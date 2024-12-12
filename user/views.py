@@ -36,9 +36,9 @@ async def mobile_login(request, data: MobileLogin):
 async def email_login(request, data: EmailLogin):
     if await User.objects.filter(email=data.email).aexists():
         user = await User.objects.aget(email=data.email)
-        if password:
+        refresh = RefreshToken.for_user(user)
+        if data.password:
             if check_password(data.password, user.password):
-                refresh = RefreshToken.for_user(user)
                 return 200, {'access': str(refresh.access_token), 'refresh': str(refresh)}
         else:
             return 200, {'access': str(refresh.access_token), 'refresh': str(refresh)}
