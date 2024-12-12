@@ -3,12 +3,10 @@ from django.contrib.auth import get_user_model
 from .schema import *
 from typing import *
 from .models import *
-from ninja_jwt.authentication import JWTAuth
 from ninja_jwt.tokens import RefreshToken
 from django.contrib.auth import authenticate
 from django.db.models import Q
 from ninja.responses import codes_4xx
-from ninja_jwt.authentication import AsyncJWTAuth
 from asgiref.sync import sync_to_async
 from ninja_jwt.tokens import RefreshToken, AccessToken
 from django.contrib.auth.hashers import check_password
@@ -34,12 +32,15 @@ async def mobile_login(request, data: MobileLogin):
     refresh = RefreshToken.for_user(user)
     return 200, {'access': str(refresh.access_token), 'refresh': str(refresh)}
 
-@user_api.post("/email_login", auth=None, response={200: TokenSchema, 401: Message}, description="Authenticate user with email and password")
+@user_api.post("/email_login", auth=None, response={200: TokenSchema, 401: Message}, description="Authenticate user with email and password/ Social login using email only")
 async def email_login(request, data: EmailLogin):
     if await User.objects.filter(email=data.email).aexists():
         user = await User.objects.aget(email=data.email)
-        if check_password(data.password, user.password):
-            refresh = RefreshToken.for_user(user)
+        if password:
+            if check_password(data.password, user.password):
+                refresh = RefreshToken.for_user(user)
+                return 200, {'access': str(refresh.access_token), 'refresh': str(refresh)}
+        else:
             return 200, {'access': str(refresh.access_token), 'refresh': str(refresh)}
     return 401, {"message": "Invalid credentials"}
 

@@ -9,12 +9,12 @@ class Message(Schema):
     message: str
 
 class MobileLogin(Schema):
-    password: str
     username: str
+    password: str
 
 class EmailLogin(Schema):
-    password: str
     email: str
+    password: str | None = None
 
 class UserCreation(Schema):
     name: str
