@@ -9,6 +9,7 @@ class UserProfile(AbstractUser):
     inactive_from = models.DateTimeField(null=True, blank=True)
     deactivate = models.BooleanField(default=False)
     deactivated_on = models.DateField(null=True, blank=True)
+    whatsapp_updations = models.BooleanField(default=True)
 
     groups = models.ManyToManyField(
         'auth.Group',

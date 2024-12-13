@@ -22,6 +22,7 @@ class UserCreation(Schema):
     email: str
     phone: str
     username: str
+    whatsapp_updations: bool
 
 class TokenSchema(Schema):
     access: str
