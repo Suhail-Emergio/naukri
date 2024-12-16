@@ -28,7 +28,7 @@ RUN adduser \
 # Install dependencies required for building some Python packages.
 RUN --mount=type=cache,target=/root/.cache/pip \
     --mount=type=bind,source=requirements.txt,target=requirements.txt \
-    python -m pip install -r requirements.txt \
+    python -m pip install -r requirements.txt && \
     pip install six
 # Switch to the non-privileged user to run the application.
 USER appuser
