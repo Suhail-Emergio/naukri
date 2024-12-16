@@ -5,9 +5,13 @@ from django.conf.urls.static import static
 from ninja import NinjaAPI
 from .utils.auth import *
 from user.views import *
+from seeker.details.views import *
 
 api = NinjaAPI(auth=AsyncJWTAuth())
 api.add_router('user', user_api)
+api.add_router('personal', personal_api)
+# api.add_router('employment', employment_api)
+# api.add_router('professional', professional_api)
 
 urlpatterns = [
     path('admin/', admin.site.urls),

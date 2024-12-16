@@ -1,0 +1,39 @@
+from django.db import models
+from django.contrib.auth import get_user_model
+
+User = get_user_model()
+
+class Employment(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    employed = models.BooleanField(default=False)
+    experiance = models.IntegerField()
+    job_title = models.CharField(max_length=150)
+    company_name = models.CharField(max_length=200)
+    duration = models.IntegerField()
+    ctc = models.IntegerField()
+    notice_pd = models.IntegerField()
+    department = models.CharField(max_length=200)
+    job_role = models.CharField(max_length=500)
+    role_category = models.CharField(max_length=500)
+
+class Professional(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    student = models.BooleanField(default=False) ## IF FALSE WORKER
+    education = models.CharField(max_length=150)
+    course = models.CharField(max_length=200)
+    type_course = models.CharField(max_length=200)
+    specialisation = models.CharField(max_length=200)
+    university = models.CharField(max_length=200)
+    starting_yr = models.IntegerField()
+    ending_yr = models.IntegerField()
+    grade = models.IntegerField()
+
+class Personal(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    intro = models.CharField(max_length=250)
+    city = models.CharField(max_length=250)
+    state = models.CharField(max_length=250)
+    cv = models.FileField(upload_to="details/resume/", null=True, blank=True)
+    skills = models.JSONField()
+    prefered_salary_pa = models.IntegerField()
+    prefered_work_loc = models.JSONField()

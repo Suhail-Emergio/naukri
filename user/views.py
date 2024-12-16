@@ -54,5 +54,5 @@ def refresh_token(request, token_data: TokenRefreshSchema):
 
 @user_api.get("/", response={200: UserData, 401: Message}, description="Get info of logged user")
 async def user(request):
-    user = request.user
+    user = request.auth
     return 200, user
