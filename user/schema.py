@@ -4,6 +4,7 @@ from typing import *
 class UserData(Schema):
     id: int
     username: str
+    role: str
 
 class Message(Schema):
     message: str
@@ -22,6 +23,7 @@ class UserCreation(Schema):
     email: str
     phone: str
     username: str
+    role: str
     whatsapp_updations: bool
 
 class TokenSchema(Schema):
