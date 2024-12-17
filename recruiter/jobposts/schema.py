@@ -5,7 +5,6 @@ from .models import *
 
 # Job Post Schema
 class JobCreation(Schema):
-    user : int
     title : str
     description : str
     type : str

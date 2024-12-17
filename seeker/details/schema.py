@@ -5,7 +5,6 @@ from .models import *
 
 # Personal Schema
 class PersonalCreation(Schema):
-    user : int
     intro : str
     city : str
     state : str
@@ -18,7 +17,6 @@ PersonalData = create_schema(Personal)
 
 # Employment Schema
 class EmploymentCreation(Schema):
-    user : int
     employed : bool
     experiance: int
     job_title: str
@@ -34,7 +32,6 @@ EmploymentData = create_schema(Employment)
 
 # Professional Schema
 class ProfessionalCreation(Schema):
-    user: int
     student: bool = False
     education: str
     course: str

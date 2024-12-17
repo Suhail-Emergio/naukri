@@ -14,7 +14,6 @@ professional_api = Router(tags=['professional'])
 @personal_api.post("/", response={201: PersonalData, 409: Message}, description="User personal data creation")
 async def personal(request, data: PersonalCreation):
     data_dict = data.dict()
-    user = await User.objects.aget(id=request.auth)
     data_dict['user'] = request.auth
     personal = await Personal.objects.acreate(**data_dict)
     return 201, personal
@@ -27,7 +26,6 @@ async def personal_data(request):
 @employment_api.post("/", response={201: EmploymentData, 409: Message}, description="User employment data creation")
 async def employment(request, data: EmploymentCreation):
     data_dict = data.dict()
-    user = await User.objects.aget(id=request.auth)
     data_dict['user'] = request.auth
     employment = await Employment.objects.acreate(**data_dict)
     return 201, employment
@@ -40,7 +38,6 @@ async def employment_data(request):
 @professional_api.post("/", response={201: ProfessionalData, 409: Message}, description="User professional data creation")
 async def professional(request, data: ProfessionalCreation):
     data_dict = data.dict()
-    user = await User.objects.aget(id=request.auth)
     data_dict['user'] = request.auth
     professional = await Professional.objects.acreate(**data_dict)
     return 201, professional
