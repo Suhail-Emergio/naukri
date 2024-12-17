@@ -6,7 +6,7 @@ from ninja import NinjaAPI
 from .utils.auth import *
 from user.views import *
 from seeker.details.views import *
-from recruiter.jobposts.views import *
+from recruiter.jobposts.views import jobs_api; from recruiter.company.views import company_api
 
 api = NinjaAPI(auth=AsyncJWTAuth())
 
@@ -20,6 +20,7 @@ api.add_router('professional', professional_api)
 
 ## Recruiter API
 api.add_router('jobs', jobs_api)
+api.add_router('company', company_api)
 
 urlpatterns = [
     path('admin/', admin.site.urls),
