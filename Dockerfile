@@ -32,8 +32,14 @@ RUN --mount=type=cache,target=/root/.cache/pip \
     pip install six
 
 # Create writable directories and set permissions
-RUN mkdir -p /naukri/app/migrations /naukri/tmp && \
-    chown -R appuser:appuser /naukri
+RUN mkdir -p /naukri && \
+    chmod 777 /naukri
+
+# Copy the source code into the container
+COPY . .
+
+# Ensure full write permissions for the entire directory
+RUN chmod -R 777 /naukri
 
 # Copy the source code into the container
 COPY . .
