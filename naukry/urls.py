@@ -6,12 +6,20 @@ from ninja import NinjaAPI
 from .utils.auth import *
 from user.views import *
 from seeker.details.views import *
+from recruiter.jobposts.views import *
 
 api = NinjaAPI(auth=AsyncJWTAuth())
+
+## User API
 api.add_router('user', user_api)
+
+## Seeker API
 api.add_router('personal', personal_api)
 api.add_router('employment', employment_api)
 api.add_router('professional', professional_api)
+
+## Recruiter API
+api.add_router('jobs', jobs_api)
 
 urlpatterns = [
     path('admin/', admin.site.urls),
