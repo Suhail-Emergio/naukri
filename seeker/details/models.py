@@ -3,6 +3,16 @@ from django.contrib.auth import get_user_model
 
 User = get_user_model()
 
+class Personal(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    intro = models.CharField(max_length=250)
+    city = models.CharField(max_length=250)
+    state = models.CharField(max_length=250)
+    cv = models.FileField(upload_to="details/resume/", null=True, blank=True)
+    skills = models.JSONField()
+    prefered_salary_pa = models.IntegerField()
+    prefered_work_loc = models.JSONField()
+
 class Employment(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     employed = models.BooleanField(default=False)
@@ -27,13 +37,3 @@ class Professional(models.Model):
     starting_yr = models.IntegerField()
     ending_yr = models.IntegerField()
     grade = models.IntegerField()
-
-class Personal(models.Model):
-    user = models.ForeignKey(User, on_delete=models.CASCADE)
-    intro = models.CharField(max_length=250)
-    city = models.CharField(max_length=250)
-    state = models.CharField(max_length=250)
-    cv = models.FileField(upload_to="details/resume/", null=True, blank=True)
-    skills = models.JSONField()
-    prefered_salary_pa = models.IntegerField()
-    prefered_work_loc = models.JSONField()

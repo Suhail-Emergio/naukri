@@ -29,3 +29,29 @@ async def personal(request, data: PersonalCreation):
 async def personal_data(request):
     personal = [i async for i in Personal.objects.filter(user=request.auth)]
     return 200, personal
+
+@employment_api.post("/", response={201: EmploymentData, 409: Message}, description="user personal data creation")
+async def employment(request, data: EmploymentCreation):
+    data_dict = data.dict()
+    user = await User.objects.aget(id=request.auth)
+    data_dict['user'] = request.auth
+    employment = await Employment.objects.acreate(**data_dict)
+    return 201, employment
+
+@employment_api.get("/", response={200: List[EmploymentData], 409: Message}, description="user personal data creation")
+async def employment_data(request):
+    employment = [i async for i in Employment.objects.filter(user=request.auth)]
+    return 200, employment
+
+@professional_api.post("/", response={201: ProfessionalData, 409: Message}, description="user personal data creation")
+async def professional(request, data: ProfessionalCreation):
+    data_dict = data.dict()
+    user = await User.objects.aget(id=request.auth)
+    data_dict['user'] = request.auth
+    professional = await Professional.objects.acreate(**data_dict)
+    return 201, professional
+
+@professional_api.get("/", response={200: List[ProfessionalData], 409: Message}, description="user personal data creation")
+async def professional_data(request):
+    professional = [i async for i in Professional.objects.filter(user=request.auth)]
+    return 200, professional
