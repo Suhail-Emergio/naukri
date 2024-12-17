@@ -16,8 +16,10 @@ User = get_user_model()
 
 @user_api.post("/register", auth=None, response={201: TokenSchema, 409: Message}, description="User creation")
 async def register(request, data: UserCreation):
-    if not await User.objects.filter(Q(username=data.username) | Q(email=data.email)).aexists():
-        user = await User.objects.acreate(**data.dict())
+    if not await User.objects.filter(Q(username=data.phone) | Q(email=data.email)).aexists():
+        data_dict = data.dict()
+        data['username'] = data.phone
+        user = await User.objects.acreate(**data_dict)
         user.set_password(data.password)
         await user.asave()
         refresh = RefreshToken.for_user(user)
