@@ -8,7 +8,7 @@ ENV PYTHONDONTWRITEBYTECODE=1
 # the application crashes without emitting any logs due to buffering.
 ENV PYTHONUNBUFFERED=1
 
-WORKDIR /naukry
+WORKDIR /naukri
 RUN apt-get update && apt-get install -y build-essential pkg-config default-libmysqlclient-dev && rm -rf /var/lib/apt/lists/*
 
 ARG UID=10001
@@ -32,10 +32,10 @@ RUN --mount=type=cache,target=/root/.cache/pip \
     pip install six
 
 COPY . .
-RUN chown -R appuser:appuser /naukry
+RUN chown -R appuser:appuser /naukri
 
 # Set TMPDIR for temporary files
-ENV TMPDIR=/naukry/tmp
+ENV TMPDIR=/naukri/tmp
 RUN mkdir -p $TMPDIR && chown appuser:appuser $TMPDIR
 
 # Switch to the non-privileged user to run the application.
