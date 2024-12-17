@@ -10,7 +10,7 @@ User = get_user_model()
 company_api = Router(tags=['company'])
 
 @company_api.post("/", response={201: CompanyData, 401: Message, 409:Message}, description="Company data creation")
-async def job(request, data: CompanyCreation):
+async def company_creation(request, data: CompanyCreation):
     data_dict = data.dict()
     if request.auth.role == "recruiter":
         data_dict['user'] = request.auth
