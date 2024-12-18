@@ -22,6 +22,7 @@ class UserCreation(Schema):
     password: str
     email: str
     phone: str
+    username: str | None = None
     role: str
     whatsapp_updations: bool
 

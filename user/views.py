@@ -18,7 +18,7 @@ User = get_user_model()
 async def register(request, data: UserCreation):
     if not await User.objects.filter(Q(username=data.phone) | Q(email=data.email)).aexists():
         data_dict = data.dict()
-        data['username'] = data.phone
+        data_dict['username'] = data.phone
         user = await User.objects.acreate(**data_dict)
         user.set_password(data.password)
         await user.asave()
