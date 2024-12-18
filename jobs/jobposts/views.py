@@ -1,10 +1,12 @@
 from ninja import Router
 from django.contrib.auth import get_user_model
+from asgiref.sync import sync_to_async
 from .schema import *
 from typing import *
 from .models import *
 from user.schema import *
 from django.db.models import Q
+from recruiter.company.models import CompanyDetails
 
 User = get_user_model()
 jobs_api = Router(tags=['jobs'])
@@ -34,6 +36,7 @@ async def jobs(request):
 async def all_jobs(request):
     job_data = []
     async for job in JobPosts.objects.all():
-        company = job.user.companydetails.first()
+        user = await sync_to_async(lambda: job.user)()
+        company = await CompanyDetails.objects.aget(user=user)
         job_data.append(JobCompanyData(job_posts=job, company_data=company))
     return 200, job_data

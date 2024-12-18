@@ -6,7 +6,7 @@ from ninja import NinjaAPI
 from .utils.auth import *
 from user.views import *
 from seeker.details.views import *
-from recruiter.jobposts.views import jobs_api
+from jobs.jobposts.views import jobs_api
 from recruiter.company.views import company_api
 
 api = NinjaAPI(auth=AsyncJWTAuth())

@@ -33,6 +33,7 @@ INSTALLED_APPS = [
     'user',
     'recruiter',
     'seeker',
+    'jobs'
 ]
 
 MIDDLEWARE = [
@@ -71,8 +72,8 @@ TEMPLATES = [
 ]
 
 NINJA_JWT = {
-    'ACCESS_TOKEN_LIFETIME': timedelta(minutes=60),
-    'REFRESH_TOKEN_LIFETIME': timedelta(days=1),
+    'ACCESS_TOKEN_LIFETIME': timedelta(days=30),
+    'REFRESH_TOKEN_LIFETIME': timedelta(days=60),
     'USER_ID_FIELD': 'id',
     'USER_ID_CLAIM': 'user_id', 
     'AUTH_HEADER_TYPES': ('Bearer',),

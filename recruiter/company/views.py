@@ -18,10 +18,12 @@ async def company_creation(request, data: CompanyCreation):
         return 201, company
     return 401, {"message": "Not Authorised"}
 
-@company_api.get("/", response={200: List[CompanyData], 409: Message}, description="Company data of logged user")
+@company_api.get("/", response={200: List[CompanyData], 404: Message, 409: Message}, description="Company data of logged user")
 async def company(request):
-    comp = await CompanyDetails.objects.aget(user=request.auth)
-    return 200, comp
+    if await CompanyDetails.objects.filter(user=request.auth).aexists():
+        comp = await CompanyDetails.objects.aget(user=request.auth)
+        return 200, comp
+    return 404, {"message" : "No company details found"}
 
 @company_api.get("/all_company", response={200: List[CompanyData], 409: Message}, description="Company data of all posts")
 async def all_company(request):
