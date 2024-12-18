@@ -30,7 +30,10 @@ async def jobs(request):
     job = [i async for i in JobPosts.objects.filter(user=request.auth)]
     return 200, job
 
-@jobs_api.get("/all_jobs", response={200: List[JobData], 409: Message}, description="Job data passing of all posts")
+@jobs_api.get("/all_jobs", response={200: List[JobCompanyData], 409: Message}, description="Job data passing of all posts with respective company details")
 async def all_jobs(request):
-    job = [i async for i in JobPosts.objects.all()]
-    return 200, job
+    job_data = []
+    async for job in JobPosts.objects.all():
+        company = job.user.companydetails.first()
+        job_data.append(JobCompanyData(job_posts=job, company_data=company))
+    return 200, job_data

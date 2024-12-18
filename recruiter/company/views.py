@@ -12,7 +12,7 @@ company_api = Router(tags=['company'])
 @company_api.post("/", response={201: CompanyData, 401: Message, 409:Message}, description="Company data creation")
 async def company_creation(request, data: CompanyCreation):
     data_dict = data.dict()
-    if request.auth.role == "recruiter":
+    if request.auth.role == "recruiter" and not await CompanyDetails.objects.filter(user=request.auth).aexists():
         data_dict['user'] = request.auth
         company = await CompanyDetails.objects.acreate(**data_dict)
         return 201, company
@@ -20,7 +20,7 @@ async def company_creation(request, data: CompanyCreation):
 
 @company_api.get("/", response={200: List[CompanyData], 409: Message}, description="Company data of logged user")
 async def company(request):
-    comp = [i async for i in CompanyDetails.objects.filter(user=request.auth)]
+    comp = await CompanyDetails.objects.aget(user=request.auth)
     return 200, comp
 
 @company_api.get("/all_company", response={200: List[CompanyData], 409: Message}, description="Company data of all posts")
