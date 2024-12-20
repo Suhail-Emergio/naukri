@@ -6,16 +6,17 @@ User = get_user_model()
 class Personal(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     intro = models.CharField(max_length=250)
+    employed = models.BooleanField(default=False)
     city = models.CharField(max_length=250)
     state = models.CharField(max_length=250)
     cv = models.FileField(upload_to="details/resume/", null=True, blank=True)
+    profile_image = models.ImageField(upload_to="details/profile/", null=True, blank=True)
     skills = models.JSONField()
     prefered_salary_pa = models.IntegerField()
     prefered_work_loc = models.JSONField()
 
 class Employment(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE)
-    employed = models.BooleanField(default=False)
     experiance = models.IntegerField()
     job_title = models.CharField(max_length=150)
     company_name = models.CharField(max_length=200)
@@ -28,7 +29,6 @@ class Employment(models.Model):
 
 class Professional(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE)
-    student = models.BooleanField(default=False) ## IF FALSE WORKER
     education = models.CharField(max_length=150)
     course = models.CharField(max_length=200)
     type_course = models.CharField(max_length=200)

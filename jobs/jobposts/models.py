@@ -1,11 +1,12 @@
 from django.db import models
-from django.contrib.auth import get_user_model
+# from django.contrib.auth import get_user_model
+from recruiter.company.models import CompanyDetails as Company
 
-User = get_user_model()
+# User = get_user_model()
 
 class JobPosts(models.Model):
     ## Job Details
-    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    company = models.ForeignKey(Company, on_delete=models.CASCADE)
     title = models.CharField(max_length=250)
     description = models.JSONField()
     type = models.CharField(max_length=250)
