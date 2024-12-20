@@ -34,9 +34,12 @@ async def jobs(request):
 
 @jobs_api.get("/all_jobs", response={200: List[JobCompanyData], 409: Message}, description="Job data passing of all posts with respective company details")
 async def all_jobs(request):
-    job_data = []
-    async for job in JobPosts.objects.all():
-        user = await sync_to_async(lambda: job.user)()
-        company = await CompanyDetails.objects.aget(user=user)
-        job_data.append(JobCompanyData(job_posts=job, company_data=company))
-    return 200, job_data
+    jobs = [i async for i in JobPosts.objects.all()]
+    job_company_data = []
+    for job in jobs:
+        company_details = await sync_to_async(CompanyDetails.objects.get)(id=job.company_id)
+        job_company_data.append({
+            "job": job,
+            "company": company_details
+        })
+    return 200, job_company_data
