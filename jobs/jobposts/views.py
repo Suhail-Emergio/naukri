@@ -39,7 +39,7 @@ async def all_jobs(request):
     for job in jobs:
         company_details = await sync_to_async(CompanyDetails.objects.get)(id=job.company_id)
         job_company_data.append({
-            "job": job,
-            "company": company_details
+            "job_posts": job,
+            "company_data": company_details
         })
     return 200, job_company_data
