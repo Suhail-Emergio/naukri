@@ -6,7 +6,7 @@ from recruiter.company.models import CompanyDetails as Company
 
 class JobPosts(models.Model):
     ## Job Details
-    company = models.ForeignKey(Company, on_delete=models.CASCADE)
+    company = models.ForeignKey(Company, on_delete=models.CASCADE, null=True, blank=True)
     title = models.CharField(max_length=250)
     description = models.JSONField()
     type = models.CharField(max_length=250)
