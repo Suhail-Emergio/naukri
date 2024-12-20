@@ -10,6 +10,7 @@ from ninja.responses import codes_4xx
 from asgiref.sync import sync_to_async
 from ninja_jwt.tokens import RefreshToken, AccessToken
 from django.contrib.auth.hashers import check_password
+from naukry.utils.email import send_mails
 
 user_api = Router(tags=['user'])
 User = get_user_model()
@@ -58,3 +59,8 @@ def refresh_token(request, token_data: TokenRefreshSchema):
 async def user(request):
     user = request.auth
     return 200, user
+
+# @user_api.get("/email", auth=None, response={200: Message}, description="Get info of logged user")
+# async def email(request):
+#     message = await send_mails("ms10suhail@gmail.com", "Suhail", "password")
+#     return 200, {"message": "Email sent"}

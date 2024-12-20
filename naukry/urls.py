@@ -15,9 +15,7 @@ api = NinjaAPI(auth=AsyncJWTAuth())
 api.add_router('user', user_api)
 
 ## Seeker API
-api.add_router('personal', personal_api)
-api.add_router('employment', employment_api)
-api.add_router('professional', professional_api)
+api.add_router('details', details_api)
 
 ## Recruiter API
 api.add_router('jobs', jobs_api)
