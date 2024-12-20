@@ -22,7 +22,7 @@ async def job(request, data: JobCreation):
         return 400, {"message": "Minimum salary cannot be greater than maximum"}
 
     if request.auth.role == "recruiter":
-        data_dict['user'] = request.auth
+        data_dict['company'] = await CompanyDetails.objects.aget(user=request.auth)
         job = await JobPosts.objects.acreate(**data_dict)
         return 201, job
     return 401, {"message": "Not Authorised"}
