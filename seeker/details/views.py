@@ -74,3 +74,29 @@ async def update_professional_data(request, data: ProfessionalCreation):
 async def professional_data(request):
     professional = [i async for i in Professional.objects.filter(user=request.auth)]
     return 200, professional
+
+@details_api.post("/preference", response={201: PreferenceData, 409: Message}, description="User preference data creation")
+async def preference(request, data: PreferenceCreation):
+    data_dict = data.dict()
+    if Preference.objects.filter(user=request.auth).aexists():
+        return 409, {"message": "Preference data already exists"}
+    data_dict['user'] = request.auth
+    preference = await Preference.objects.acreate(**data_dict)
+    return 201, preference
+
+@details_api.patch("/preference", response={200: PreferenceData, 404: Message, 409: Message}, description="User preference data update")
+async def update_preference_data(request, data: PreferenceCreation):
+    if await Preference.objects.filter(user=request.auth).aexists():
+        preference = await Preference.objects.aget(user=request.auth)
+        for attr, value in data.dict().items():
+            setattr(preference, attr, value)
+        await preference.asave()
+        return 200, preference
+    return 404, {"message": "Preference data not found"}
+
+@details_api.get("/preference", response={200: PreferenceData, 404: Message, 409: Message}, description="User preference data")
+async def preference_data(request):
+    if await Preference.objects.filter(user=request.auth).aexists():
+        preference = await Preference.objects.aget(user=request.auth)
+        return 200, preference
+    return 404, {"message": "Preference data not found"}

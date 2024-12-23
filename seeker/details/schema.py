@@ -43,3 +43,14 @@ class ProfessionalCreation(Schema):
     grade: int
 
 ProfessionalData = create_schema(Professional)
+
+# Preference Schema
+class PreferenceCreation(Schema):
+    job_type: str
+    employment_type: str
+    job_shift: str
+    job_role: List[str]
+    pref_salary: int
+    job_location: List[str]
+
+PreferenceData = create_schema(Preference)

@@ -18,8 +18,11 @@ api.add_router('user', user_api)
 api.add_router('details', details_api)
 
 ## Recruiter API
-api.add_router('jobs', jobs_api)
 api.add_router('company', company_api)
+
+## Jobs API
+api.add_router('jobs', jobs_api)
+api.add_router('basedjobs', based_jobs_api)
 
 urlpatterns = [
     path('admin/', admin.site.urls),
