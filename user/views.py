@@ -61,6 +61,7 @@ async def user(request):
     return 200, user
 
 # async def forgot_pwd(request):
+# async def user(request): Patch
 # async def otp_verify(request):
 
 # @user_api.get("/email", auth=None, response={200: Message}, description="Get info of logged user")
