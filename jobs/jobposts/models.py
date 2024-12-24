@@ -10,7 +10,7 @@ class JobPosts(models.Model):
     title = models.CharField(max_length=250)
     description = models.JSONField()
     type = models.CharField(max_length=250)
-    city = models.CharField(max_length=250)
+    city = models.CharField(max_length=250, default='')
     country = models.CharField(max_length=250)
     vacancy = models.IntegerField()
     industry = models.CharField(max_length=250)
