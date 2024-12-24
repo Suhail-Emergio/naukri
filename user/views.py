@@ -60,6 +60,9 @@ async def user(request):
     user = request.auth
     return 200, user
 
+# async def forgot_pwd(request):
+# async def otp_verify(request):
+
 # @user_api.get("/email", auth=None, response={200: Message}, description="Get info of logged user")
 # async def email(request):
 #     message = await send_mails("ms10suhail@gmail.com", "Suhail", "password")
