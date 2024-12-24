@@ -59,3 +59,4 @@ async def category_based_jobs(request):
     return 200, job_company_data
 
 # async def similar_jobs(request):
+# async def featured_jobs(request):
