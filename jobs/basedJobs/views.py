@@ -1,11 +1,11 @@
 from ninja import Router
 from django.contrib.auth import get_user_model
-from jobposts.schema import *
+from jobs.jobposts.schema import *
 from typing import *
-from jobposts.models import *
+from jobs.jobposts.models import *
 from user.schema import *
 from django.db.models import Q
-from seeker.details.models import Preference, Personal, Emjployment
+from seeker.details.models import Preference, Personal, Employment
 
 User = get_user_model()
 based_jobs_api = Router(tags=['basedjobs'])
@@ -37,8 +37,7 @@ async def profile_based_jobs(request):
     if personal:
         if personal.employed and employment:
             query = Q(title=employment.job_title) | Q(industry=employment.industry) | Q(functional_area=employment.functional_area)
-        if personal.state:
-            query |= Q(address__state = personal.state)
+        query |= Q(city = personal.prefered_work_loc) | Q(country = personal.prefered_work_loc)
         jobs = [i async for i in JobPosts.objects.filter(query)]
         job_company_data = []
         for job in jobs:
