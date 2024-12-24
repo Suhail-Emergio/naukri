@@ -1,4 +1,4 @@
-from ninja import Router
+from ninja import Router, PatchDict
 from django.contrib.auth import get_user_model
 from .schema import *
 from typing import *
@@ -13,14 +13,16 @@ details_api = Router(tags=['details'])
 async def personal(request, data: PersonalCreation):
     data_dict = data.dict()
     data_dict['user'] = request.auth
+    if await Personal.objects.filter(user=request.auth).aexists():
+        return 409, {"message": "Personal data already exists"}
     personal = await Personal.objects.acreate(**data_dict)
     return 201, personal
 
 @details_api.patch("/personal", response={200: PersonalData, 404: Message, 409: Message}, description="User personal data update")
-async def update_personal_data(request, data: PersonalCreation):
+async def update_personal_data(request, data: PatchDict[PersonalData]):
     if await Personal.objects.filter(user=request.auth).aexists():
         personal = await Personal.objects.aget(user=request.auth)
-        for attr, value in data.dict().items():
+        for attr, value in data.items():
             setattr(personal, attr, value)
         await personal.asave()
         return 200, personal
@@ -39,10 +41,10 @@ async def employment(request, data: EmploymentCreation):
     return 201, employment
 
 @details_api.patch("/employment", response={200: EmploymentData, 404: Message, 409: Message}, description="User employment data update")
-async def update_employment_data(request, data: EmploymentCreation):
-    if await Employment.objects.filter(user=request.auth).aexists():
-        employment = await Employment.objects.aget(user=request.auth)
-        for attr, value in data.dict().items():
+async def update_employment_data(request, data: PatchDict[EmploymentData]):
+    if await Employment.objects.filter(id=data['id']).aexists():
+        employment = await Employment.objects.aget(id=data['id'])
+        for attr, value in data.items():
             setattr(employment, attr, value)
         await employment.asave()
         return 200, employment
@@ -53,39 +55,39 @@ async def employment_data(request):
     employment = [i async for i in Employment.objects.filter(user=request.auth)]
     return 200, employment
 
-@details_api.post("/professional", response={201: ProfessionalData, 409: Message}, description="User professional data creation")
-async def professional(request, data: ProfessionalCreation):
+@details_api.post("/qualification", response={201: QualificationData, 409: Message}, description="User Qualification data creation")
+async def qualification(request, data: QualificationCreation):
     data_dict = data.dict()
     data_dict['user'] = request.auth
-    professional = await Professional.objects.acreate(**data_dict)
-    return 201, professional
+    qualification = await Qualification.objects.acreate(**data_dict)
+    return 201, qualification
 
-@details_api.patch("/professional", response={200: ProfessionalData, 404: Message, 409: Message}, description="User professional data update")
-async def update_professional_data(request, data: ProfessionalCreation):
-    if await Professional.objects.filter(user=request.auth).aexists():
-        professional = await Professional.objects.aget(user=request.auth)
+@details_api.patch("/qualification", response={200: QualificationData, 404: Message, 409: Message}, description="User Qualification data update")
+async def update_qualification_data(request, data: PatchDict[QualificationData]):
+    if await Qualification.objects.filter(id=id).aexists():
+        qualification = await Qualification.objects.aget(id=id)
         for attr, value in data.dict().items():
-            setattr(professional, attr, value)
-        await professional.asave()
-        return 200, professional
-    return 404, {"message": "Professional data not found"}
+            setattr(qualification, attr, value)
+        await qualification.asave()
+        return 200, qualification
+    return 404, {"message": "Qualification data not found"}
 
-@details_api.get("/professional", response={200: List[ProfessionalData], 409: Message}, description="User professional data")
-async def professional_data(request):
-    professional = [i async for i in Professional.objects.filter(user=request.auth)]
-    return 200, professional
+@details_api.get("/qualification", response={200: List[QualificationData], 409: Message}, description="User Qualification data")
+async def qualification_data(request):
+    qualification = [i async for i in Qualification.objects.filter(user=request.auth)]
+    return 200, qualification
 
 @details_api.post("/preference", response={201: PreferenceData, 409: Message}, description="User preference data creation")
 async def preference(request, data: PreferenceCreation):
     data_dict = data.dict()
-    if Preference.objects.filter(user=request.auth).aexists():
+    if await Preference.objects.filter(user=request.auth).aexists():
         return 409, {"message": "Preference data already exists"}
     data_dict['user'] = request.auth
     preference = await Preference.objects.acreate(**data_dict)
     return 201, preference
 
 @details_api.patch("/preference", response={200: PreferenceData, 404: Message, 409: Message}, description="User preference data update")
-async def update_preference_data(request, data: PreferenceCreation):
+async def update_preference_data(request, data: PatchDict[PreferenceData]):
     if await Preference.objects.filter(user=request.auth).aexists():
         preference = await Preference.objects.aget(user=request.auth)
         for attr, value in data.dict().items():

@@ -8,6 +8,7 @@ class PersonalCreation(Schema):
     intro : str
     city : str
     state : str
+    employed : bool
     cv : Optional[str] = None
     skills : List[str]
     prefered_salary_pa : int
@@ -17,7 +18,6 @@ PersonalData = create_schema(Personal)
 
 # Employment Schema
 class EmploymentCreation(Schema):
-    employed : bool
     experiance: int
     job_title: str
     company_name: str
@@ -30,8 +30,8 @@ class EmploymentCreation(Schema):
 
 EmploymentData = create_schema(Employment)
 
-# Professional Schema
-class ProfessionalCreation(Schema):
+# Qualification Schema
+class QualificationCreation(Schema):
     student: bool = False
     education: str
     course: str
@@ -42,7 +42,7 @@ class ProfessionalCreation(Schema):
     ending_yr: int
     grade: int
 
-ProfessionalData = create_schema(Professional)
+QualificationData = create_schema(Qualification)
 
 # Preference Schema
 class PreferenceCreation(Schema):

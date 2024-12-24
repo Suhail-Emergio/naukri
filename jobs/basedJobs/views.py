@@ -18,8 +18,8 @@ async def prefered_jobs(request):
         return 404, {"message": "User preferences not found"}
 
     jobs = [i async for i in JobPosts.objects.filter(
-        Q(location__in=preferences.locations) |
-        Q(job_type__in=preferences.job_types) |
+        Q(city__in=preferences.locations) |
+        Q(type__in=preferences.job_types) |
         Q(industry__in=preferences.industries)
     )]
 
@@ -45,3 +45,17 @@ async def profile_based_jobs(request):
             job_company_data.append({"job_posts": job, "company_data": company_details})
         return 200, job_company_data
     return 404, {"message": "User profile data not found"}
+
+@based_jobs_api.get("/category_based", response={200: List[JobCompanyData], 404: Message, 409: Message}, description="Retrieve all job posts based on category")
+async def category_based_jobs(request):
+    category = request.GET.get("category")
+    if not category:
+        return 409, {"message": "Category not provided"}
+    jobs = [i async for i in JobPosts.objects.filter(category=category)]
+    job_company_data = []
+    for job in jobs:
+        company_details = await CompanyDetails.objects.aget(id=job.company_id)
+        job_company_data.append({"job_posts": job, "company_data": company_details})
+    return 200, job_company_data
+
+# async def similar_jobs(request):

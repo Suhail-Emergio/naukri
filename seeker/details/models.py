@@ -27,7 +27,7 @@ class Employment(models.Model):
     job_role = models.CharField(max_length=500)
     role_category = models.CharField(max_length=500)
 
-class Professional(models.Model):
+class Qualification(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     education = models.CharField(max_length=150)
     course = models.CharField(max_length=200)

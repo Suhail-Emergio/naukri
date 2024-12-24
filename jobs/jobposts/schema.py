@@ -9,6 +9,8 @@ class JobCreation(Schema):
     title : str
     description : str
     type : str
+    category : str
+    city : str
     country : str
     vacancy : int
     industry : str
