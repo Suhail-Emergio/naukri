@@ -1,3 +1,16 @@
 from django.db import models
+from jobs.jobposts.models import JobPosts
+from django.contrib.auth import get_user_model
 
-# Create your models here.
+User = get_user_model()
+
+class SaveJobs(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    job = models.ForeignKey(JobPosts, on_delete=models.CASCADE)
+    created_on = models.DateTimeField(auto_now=True)
+
+class ApplyJobs(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    job = models.ForeignKey(JobPosts, on_delete=models.CASCADE)
+    status = models.CharField(max_length=50, choices=[('applied', 'applied'), ('shortlisted', 'shortlisted'), ('rejected', 'rejected')], default='applied')
+    created_on = models.DateTimeField(auto_now=True)

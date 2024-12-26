@@ -18,14 +18,14 @@ async def company_creation(request, data: CompanyCreation):
         return 201, company
     return 401, {"message": "Not Authorised"}
 
-@company_api.patch("/edit", response={200: CompanyData, 404: Message, 409: Message}, description="Company data update")
+@company_api.patch("/edit", response={201: CompanyData, 404: Message, 409: Message}, description="Company data update")
 async def update_company(request, data: PatchDict[CompanyData]):
     if await CompanyDetails.objects.filter(user=request.auth).aexists():
         company = await CompanyDetails.objects.aget(user=request.auth)
         for attr, value in data.items():
             setattr(company, attr, value)
         await company.asave()
-        return 200, company
+        return 201, company
     return 404, {"message": "Company data not found"}
 
 @company_api.get("/", response={200: CompanyData, 404: Message, 409: Message}, description="Company data of logged user")
