@@ -1,4 +1,4 @@
-from ninja import Router
+from ninja import Router, PatchDict
 from django.contrib.auth import get_user_model
 from asgiref.sync import sync_to_async
 from .schema import *
@@ -22,14 +22,26 @@ async def job(request, data: JobCreation):
         return 400, {"message": "Minimum salary cannot be greater than maximum"}
 
     if request.auth.role == "recruiter":
+        if not await CompanyDetails.objects.filter(user=request.auth).aexists():
+            return 400, {"message": "Create company details first"}
         data_dict['company'] = await CompanyDetails.objects.aget(user=request.auth)
         job = await JobPosts.objects.acreate(**data_dict)
         return 201, job
     return 401, {"message": "Not Authorised"}
 
+@jobs_api.patch("/edit", response={200: JobData, 404: Message, 409: Message}, description="User personal data update")
+async def update_jobpost(request, data: PatchDict[JobData]):
+    if await JobPosts.objects.filter(id=data['id']).aexists():
+        job = await JobPosts.objects.aget(id=data['id'])
+        for attr, value in data.items():
+            setattr(job, attr, value)
+        await job.asave()
+        return 200, job
+    return 404, {"message": "Personal data not found"}
+
 @jobs_api.get("/", response={200: List[JobData], 409: Message}, description="Job data passing of logged user")
 async def jobs(request):
-    job = [i async for i in JobPosts.objects.filter(user=request.auth)]
+    job = [i async for i in JobPosts.objects.filter(company__user=request.auth)]
     return 200, job
 
 @jobs_api.get("/all_jobs", response={200: List[JobCompanyData], 409: Message}, description="Job data passing of all posts with respective company details")

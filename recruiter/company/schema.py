@@ -5,7 +5,7 @@ from .models import *
 
 # Company Details Schema
 class CompanyCreation(Schema):
-    logo : Optional[str] = None
+    logo : str | None = None
     about : str
     website : str
     functional_area : str
