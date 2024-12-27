@@ -15,7 +15,14 @@ class MobileLogin(Schema):
 
 class EmailLogin(Schema):
     email: str
-    password: str | None = None
+    password: str
+
+class MobileOtpVerify(Schema):
+    phone: str
+    otp: str
+
+class EmailOtpVerify(Schema):
+    otp: int
 
 class UserCreation(Schema):
     name: str

@@ -16,6 +16,8 @@ class UserProfile(AbstractUser):
     deactivate = models.BooleanField(default=False)
     deactivated_on = models.DateField(null=True, blank=True)
     whatsapp_updations = models.BooleanField(default=True)
+    email_verified = models.BooleanField(default=False)
+    phone_verified = models.BooleanField(default=False)
 
     groups = models.ManyToManyField(
         'auth.Group',
