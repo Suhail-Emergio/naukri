@@ -59,6 +59,8 @@ async def email_login(request, data: LoginSchema):
             if check_password(data.password, user.password):
                 return 200, {'access': str(refresh.access_token), 'refresh': str(refresh)}
         else:
+            user.email_verified = True
+            await user.asave()
             return 200, {'access': str(refresh.access_token), 'refresh': str(refresh)}
         # return 403, {"message": "Mobile not verified"}
     return 401, {"message": "Invalid credentials"}
