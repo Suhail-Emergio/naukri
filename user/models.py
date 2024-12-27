@@ -18,6 +18,7 @@ class UserProfile(AbstractUser):
     whatsapp_updations = models.BooleanField(default=True)
     email_verified = models.BooleanField(default=False)
     phone_verified = models.BooleanField(default=False)
+    subscribed = models.BooleanField(default=False)
 
     groups = models.ManyToManyField(
         'auth.Group',

@@ -45,6 +45,8 @@ async def mobile_login(request, data: LoginSchema):
     if not user:
         return 401, {"message": "Invalid credentials"}
     # if user.mobile_verified:
+    # if user.role == "recruiter" and user.subscribed == False:
+    #     return 403, {"message": "Please subscribe to a plan"}
     refresh = RefreshToken.for_user(user)
     return 200, {'access': str(refresh.access_token), 'refresh': str(refresh), 'role': user.role}
     # return 403, {"message": "Mobile not verified"}
@@ -54,6 +56,8 @@ async def email_login(request, data: LoginSchema):
     if await User.objects.filter(email=data.username).aexists():
         user = await User.objects.aget(email=data.username)
         # if user.mobile_verified:
+        # if user.role == "recruiter" and user.subscribed == False:
+        #     return 403, {"message": "Please subscribe to a plan"}
         refresh = RefreshToken.for_user(user)
         if data.password:
             if check_password(data.password, user.password):
