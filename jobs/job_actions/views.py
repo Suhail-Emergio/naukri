@@ -11,6 +11,7 @@ from recruiter.company.models import CompanyDetails
 User = get_user_model()
 job_actions_api = Router(tags=['job-actions'])
 
+#################################  A P P L Y  J O B S  #################################
 @job_actions_api.post("/apply", response={201: ApplyJobsData, 404: Message, 409: Message}, description="Apply for a job post")
 async def apply_jobs(request, data: ApplyJobsCreation):
     data_dict = data.dict()
@@ -25,6 +26,7 @@ async def applied_jobs(request):
     jobs = [i async for i in ApplyJobs.objects.filter(user=request.auth).order_by('-created_on')]
     return 200, jobs
 
+#################################  A P P L I C A T I O N S  #################################
 @job_actions_api.get("/company/applications", response={200: List[ApplyJobsData], 409: Message}, description="Retrieve all job applications for a company")
 async def job_applications(request, job_id: int):
     if await JobPosts.objects.filter(id=job_id).aexists():
@@ -32,6 +34,7 @@ async def job_applications(request, job_id: int):
         return 200, jobs
     return 404, {"message": "Job not found"}
 
+#################################  S A V E /  B O O K M A R K  J O B S  #################################
 @job_actions_api.post("/save", response={201: SavedJobsData, 200: Message, 404: Message, 409: Message}, description="Save/ Bookmark a job post if not already saved, if already saved remove it")
 async def save_jobs(request, data: SavedJobsCreation):
     data_dict = data.dict()
@@ -53,6 +56,7 @@ async def saved_jobs(request):
     jobs = [i async for i in SaveJobs.objects.filter(user=request.auth).order_by('-created_on')]
     return 200, jobs
 
+#################################  S E A R C H  &  F I L T E R  J O B S  #################################
 @job_actions_api.get("/search", response={200: List[JobCompanyData], 409: Message}, description="Retrieve all job posts a user searched & filtered")
 async def search_jobs(request, 
         specialization: str = None, 

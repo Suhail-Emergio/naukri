@@ -11,6 +11,7 @@ from recruiter.company.models import CompanyDetails
 User = get_user_model()
 jobs_api = Router(tags=['jobs'])
 
+#################################  J O B  P O S T S  #################################
 @jobs_api.post("/", response={201: JobData, 400: Message, 401: Message, 409:Message}, description="Job data creation")
 async def job(request, data: JobCreation):
     data_dict = data.dict()

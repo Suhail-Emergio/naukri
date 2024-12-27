@@ -11,6 +11,7 @@ from recruiter.company.models import CompanyDetails
 User = get_user_model()
 based_jobs_api = Router(tags=['based-jobs'])
 
+#################################  J O B S  B A S E D  O N  D I F F  I N F O S  #################################
 @based_jobs_api.get("/prefered_jobs", response={200: List[JobCompanyData], 404: Message, 409: Message}, description="Retrieve all job posts with respective company details based on user preferences")
 async def prefered_jobs(request):
     user = request.auth

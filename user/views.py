@@ -17,6 +17,7 @@ from django.core.cache import cache
 user_api = Router(tags=['user'])
 User = get_user_model()
 
+#################################  R E G I S T E R  &  L O G I N  #################################
 @user_api.post("/register", auth=None, response={201: TokenSchema, 409: Message}, description="User creation")
 async def register(request, data: UserCreation):
     if not await User.objects.filter(Q(username=data.phone) | Q(email=data.email)).aexists():
@@ -59,25 +60,7 @@ async def email_login(request, data: EmailLogin):
         # return 403, {"message": "Mobile not verified"}
     return 401, {"message": "Invalid credentials"}
 
-@user_api.post("/refresh", auth=None, response={200: TokenSchema, 401: Message}, description="Refresh AccessToken using RefreshToken")
-def refresh_token(request, token_data: TokenRefreshSchema):
-    try:
-        refresh = RefreshToken(token_data.refresh)
-        return 200, {'access': str(refresh.access_token),'refresh': str(refresh)}
-    except Exception:
-        return 401, {"message": "Invalid refresh token"}
-
-@user_api.get("/", response={200: UserData, 401: Message}, description="Get info of logged user")
-async def user(request):
-    user = request.auth
-    return 200, user
-
-@user_api.delete("/", response={200: Message, 401: Message}, description="Delete user account")
-async def user(request):
-    user = request.auth
-    await user.adelete()
-    return 200, {"message": "Account Deleted Successfully"}
-
+#################################  V E R I F I C A T I O N S  #################################
 @user_api.post("/mobile_verify", auth=None, response={200: TokenSchema, 401: Message, 403: Message}, description="Verify OTP using mobile number")
 async def mobile_verify(request, data: MobileOtpVerify):
     key = f'otp_{data.phone}'
@@ -114,11 +97,27 @@ async def email_verify(request, data: EmailOtpVerify):
         return 403, {"message": "Invalid OTP"}
     return 401, {"message": "OTP expired"}
 
+#################################  T O K E N  R E F R E S H  #################################
+@user_api.post("/refresh", auth=None, response={200: TokenSchema, 401: Message}, description="Refresh AccessToken using RefreshToken")
+def refresh_token(request, token_data: TokenRefreshSchema):
+    try:
+        refresh = RefreshToken(token_data.refresh)
+        return 200, {'access': str(refresh.access_token),'refresh': str(refresh)}
+    except Exception:
+        return 401, {"message": "Invalid refresh token"}
+
+#################################  U S E R  D A T A  #################################
+@user_api.get("/", response={200: UserData, 401: Message}, description="Get info of logged user")
+async def user(request):
+    user = request.auth
+    return 200, user
+
+@user_api.delete("/", response={200: Message, 401: Message}, description="Delete user account")
+async def user(request):
+    user = request.auth
+    await user.adelete()
+    return 200, {"message": "Account Deleted Successfully"}
+
 # async def forgot_pwd(request):
 # async def change_pwd(request):
 # async def user(request): Patch
-
-# @user_api.get("/email", auth=None, response={200: Message}, description="Get info of logged user")
-# async def email(request):
-#     message = await send_mails("ms10suhail@gmail.com", "Suhail", "password")
-#     return 200, {"message": "Email sent"}

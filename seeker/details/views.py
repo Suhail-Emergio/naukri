@@ -9,6 +9,7 @@ from django.db.models import Q
 User = get_user_model()
 details_api = Router(tags=['details'])
 
+#################################  P E R S O N A L  D A T A  #################################
 @details_api.post("/personal", response={201: PersonalData, 409: Message}, description="User personal data creation")
 async def personal(request, data: PersonalCreation):
     data_dict = data.dict()
@@ -33,6 +34,7 @@ async def personal_data(request):
     personal = [i async for i in Personal.objects.filter(user=request.auth)]
     return 200, personal
 
+#################################  E M P L O Y M E N T  D A T A  #################################
 @details_api.post("/employment", response={201: EmploymentData, 409: Message}, description="User employment data creation")
 async def employment(request, data: EmploymentCreation):
     data_dict = data.dict()
@@ -55,6 +57,7 @@ async def employment_data(request):
     employment = [i async for i in Employment.objects.filter(user=request.auth)]
     return 200, employment
 
+#################################  Q U A L I F I C A T I O N  D A T A  #################################
 @details_api.post("/qualification", response={201: QualificationData, 409: Message}, description="User Qualification data creation")
 async def qualification(request, data: QualificationCreation):
     data_dict = data.dict()
@@ -77,6 +80,7 @@ async def qualification_data(request):
     qualification = [i async for i in Qualification.objects.filter(user=request.auth)]
     return 200, qualification
 
+#################################  P R E F E R E N C E  D A T A  #################################
 @details_api.post("/preference", response={201: PreferenceData, 409: Message}, description="User preference data creation")
 async def preference(request, data: PreferenceCreation):
     data_dict = data.dict()
