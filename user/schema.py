@@ -39,6 +39,7 @@ class UserCreation(Schema):
 class TokenSchema(Schema):
     access: str
     refresh: str
+    role: str
 
 class TokenRefreshSchema(Schema):
     refresh: str

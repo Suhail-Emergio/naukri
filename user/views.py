@@ -36,7 +36,7 @@ async def register(request, data: UserCreation):
         ### SEND OTP TO MOBILE
 
         refresh = RefreshToken.for_user(user)
-        return 201, {'access': str(refresh.access_token), 'refresh': str(refresh)}
+        return 201, {'access': str(refresh.access_token), 'refresh': str(refresh), 'role': user.role}
     return 409, {"message": "User already exists"}
 
 @user_api.post("/mobile_login", auth=None, response={200: TokenSchema, 403: Message, 401: Message}, description="Authenticate user with username and password")
@@ -46,7 +46,7 @@ async def mobile_login(request, data: LoginSchema):
         return 401, {"message": "Invalid credentials"}
     # if user.mobile_verified:
     refresh = RefreshToken.for_user(user)
-    return 200, {'access': str(refresh.access_token), 'refresh': str(refresh)}
+    return 200, {'access': str(refresh.access_token), 'refresh': str(refresh), 'role': user.role}
     # return 403, {"message": "Mobile not verified"}
 
 @user_api.post("/email_login", auth=None, response={200: TokenSchema, 403: Message, 401: Message}, description="Authenticate user with email and password/ Social login using email only")
@@ -57,11 +57,11 @@ async def email_login(request, data: LoginSchema):
         refresh = RefreshToken.for_user(user)
         if data.password:
             if check_password(data.password, user.password):
-                return 200, {'access': str(refresh.access_token), 'refresh': str(refresh)}
+                return 200, {'access': str(refresh.access_token), 'refresh': str(refresh), 'role': user.role}
         else:
             user.email_verified = True
             await user.asave()
-            return 200, {'access': str(refresh.access_token), 'refresh': str(refresh)}
+            return 200, {'access': str(refresh.access_token), 'refresh': str(refresh), 'role': user.role}
         # return 403, {"message": "Mobile not verified"}
     return 401, {"message": "Invalid credentials"}
 
@@ -74,7 +74,7 @@ async def mobile_verify(request, data: MobileOtpVerify):
         if cache_value == data.otp:
             user = await User.objects.aget(phone=data.phone)
             refresh = RefreshToken.for_user(user)
-            return 200, {'access': str(refresh.access_token), 'refresh': str(refresh)}
+            return 200, {'access': str(refresh.access_token), 'refresh': str(refresh), 'role': user.role}
         return 403, {"message": "Invalid OTP"}
     return 401, {"message": "OTP expired"}
 
@@ -98,7 +98,7 @@ async def email_verify(request, data: EmailOtpVerify):
     if cache_value:
         if int(cache_value) == data.otp:
             refresh = RefreshToken.for_user(user)
-            return 200, {'access': str(refresh.access_token), 'refresh': str(refresh)}
+            return 200, {'access': str(refresh.access_token), 'refresh': str(refresh), 'role': user.role}
         return 403, {"message": "Invalid OTP"}
     return 401, {"message": "OTP expired"}
 
