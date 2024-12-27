@@ -2,19 +2,14 @@ from ninja import Schema
 from typing import *
 
 class UserData(Schema):
-    id: int
     username: str
     role: str
 
 class Message(Schema):
     message: str
 
-class MobileLogin(Schema):
+class LoginSchema(Schema):
     username: str
-    password: str
-
-class EmailLogin(Schema):
-    email: str
     password: str
 
 class MobileOtpVerify(Schema):
@@ -23,6 +18,14 @@ class MobileOtpVerify(Schema):
 
 class EmailOtpVerify(Schema):
     otp: int
+
+class ForgotPassword(Schema):
+    phone : str
+
+class ResetPassword(Schema):
+    phone : str | None = None
+    otp : int | None = None
+    password: str
 
 class UserCreation(Schema):
     name: str

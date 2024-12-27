@@ -1,4 +1,4 @@
-from ninja import Router
+from ninja import Router, PatchDict
 from django.contrib.auth import get_user_model
 from .schema import *
 from typing import *
@@ -32,24 +32,27 @@ async def register(request, data: UserCreation):
         if cache_value:
             await sync_to_async(cache.delete)(key)
         await sync_to_async(cache.set)(key, f"{otp:04d}", timeout=60)
+
+        ### SEND OTP TO MOBILE
+
         refresh = RefreshToken.for_user(user)
         return 201, {'access': str(refresh.access_token), 'refresh': str(refresh)}
     return 409, {"message": "User already exists"}
 
 @user_api.post("/mobile_login", auth=None, response={200: TokenSchema, 403: Message, 401: Message}, description="Authenticate user with username and password")
-async def mobile_login(request, data: MobileLogin):
+async def mobile_login(request, data: LoginSchema):
     user = await sync_to_async(authenticate)(username=data.username, password=data.password)
     if not user:
         return 401, {"message": "Invalid credentials"}
     # if user.mobile_verified:
-        refresh = RefreshToken.for_user(user)
-        return 200, {'access': str(refresh.access_token), 'refresh': str(refresh)}
+    refresh = RefreshToken.for_user(user)
+    return 200, {'access': str(refresh.access_token), 'refresh': str(refresh)}
     # return 403, {"message": "Mobile not verified"}
 
 @user_api.post("/email_login", auth=None, response={200: TokenSchema, 403: Message, 401: Message}, description="Authenticate user with email and password/ Social login using email only")
-async def email_login(request, data: EmailLogin):
-    if await User.objects.filter(email=data.email).aexists():
-        user = await User.objects.aget(email=data.email)
+async def email_login(request, data: LoginSchema):
+    if await User.objects.filter(email=data.username).aexists():
+        user = await User.objects.aget(email=data.username)
         # if user.mobile_verified:
         refresh = RefreshToken.for_user(user)
         if data.password:
@@ -107,17 +110,59 @@ def refresh_token(request, token_data: TokenRefreshSchema):
         return 401, {"message": "Invalid refresh token"}
 
 #################################  U S E R  D A T A  #################################
-@user_api.get("/", response={200: UserData, 401: Message}, description="Get info of logged user")
-async def user(request):
+@user_api.get("/", response={200: UserData, 409: Message}, description="Get info of logged user")
+async def get_user(request):
     user = request.auth
     return 200, user
 
-@user_api.delete("/", response={200: Message, 401: Message}, description="Delete user account")
-async def user(request):
+@user_api.patch("/", response={200: Message, 400: Message, 409: Message}, description="Update user information")
+async def update_user(request, data: PatchDict[UserData]):
+    user = request.auth
+    for attr, value in data.items():
+        setattr(user, attr, value)
+
+    ## Hashing password
+    if 'password' in data:
+        if check_password(data['password'], user.password):
+            return 400, {"message": "New password can't be same as old password"}
+        user.set_password(data['password'])
+    await user.asave()
+    return 200, {"message": "Account Updated Successfully"}
+
+@user_api.delete("/", response={200: Message, 409: Message}, description="Delete user account")
+async def delete_user(request):
     user = request.auth
     await user.adelete()
     return 200, {"message": "Account Deleted Successfully"}
 
-# async def forgot_pwd(request):
-# async def change_pwd(request):
-# async def user(request): Patch
+#################################  F O R G O T  P A S S W O R D  #################################
+@user_api.post("/forgot_password", response={200: Message, 401: Message}, description="Send otp to user mobile to change password")
+async def forgot_pwd(request, data: ForgotPassword):
+    if await User.objects.filter(phone=data.phone).aexists():
+        user = await User.objects.aget(phone=data.phone)
+        otp = random.randint(1111,9999)
+        key = f'change_pwd_{data.phone}'
+        cache_value = await sync_to_async(cache.get)(key)
+        if cache_value:
+            await sync_to_async(cache.delete)(key)
+        await sync_to_async(cache.set)(key, f"{otp:04d}", timeout=60)
+
+        ### SEND OTP TO MOBILE
+
+        return 200, {"message": "OTP sent to email"}
+    return 401, {"message": "User not found"}
+
+@user_api.post("/change_password", response={200: Message, 400: Message, 401: Message, 403: Message}, description="Change password using OTP")
+async def change_pwd(request, data: ResetPassword):
+    key = f'change_pwd_{data.phone}'
+    cache_value = await sync_to_async(cache.get)(key)
+    if cache_value:
+        if cache_value == data.otp:
+            if check_password(data.password, user.password):
+                return 400, {"message": "New password can't be same as old password"}
+            user = await User.objects.aget(phone=data.phone)
+            user.set_password(data.password)
+            await user.asave()
+            return 200, {"message": "Password changed successfully"}
+        return 403, {"message": "Invalid OTP"}
+    return 401, {"message": "OTP expired"}
