@@ -19,10 +19,13 @@ class JobCreation(Schema):
     nationality : Optional[str] = None
     experience_min : Optional[int] = None
     experience_max : Optional[int] = None
-    candidate_location : Optional[str] = None
+    candidate_location : Optional[List[str]] = None
     education : Optional[str] = None
     salary_min : Optional[int] = None
     salary_max : Optional[int] = None
+    currency : Optional[str] = None
+    skills : Optional[List[str]] = None
+    custom_qns : Optional[List[str]] = None
 
 JobData = create_schema(JobPosts)
 

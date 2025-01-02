@@ -9,11 +9,15 @@ class Personal(models.Model):
     employed = models.BooleanField(default=False)
     city = models.CharField(max_length=250)
     state = models.CharField(max_length=250)
+    nationality = models.CharField(max_length=250, null=True, blank=True)
+    gender = models.CharField(max_length=250, null=True, blank=True)
     cv = models.FileField(upload_to="details/resume/", null=True, blank=True)
     profile_image = models.ImageField(upload_to="details/profile/", null=True, blank=True)
     skills = models.JSONField()
     prefered_salary_pa = models.IntegerField()
     prefered_work_loc = models.JSONField()
+    total_experience_years = models.IntegerField(default=0)
+    total_experience_months = models.IntegerField(default=0)
 
 class Employment(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE)

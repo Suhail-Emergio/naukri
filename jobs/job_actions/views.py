@@ -17,7 +17,8 @@ async def apply_jobs(request, data: ApplyJobsCreation):
     data_dict = data.dict()
     if await JobPosts.objects.filter(id=data_dict['job_id']).aexists():
         job = await JobPosts.objects.aget(id=data_dict['job_id'])
-        apply_job = await ApplyJobs.objects.acreate(user=request.auth, job=job)
+        custom_qns = data_dict['custom_qns'] if data_dict['custom_qns'] else None
+        apply_job = await ApplyJobs.objects.acreate(user=request.auth, job=job, custom_qns=custom_qns)
         return 201, apply_job
     return 404, {"message": "Job not found"}
 

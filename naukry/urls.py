@@ -10,6 +10,7 @@ from jobs.jobposts.views import jobs_api
 from jobs.based_jobs.views import based_jobs_api
 from jobs.job_actions.views import job_actions_api
 from recruiter.company.views import company_api
+from recruiter.recruiter_actions.views import recruiter_actions_api
 
 api = NinjaAPI(auth=AsyncJWTAuth())
 
@@ -21,6 +22,7 @@ api.add_router('details', details_api)
 
 ## Recruiter API
 api.add_router('company', company_api)
+api.add_router('recruiter_actions', recruiter_actions_api)
 
 ## Jobs API
 api.add_router('jobs', jobs_api)

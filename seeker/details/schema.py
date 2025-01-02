@@ -13,6 +13,10 @@ class PersonalCreation(Schema):
     skills : List[str]
     prefered_salary_pa : int
     prefered_work_loc : str
+    nationality : str
+    gender : str
+    total_experience_years : int
+    total_experience_months : int
 
 PersonalData = create_schema(Personal)
 
