@@ -12,11 +12,9 @@ details_api = Router(tags=['details'])
 #################################  P E R S O N A L  D A T A  #################################
 @details_api.post("/personal", response={201: PersonalData, 409: Message}, description="User personal data creation")
 async def personal(request, data: PersonalCreation):
-    data_dict = data.dict()
-    data_dict['user'] = request.auth
     if await Personal.objects.filter(user=request.auth).aexists():
         return 409, {"message": "Personal data already exists"}
-    personal = await Personal.objects.acreate(**data_dict)
+    personal = await Personal.objects.acreate(**data.dict(), user=request.auth)
     return 201, personal
 
 @details_api.patch("/personal", response={201: PersonalData, 404: Message, 409: Message}, description="User personal data update")
@@ -37,9 +35,7 @@ async def personal_data(request):
 #################################  E M P L O Y M E N T  D A T A  #################################
 @details_api.post("/employment", response={201: EmploymentData, 409: Message}, description="User employment data creation")
 async def employment(request, data: EmploymentCreation):
-    data_dict = data.dict()
-    data_dict['user'] = request.auth
-    employment = await Employment.objects.acreate(**data_dict)
+    employment = await Employment.objects.acreate(**data.dict(), user=request.auth)
     return 201, employment
 
 @details_api.patch("/employment", response={201: EmploymentData, 404: Message, 409: Message}, description="User employment data update")
@@ -60,9 +56,7 @@ async def employment_data(request):
 #################################  Q U A L I F I C A T I O N  D A T A  #################################
 @details_api.post("/qualification", response={201: QualificationData, 409: Message}, description="User Qualification data creation")
 async def qualification(request, data: QualificationCreation):
-    data_dict = data.dict()
-    data_dict['user'] = request.auth
-    qualification = await Qualification.objects.acreate(**data_dict)
+    qualification = await Qualification.objects.acreate(**data.dict(), user=request.auth)
     return 201, qualification
 
 @details_api.patch("/qualification", response={201: QualificationData, 404: Message, 409: Message}, description="User Qualification data update")
@@ -83,11 +77,9 @@ async def qualification_data(request):
 #################################  P R E F E R E N C E  D A T A  #################################
 @details_api.post("/preference", response={201: PreferenceData, 409: Message}, description="User preference data creation")
 async def preference(request, data: PreferenceCreation):
-    data_dict = data.dict()
     if await Preference.objects.filter(user=request.auth).aexists():
         return 409, {"message": "Preference data already exists"}
-    data_dict['user'] = request.auth
-    preference = await Preference.objects.acreate(**data_dict)
+    preference = await Preference.objects.acreate(**data.dict(), user=request.auth)
     return 201, preference
 
 @details_api.patch("/preference", response={201: PreferenceData, 404: Message, 409: Message}, description="User preference data update")

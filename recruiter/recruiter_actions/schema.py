@@ -3,6 +3,7 @@ from typing import *
 from ninja.orm import create_schema
 from seeker.details.schema import *
 from .models import *
+from datetime import datetime
 
 class SearchCriteria(Schema):
     keywords: Optional[List[str]] = None
@@ -20,10 +21,27 @@ class SeekerData(Schema):
     employment: Optional[EmploymentData] = None
     qualification: Optional[QualificationData] = None
 
-class InviteCandidate(Schema):
+class InviteCandidateSchema(Schema):
     candidate_id: int
     job_id: int
 
 class JobInvitations(Schema):
     candidate: SeekerData
     read: bool
+
+EmailTemplates = create_schema(EmailTemplate)
+
+class TemplateCreation(Schema):
+    subject : str
+    body : str
+    job_id : int
+
+class ScheduledInterviews(Schema):
+    candidate: SeekerData
+    schedule: datetime
+    created_on: datetime
+
+class InterviewScheduleSchema(Schema):
+    candidate_id: int
+    job_id: int
+    schedule: datetime

@@ -11,6 +11,7 @@ from asgiref.sync import sync_to_async
 from ninja_jwt.tokens import RefreshToken, AccessToken
 from django.contrib.auth.hashers import check_password
 from naukry.utils.email import send_mails
+from naukry.utils.twilio import whatsapp_message
 import random
 from django.core.cache import cache
 
@@ -18,12 +19,10 @@ user_api = Router(tags=['user'])
 User = get_user_model()
 
 #################################  R E G I S T E R  &  L O G I N  #################################
-@user_api.post("/register", auth=None, response={201: TokenSchema, 409: Message}, description="User creation")
+@user_api.post("/register", auth=None, response={201: Message, 409: Message}, description="User creation")
 async def register(request, data: UserCreation):
     if not await User.objects.filter(Q(username=data.phone) | Q(email=data.email)).aexists():
-        data_dict = data.dict()
-        data_dict['username'] = data.phone
-        user = await User.objects.acreate(**data_dict)
+        user = await User.objects.acreate(**data.dict(), username=data.phone)
         user.set_password(data.password)
         await user.asave()
         otp = random.randint(1111,9999)
@@ -32,55 +31,75 @@ async def register(request, data: UserCreation):
         if cache_value:
             await sync_to_async(cache.delete)(key)
         await sync_to_async(cache.set)(key, f"{otp:04d}", timeout=60)
-
-        ### SEND OTP TO MOBILE
-
+        await whatsapp_message(otp, data.phone)
         refresh = RefreshToken.for_user(user)
-        return 201, {'access': str(refresh.access_token), 'refresh': str(refresh), 'role': user.role}
+        return 201, {"message": "Otp send successfully"}
     return 409, {"message": "User already exists"}
 
 @user_api.post("/mobile_login", auth=None, response={200: TokenSchema, 403: Message, 401: Message}, description="Authenticate user with username and password")
 async def mobile_login(request, data: LoginSchema):
     user = await sync_to_async(authenticate)(username=data.username, password=data.password)
-    if not user:
-        return 401, {"message": "Invalid credentials"}
-    # if user.mobile_verified:
-    # if user.role == "recruiter" and user.subscribed == False:
-    #     return 403, {"message": "Please subscribe to a plan"}
-    refresh = RefreshToken.for_user(user)
-    return 200, {'access': str(refresh.access_token), 'refresh': str(refresh), 'role': user.role}
-    # return 403, {"message": "Mobile not verified"}
+    if user:
+        if user.phone_verified:
+            # if user.role == "recruiter" and user.subscribed == False:
+            #     return 403, {"message": "Please subscribe to a plan"}
+            refresh = RefreshToken.for_user(user)
+            return 200, {'access': str(refresh.access_token), 'refresh': str(refresh), 'role': user.role}
+        return 403, {"message": "Mobile not verified"}
+    return 401, {"message": "Invalid credentials"}
 
 @user_api.post("/email_login", auth=None, response={200: TokenSchema, 403: Message, 401: Message}, description="Authenticate user with email and password/ Social login using email only")
 async def email_login(request, data: LoginSchema):
     if await User.objects.filter(email=data.username).aexists():
         user = await User.objects.aget(email=data.username)
-        # if user.mobile_verified:
-        # if user.role == "recruiter" and user.subscribed == False:
-        #     return 403, {"message": "Please subscribe to a plan"}
-        refresh = RefreshToken.for_user(user)
-        if data.password:
-            if check_password(data.password, user.password):
+        if user.phone_verified:
+            # if user.role == "recruiter" and user.subscribed == False:
+            #     return 403, {"message": "Please subscribe to a plan"}
+            refresh = RefreshToken.for_user(user)
+            if data.password:
+                if check_password(data.password, user.password):
+                    return 200, {'access': str(refresh.access_token), 'refresh': str(refresh), 'role': user.role}
+
+            ## SOCIAL LOGIN
+            else:
+                user.email_verified = True
+                await user.asave()
                 return 200, {'access': str(refresh.access_token), 'refresh': str(refresh), 'role': user.role}
-        else:
-            user.email_verified = True
-            await user.asave()
-            return 200, {'access': str(refresh.access_token), 'refresh': str(refresh), 'role': user.role}
-        # return 403, {"message": "Mobile not verified"}
+        return 403, {"message": "Mobile not verified"}
     return 401, {"message": "Invalid credentials"}
 
 #################################  V E R I F I C A T I O N S  #################################
-@user_api.post("/mobile_verify", auth=None, response={200: TokenSchema, 401: Message, 403: Message}, description="Verify OTP using mobile number")
-async def mobile_verify(request, data: MobileOtpVerify):
+@user_api.post("/mobile_otp_verify", auth=None, response={200: TokenSchema, 401: Message, 403: Message}, description="Verify OTP using mobile number")
+async def mobile_otp_verify(request, data: MobileOtpVerify):
     key = f'otp_{data.phone}'
     cache_value = await sync_to_async(cache.get)(key)
     if cache_value:
         if cache_value == data.otp:
             user = await User.objects.aget(phone=data.phone)
+            if not user.phone_verified:
+                user.phone_verified = True
+                await user.asave()
             refresh = RefreshToken.for_user(user)
             return 200, {'access': str(refresh.access_token), 'refresh': str(refresh), 'role': user.role}
         return 403, {"message": "Invalid OTP"}
     return 401, {"message": "OTP expired"}
+
+@user_api.post("/retry_otp", auth=None, response={200: TokenSchema, 401: Message, 403: Message}, description="Retry sending OTP using mobile number")
+async def retry_otp(request, data: MobileOtpVerify):
+    if await User.objects.filter(phone=data.phone).aexists():
+        user = await User.objects.aget(phone=data.phone)
+        verified = await sync_to_async(lambda: user.phone_verified)()
+        if not verified:
+            otp = random.randint(1111,9999)
+            key = f'otp_{data.phone}'
+            cache_value = await sync_to_async(cache.get)(key)
+            if cache_value:
+                await sync_to_async(cache.delete)(key)
+            await sync_to_async(cache.set)(key, f"{otp:04d}", timeout=60)
+            await whatsapp_message(otp, data.phone)
+            return 201, {"message": "Otp send successfully"}
+        return 403, {"message": "Mobile already verified"}
+    return 401, {"message": "User not registered"}
 
 @user_api.post("/send_email_otp", response={200: Message}, description="Send OTP to email")
 async def send_email_otp(request):
@@ -101,6 +120,8 @@ async def email_verify(request, data: EmailOtpVerify):
     cache_value = await cache.aget(key)
     if cache_value:
         if int(cache_value) == data.otp:
+            user.email_verified = True
+            await user.asave()
             refresh = RefreshToken.for_user(user)
             return 200, {'access': str(refresh.access_token), 'refresh': str(refresh), 'role': user.role}
         return 403, {"message": "Invalid OTP"}
@@ -127,6 +148,8 @@ async def update_user(request, data: PatchDict[UserData]):
     for attr, value in data.items():
         setattr(user, attr, value)
 
+    ## Check if username& phone is changing... if so otp verification
+
     ## Hashing password
     if 'password' in data:
         if check_password(data['password'], user.password):
@@ -152,9 +175,7 @@ async def forgot_pwd(request, data: ForgotPassword):
         if cache_value:
             await sync_to_async(cache.delete)(key)
         await sync_to_async(cache.set)(key, f"{otp:04d}", timeout=60)
-
-        ### SEND OTP TO MOBILE
-
+        await whatsapp_message(otp, data.phone)
         return 200, {"message": "OTP sent to email"}
     return 401, {"message": "User not found"}
 

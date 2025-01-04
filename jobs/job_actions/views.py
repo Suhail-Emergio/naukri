@@ -20,9 +20,9 @@ async def apply_jobs(request, data: ApplyJobsCreation):
         job = await JobPosts.objects.aget(id=data_dict['job_id'])
         custom_qns = data_dict['custom_qns'] if data_dict['custom_qns'] else None
         invited = False
-        if await InviteCandidate.objects.filter(candidate__user=request.auth, job=job).aexists():
+        if await InviteCandidate.objects.filter(application__user=request.auth, job=job).aexists():
             invited = True
-            invite = await InviteCandidate.objects.aget(candidate__user=request.auth, job=job)
+            invite = await InviteCandidate.objects.aget(application__user=request.auth, job=job)
             invite.interested = True
             await invite.asave()
         apply_job = await ApplyJobs.objects.acreate(user=request.auth, job=job, custom_qns=custom_qns, invited=invited)
@@ -108,5 +108,3 @@ async def search_jobs(request,
             job_company_data.append({"job_posts": job, "company_data": company_details})
         return 200, job_company_data
     return 409, {"message": "Please provide specialization or query"}
-
-# async def filter_jobs(request):

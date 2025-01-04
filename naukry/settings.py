@@ -21,6 +21,9 @@ ALLOWED_HOSTS = config('DJANGO_ALLOWED_HOSTS', default='').split(',')
 # CSRF_ALLOWED_ORIGINS = config('DJANGO_CSRF_ALLOWED_ORIGINS', default='').split(',')
 # CORS_ORIGINS_WHITELIST = config('DJANGO_CORS_ORIGINS_WHITELIST', default='').split(',')
 
+TWILIO_ACCOUNT_SID = config('TWILIO_ACCOUNT_SID')
+TWILIO_AUTH_TOKEN = config('TWILIO_AUTH_TOKEN')
+
 INSTALLED_APPS = [
     'django.contrib.admin',
     'django.contrib.auth',

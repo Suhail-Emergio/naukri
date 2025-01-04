@@ -101,3 +101,8 @@ async def send_mails(email, name, password):
     msg.attach_alternative(html_content, "text/html")
     await sync_to_async(msg.send)()
     return {"status": True,"message" :"Email sended successfully"}
+
+async def send_interview_schedule(email, subject, body):
+    msg = EmailMultiAlternatives(subject, body, settings.EMAIL_HOST_USER, [email])
+    await sync_to_async(msg.send)()
+    return {"status": True,"message" :"Email sended successfully"}
