@@ -7,6 +7,7 @@ from django.db.models import Q
 from jobs.jobposts.schema import JobCompanyData
 from jobs.jobposts.models import JobPosts
 from recruiter.company.models import CompanyDetails
+from recruiter.recruiter_actions.models import InviteCandidate
 
 User = get_user_model()
 job_actions_api = Router(tags=['job-actions'])
@@ -18,17 +19,23 @@ async def apply_jobs(request, data: ApplyJobsCreation):
     if await JobPosts.objects.filter(id=data_dict['job_id']).aexists():
         job = await JobPosts.objects.aget(id=data_dict['job_id'])
         custom_qns = data_dict['custom_qns'] if data_dict['custom_qns'] else None
-        apply_job = await ApplyJobs.objects.acreate(user=request.auth, job=job, custom_qns=custom_qns)
+        invited = False
+        if await InviteCandidate.objects.filter(candidate__user=request.auth, job=job).aexists():
+            invited = True
+            invite = await InviteCandidate.objects.aget(candidate__user=request.auth, job=job)
+            invite.interested = True
+            await invite.asave()
+        apply_job = await ApplyJobs.objects.acreate(user=request.auth, job=job, custom_qns=custom_qns, invited=invited)
         return 201, apply_job
     return 404, {"message": "Job not found"}
 
-@job_actions_api.get("/apply", response={200: List[ApplyJobsData], 409: Message}, description="Retrieve all job posts a user applied")
+@job_actions_api.get("/applied_jobs", response={200: List[ApplyJobsData], 409: Message}, description="Retrieve all job posts a user applied")
 async def applied_jobs(request):
     jobs = [i async for i in ApplyJobs.objects.filter(user=request.auth).order_by('-created_on')]
     return 200, jobs
 
 #################################  A P P L I C A T I O N S  #################################
-@job_actions_api.get("/company/applications", response={200: List[ApplyJobsData], 409: Message}, description="Retrieve all job applications for a company")
+@job_actions_api.get("/job_applications", response={200: List[ApplyJobsData], 409: Message}, description="Retrieve all job applications for a company for a job post")
 async def job_applications(request, job_id: int):
     if await JobPosts.objects.filter(id=job_id).aexists():
         jobs = [i async for i in ApplyJobs.objects.filter(job__id=job_id).order_by('-created_on')]
@@ -103,4 +110,3 @@ async def search_jobs(request,
     return 409, {"message": "Please provide specialization or query"}
 
 # async def filter_jobs(request):
-# async def invited_jobs(request):

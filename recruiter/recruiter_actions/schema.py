@@ -19,3 +19,11 @@ class SeekerData(Schema):
     personal : PersonalData
     employment: Optional[EmploymentData] = None
     qualification: Optional[QualificationData] = None
+
+class InviteCandidate(Schema):
+    candidate_id: int
+    job_id: int
+
+class JobInvitations(Schema):
+    candidate: SeekerData
+    read: bool

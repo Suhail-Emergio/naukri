@@ -14,4 +14,5 @@ class ApplyJobs(models.Model):
     job = models.ForeignKey(JobPosts, on_delete=models.CASCADE)
     custom_qns = models.JSONField(null=True, blank=True)
     status = models.CharField(max_length=50, choices=[('applied', 'applied'), ('shortlisted', 'shortlisted'), ('rejected', 'rejected')], default='applied')
+    invited = models.BooleanField(default=False)
     created_on = models.DateTimeField(auto_now=True)
