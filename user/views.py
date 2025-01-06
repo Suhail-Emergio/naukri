@@ -36,7 +36,7 @@ async def register(request, data: UserCreation):
         return 201, {"message": "Otp send successfully"}
     return 409, {"message": "User already exists"}
 
-@user_api.post("/mobile_login", auth=None, response={200: TokenSchema, 403: Message, 401: Message}, description="Authenticate user with username and password")
+@user_api.post("/mobile_login", auth=None, response={200: Message, 403: Message, 401: Message}, description="Authenticate user with username and password")
 async def mobile_login(request, data: LoginSchema):
     if await User.objects.filter(username=data.username).aexists():
         user = await User.objects.aget(username=data.username)
