@@ -38,13 +38,19 @@ async def register(request, data: UserCreation):
 
 @user_api.post("/mobile_login", auth=None, response={200: TokenSchema, 403: Message, 401: Message}, description="Authenticate user with username and password")
 async def mobile_login(request, data: LoginSchema):
-    user = await sync_to_async(authenticate)(username=data.username, password=data.password)
-    if user:
+    if await User.objects.filter(username=data.username).aexists():
+        user = await User.objects.aget(username=data.username)
         if user.phone_verified:
             # if user.role == "recruiter" and user.subscribed == False:
             #     return 403, {"message": "Please subscribe to a plan"}
-            refresh = RefreshToken.for_user(user)
-            return 200, {'access': str(refresh.access_token), 'refresh': str(refresh), 'role': user.role}
+            otp = random.randint(1111,9999)
+            key = f'otp_{user.username}'
+            cache_value = await sync_to_async(cache.get)(key)
+            if cache_value:
+                await sync_to_async(cache.delete)(key)
+            await sync_to_async(cache.set)(key, f"{otp:04d}", timeout=60)
+            await whatsapp_message(otp, user.username)
+            return 200, {"message": "Otp send successfully"}
         return 403, {"message": "Mobile not verified"}
     return 401, {"message": "Invalid credentials"}
 

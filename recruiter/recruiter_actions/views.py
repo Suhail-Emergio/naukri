@@ -13,6 +13,21 @@ User = get_user_model()
 recruiter_actions_api = Router(tags=['recruiter_actions'])
 
 #################################  F I L T E R  C A N D I D A T E S  B A S E D  #################################
+@recruiter_actions_api.get("/all_seekers", response={200: List[SeekerData], 404: Message, 409: Message}, description="Retrieve all candidates")
+async def all_seekers(request):
+    candidate = [i async for i in Personal.objects.exclude(user__is_active=False).order_by('-id')]
+    for i in candidate:
+        user = await sync_to_async(lambda: i.user)()
+        employment = None
+        if await Employment.objects.filter(user=user).aexists():
+            employment = [i async for i in Employment.objects.filter(user=user).order_by('-id')]
+        qualification = None
+        if await Qualification.objects.filter(user=user).aexists():
+            qualification = [i async for i in Qualification.objects.filter(user=user).order_by('-id')]
+        candidates.append({"personal": i, "employment": employment, "qualification": qualification})
+    return 200, candidates
+
+#################################  F I L T E R  C A N D I D A T E S  B A S E D  #################################
 @recruiter_actions_api.get("/resdex", response={200: List[SeekerData], 404: Message, 409: Message}, description="Retrieve all candidates based on filters")
 async def resdex(request,
         keywords: List[str] = Query(None, description="List of keywords"), 
@@ -41,7 +56,7 @@ async def resdex(request,
 
     candidates = []
     if queries:
-        candidate = [i async for i in Personal.objects.filter(queries).order_by('-id')]
+        candidate = [i async for i in Personal.objects.filter(queries).exclude(user__is_active=False).order_by('-id')]
         for i in candidate:
             user = await sync_to_async(lambda: i.user)()
             employment = None
