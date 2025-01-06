@@ -36,7 +36,6 @@ EmploymentData = create_schema(Employment)
 
 # Qualification Schema
 class QualificationCreation(Schema):
-    student: bool = False
     education: str
     course: str
     type_course: str
