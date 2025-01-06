@@ -16,6 +16,7 @@ recruiter_actions_api = Router(tags=['recruiter_actions'])
 @recruiter_actions_api.get("/all_seekers", response={200: List[SeekerData], 404: Message, 409: Message}, description="Retrieve all candidates")
 async def all_seekers(request):
     candidate = [i async for i in Personal.objects.exclude(user__is_active=False).order_by('-id')]
+    candidates = []
     for i in candidate:
         user = await sync_to_async(lambda: i.user)()
         employment = None
