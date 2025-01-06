@@ -119,18 +119,24 @@ async def languages_data(request):
         return 200, language
     return 404, {"message": "Personal data not found"}
 
-@details_api.patch("/language", response={201: PreferenceData, 404: Message, 409: Message}, description="User preference data update")
-async def update_languages_data(request, data: PatchDict[LanguageData]):
+@details_api.patch("/language", response={201: Message, 404: Message, 403: Message, 409: Message}, description="User language data update")
+async def update_languages_data(request, data: PatchDict[LanguageData], language_id:int):
     if await Personal.objects.filter(user=request.auth).aexists():
-        preference = await Personal.objects.aget(user=request.auth)
+        personal = await Personal.objects.aget(user=request.auth)
         language = await sync_to_async(lambda: personal.language)()
-        
-        return 201, preference
+        if language:
+            if "id" not in data:
+                language[language_id] = data.dict()
+                personal.language = language
+                await personal.asave()
+                return 201, {"message": "Language updated successfully"}
+            return 403, {"message": "Id should not be passed in body"}
+        return 409, {"message": "No language data found"}
     return 404, {"message": "Personal data not found"}
 
-@details_api.delete("/language", response={200: PreferenceData, 404: Message, 409: Message}, description="User preference data")
+@details_api.delete("/language", response={200: Message, 404: Message, 409: Message}, description="User preference data")
 async def delete_languages_data(request):
-    if await Preference.objects.filter(user=request.auth).aexists():
-        preference = await Preference.objects.aget(user=request.auth)
-        return 200, preference
-    return 404, {"message": "Preference data not found"}
+    if await Personal.objects.filter(user=request.auth).aexists():
+        personal = await Personal.objects.aget(user=request.auth)
+        return 200, {"message": "Delete language from personal data"}
+    return 404, {"message": "Personal data not found"}
