@@ -4,11 +4,11 @@ from typing import *
 from user.schema import *
 from django.db.models import Q
 from .schema import *
+from .models import BlockedCompanies
 from asgiref.sync import sync_to_async
 from recruiter.recruiter_actions.models import InviteCandidate
 from recruiter.company.models import CompanyDetails
 from recruiter.company.schema import CompanyData
-from recruiter.recruiter_actions.models import BlockedCompany
 from recruiter.recruiter_actions.models import InterviewSchedule
 from recruiter.recruiter_actions.schema import ScheduledInterviews
 
@@ -45,23 +45,23 @@ async def reject_invitation(request, id:int):
 async def block_company(request, id:int):
     user = request.auth
     if await CompanyDetails.objects.filter(id=id).aexists():
-        if await BlockedCompany.objects.filter(company__id=id, user=user).aexists():
+        if await BlockedCompanies.objects.filter(company__id=id, user=user).aexists():
             return 409, {"message": "Company already blocked"}
-        await BlockedCompany.objects.acreate(company__id=id, user=user)
+        await BlockedCompanies.objects.acreate(company__id=id, user=user)
         return 200, {"message": "Company blocked successfully"}
     return 404, {"message": "Company not found"}
 
 @seeker_actions_api.get("/blocked_companies", response={200: List[CompanyData], 409: Message}, description="Retrieve all blocked companies") 
 async def blocked_companies(request):
     user = request.auth
-    blocked = [b async for b in BlockedCompany.objects.filter(user=user)]
+    blocked = [b async for b in BlockedCompanies.objects.filter(user=user)]
     return 200, blocked
 
 @seeker_actions_api.post("/unblock_company", response={200: List[CompanyData], 409: Message}, description="Retrieve all blocked companies") 
 async def unblock_company(request, id:int):
     user = request.auth
-    if await BlockedCompany.objects.filter(id=id).aexists():
-        block = await BlockedCompany.objects.aget(id=id)
+    if await BlockedCompanies.objects.filter(id=id).aexists():
+        block = await BlockedCompanies.objects.aget(id=id)
         await block.adelete()
         return 200, {"message": "Company unblocked successfully"}
     return 404, {"message": "Blocked company not found"}
