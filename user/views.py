@@ -143,12 +143,20 @@ async def get_user(request):
     return 200, user
 
 @user_api.patch("/", response={200: Message, 400: Message, 409: Message}, description="Update user information")
-async def update_user(request, data: PatchDict[UserData]):
+async def update_user(request, data: PatchDict[UserCreation]):
     user = request.auth
     for attr, value in data.items():
         setattr(user, attr, value)
 
     ## Check if username& phone is changing... if so otp verification
+    if 'phone' in data:
+        otp = random.randint(1111,9999)
+        key = f'otp_{data.phone}'
+        cache_value = await sync_to_async(cache.get)(key)
+        if cache_value:
+            await sync_to_async(cache.delete)(key)
+        await sync_to_async(cache.set)(key, f"{otp:04d}", timeout=60)
+        await whatsapp_message(otp, data.phone)
 
     ## Hashing password
     if 'password' in data:

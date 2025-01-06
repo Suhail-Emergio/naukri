@@ -18,7 +18,7 @@ async def personal(request, data: PersonalCreation):
     return 201, personal
 
 @details_api.patch("/personal", response={201: PersonalData, 404: Message, 409: Message}, description="User personal data update")
-async def update_personal_data(request, data: PatchDict[PersonalData]):
+async def update_personal_data(request, data: PatchDict[PersonalCreation]):
     if await Personal.objects.filter(user=request.auth).aexists():
         personal = await Personal.objects.aget(user=request.auth)
         for attr, value in data.items():
