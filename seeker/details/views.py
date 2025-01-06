@@ -98,3 +98,39 @@ async def preference_data(request):
         preference = await Preference.objects.aget(user=request.auth)
         return 200, preference
     return 404, {"message": "Preference data not found"}
+
+#################################  L A N G U A G E S  #################################
+@details_api.post("/language", response={201: Message, 404: Message, 409: Message}, description="User language data creation")
+async def languages(request, data: LanguageData):
+    if await Personal.objects.filter(user=request.auth).aexists():
+        personal = await Personal.objects.aget(user=request.auth)
+        language = await sync_to_async(lambda: personal.language)()
+        count = len(language)
+        language[count + 1] = data.dict()
+        await preference.asave()
+        return 201, {"message": "Language added successfully"}
+    return 404, {"message": "Personal data not found"}
+
+@details_api.get("/language", response={200: LanguageData, 404: Message, 409: Message}, description="User preference data")
+async def languages_data(request):
+    if await Preference.objects.filter(user=request.auth).aexists():
+        preference = await Preference.objects.aget(user=request.auth)
+        return 200, preference
+    return 404, {"message": "Preference data not found"}
+
+@details_api.patch("/language", response={201: PreferenceData, 404: Message, 409: Message}, description="User preference data update")
+async def update_languages_data(request, data: PatchDict[PreferenceData]):
+    if await Preference.objects.filter(user=request.auth).aexists():
+        preference = await Preference.objects.aget(user=request.auth)
+        for attr, value in data.items():
+            setattr(preference, attr, value)
+        await preference.asave()
+        return 201, preference
+    return 404, {"message": "Preference data not found"}
+
+@details_api.delete("/language", response={200: PreferenceData, 404: Message, 409: Message}, description="User preference data")
+async def delete_languages_data(request):
+    if await Preference.objects.filter(user=request.auth).aexists():
+        preference = await Preference.objects.aget(user=request.auth)
+        return 200, preference
+    return 404, {"message": "Preference data not found"}

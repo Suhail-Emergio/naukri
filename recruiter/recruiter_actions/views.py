@@ -12,7 +12,7 @@ from jobs.jobposts.models import JobPosts
 User = get_user_model()
 recruiter_actions_api = Router(tags=['recruiter_actions'])
 
-#################################  F I L T E R  C A N D I D A T E S  B A S E D  #################################
+#################################  A L L  S E E K E R  #################################
 @recruiter_actions_api.get("/all_seekers", response={200: List[SeekerData], 404: Message, 409: Message}, description="Retrieve all candidates")
 async def all_seekers(request):
     candidate = [i async for i in Personal.objects.exclude(user__is_active=False).order_by('-id')]
@@ -106,7 +106,7 @@ async def invite_candidates(request, data: InviteCandidateSchema):
         if await JobPosts.objects.filter(id=data.job_id).aexists():
             personal = await Personal.objects.aget(id=data.candidate_id)
             job = await JobPosts.objects.aget(id=data.job_id)
-            candidate = await sync_to_async(lambda: i.application.user)()
+            candidate = await sync_to_async(lambda: personal.user)()
             if await InviteCandidate.objects.filter(user=user, application__user=candidate, job=job).aexists():
                 return 409, {"message": "Candidate already invited"}
             await InviteCandidate.objects.acreate(user=user, application__user=candidate, job=job)

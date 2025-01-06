@@ -57,3 +57,9 @@ class PreferenceCreation(Schema):
     job_location: List[str]
 
 PreferenceData = create_schema(Preference)
+
+class LanguageData(Schema):
+    id: int | None = None
+    language: str
+    proficiency: str
+    comfortability: str
