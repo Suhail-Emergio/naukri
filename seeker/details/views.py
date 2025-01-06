@@ -86,7 +86,7 @@ async def preference(request, data: PreferenceCreation):
 async def update_preference_data(request, data: PatchDict[PreferenceData]):
     if await Preference.objects.filter(user=request.auth).aexists():
         preference = await Preference.objects.aget(user=request.auth)
-        for attr, value in data.dict().items():
+        for attr, value in data.items():
             setattr(preference, attr, value)
         await preference.asave()
         return 201, preference
