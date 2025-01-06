@@ -18,8 +18,8 @@ class SearchCriteria(Schema):
 
 class SeekerData(Schema):
     personal : PersonalData
-    employment: Optional[EmploymentData] = None
-    qualification: Optional[QualificationData] = None
+    employment: List[Optional[EmploymentData]] = None
+    qualification: List[Optional[QualificationData]] = None
 
 class InviteCandidateSchema(Schema):
     candidate_id: int
