@@ -176,7 +176,7 @@ async def forgot_pwd(request, data: ForgotPassword):
             await sync_to_async(cache.delete)(key)
         await sync_to_async(cache.set)(key, f"{otp:04d}", timeout=60)
         await whatsapp_message(otp, data.phone)
-        return 200, {"message": "OTP sent to email"}
+        return 200, {"message": "OTP sent to mobile"}
     return 401, {"message": "User not found"}
 
 @user_api.post("/change_password", response={200: Message, 400: Message, 401: Message, 403: Message}, description="Change password using OTP")
@@ -184,7 +184,7 @@ async def change_pwd(request, data: ResetPassword):
     key = f'change_pwd_{data.phone}'
     cache_value = await sync_to_async(cache.get)(key)
     if cache_value:
-        if cache_value == data.otp:
+        if int(cache_value) == data.otp:
             if check_password(data.password, user.password):
                 return 400, {"message": "New password can't be same as old password"}
             user = await User.objects.aget(phone=data.phone)
