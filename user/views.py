@@ -84,8 +84,8 @@ async def mobile_otp_verify(request, data: MobileOtpVerify):
         return 403, {"message": "Invalid OTP"}
     return 401, {"message": "OTP expired"}
 
-@user_api.post("/retry_otp", auth=None, response={200: TokenSchema, 401: Message, 403: Message}, description="Retry sending OTP using mobile number")
-async def retry_otp(request, data: MobileOtpVerify):
+@user_api.post("/retry_otp", auth=None, response={201: Message, 401: Message, 403: Message}, description="Retry sending OTP using mobile number")
+async def retry_otp(request, data: ForgotPassword):
     if await User.objects.filter(phone=data.phone).aexists():
         user = await User.objects.aget(phone=data.phone)
         verified = await sync_to_async(lambda: user.phone_verified)()
