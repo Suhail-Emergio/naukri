@@ -61,8 +61,8 @@ async def qualification(request, data: QualificationCreation):
 
 @details_api.patch("/qualification", response={201: QualificationData, 404: Message, 409: Message}, description="User Qualification data update")
 async def update_qualification_data(request, data: PatchDict[QualificationData]):
-    if await Qualification.objects.filter(id=id).aexists():
-        qualification = await Qualification.objects.aget(id=id)
+    if await Qualification.objects.filter(id=data.id).aexists():
+        qualification = await Qualification.objects.aget(id=data.id)
         for attr, value in data.dict().items():
             setattr(qualification, attr, value)
         await qualification.asave()
