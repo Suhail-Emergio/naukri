@@ -18,13 +18,13 @@ async def all_seekers(request):
     candidate = [i async for i in Personal.objects.exclude(user__is_active=False).order_by('-id')]
     candidates = []
     for i in candidate:
-        user = await sync_to_async(lambda: i.user)()
+        candidate_user = await sync_to_async(lambda: i.user)()
         employment = None
-        if await Employment.objects.filter(user=user).aexists():
-            employment = [i async for i in Employment.objects.filter(user=user).order_by('-id')]
+        if await Employment.objects.filter(user=candidate_user).aexists():
+            employment = [i async for i in Employment.objects.filter(user=candidate_user).order_by('-id')]
         qualification = None
-        if await Qualification.objects.filter(user=user).aexists():
-            qualification = [i async for i in Qualification.objects.filter(user=user).order_by('-id')]
+        if await Qualification.objects.filter(user=candidate_user).aexists():
+            qualification = [i async for i in Qualification.objects.filter(user=candidate_user).order_by('-id')]
         candidates.append({"personal": i, "employment": employment, "qualification": qualification})
     return 200, candidates
 
@@ -44,10 +44,8 @@ async def resdex(request,
     queries = Q()
     if keywords:
         queries &= Q(skills__in=keywords)
-    if experience_year:
-        queries &= Q(total_experience_years__gte=experience_year)
-    if experience_month:
-        queries &= Q(total_experience_month__gte=experience_month)
+    if experience_year and experience_month:
+        queries &= Q(total_experience_years__gte=experience_year) & Q(total_experience_month__gte=experience_month)
     if current_loc:
         queries &= Q(city__icontains=current_loc) | Q(state__icontains=current_loc)
     if nationality:
@@ -81,20 +79,20 @@ async def save_candidate(request, id:int):
         return 200, {"message": "Candidate saved successfully"}
     return 404, {"message": "Candidate not found"}
 
-@recruiter_actions_api.get("/saved_candidates", response={200: List[SeekerData], 404: Message, 409: Message}, description="Retrieve all candidates based on filters")
+@recruiter_actions_api.get("/saved_candidates", response={200: List[SeekerData], 404: Message, 409: Message}, description="Retrieve all saved candidates")
 async def saved_candidates(request):
     user = request.auth
     saved = [i async for i in SaveCandidate.objects.filter(user=user).order_by('-id')]
     candidates = []
     for i in saved:
         personal = await sync_to_async(lambda: i.candidate)()
-        user = await sync_to_async(lambda: personal.user)()
+        candidate_user = await sync_to_async(lambda: personal.user)()
         employment = None
-        if await Employment.objects.filter(user=user).aexists():
-            employment = [i async for i in Employment.objects.filter(user=user).order_by('-id')]
+        if await Employment.objects.filter(user=candidate_user).aexists():
+            employment = [i async for i in Employment.objects.filter(user=candidate_user).order_by('-id')]
         qualification = None
-        if await Qualification.objects.filter(user=user).aexists():
-            qualification = [i async for i in Qualification.objects.filter(user=user).order_by('-id')]
+        if await Qualification.objects.filter(user=candidate_user).aexists():
+            qualification = [i async for i in Qualification.objects.filter(user=candidate_user).order_by('-id')]
         candidates.append({"personal": personal, "employment": employment, "qualification": qualification})
     return 200, candidates
 
