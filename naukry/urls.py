@@ -12,6 +12,7 @@ from recruiter.company.views import company_api
 from recruiter.recruiter_actions.views import recruiter_actions_api
 from seeker.details.views import *
 from seeker.seeker_actions.views import seeker_actions_api
+from common_actions.views import common_api
 
 api = NinjaAPI(auth=AsyncJWTAuth())
 
@@ -30,6 +31,9 @@ api.add_router('recruiter_actions', recruiter_actions_api)
 api.add_router('jobs', jobs_api)
 api.add_router('based-jobs', based_jobs_api)
 api.add_router('job-actions', job_actions_api)
+
+## Common API
+api.add_router('common', common_api)
 
 urlpatterns = [
     path('admin/', admin.site.urls),
