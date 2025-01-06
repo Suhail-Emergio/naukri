@@ -154,7 +154,7 @@ async def update_user(request, data: PatchDict[UserCreation]):
     for attr, value in data.items():
         setattr(user, attr, value)
 
-    ## Check if username& phone is changing... if so otp verification
+    ## Verify Phone
     if 'phone' in data:
         otp = random.randint(1111,9999)
         key = f'otp_{data.phone}'
