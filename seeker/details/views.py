@@ -63,7 +63,7 @@ async def qualification(request, data: QualificationCreation):
 async def update_qualification_data(request, data: PatchDict[QualificationData]):
     if await Qualification.objects.filter(id=data['id']).aexists():
         qualification = await Qualification.objects.aget(id=data['id'])
-        for attr, value in data.dict().items():
+        for attr, value in data.items():
             setattr(qualification, attr, value)
         await qualification.asave()
         return 201, qualification
