@@ -100,7 +100,7 @@ async def preference_data(request):
     return 404, {"message": "Preference data not found"}
 
 #################################  L A N G U A G E S  #################################
-@details_api.post("/language", response={201: Message, 404: Message, 409: Message}, description="User language data creation")
+@details_api.post("/add_language", response={201: Message, 404: Message, 409: Message}, description="User language data creation")
 async def languages(request, data: LanguageData):
     if await Personal.objects.filter(user=request.auth).aexists():
         personal = await Personal.objects.aget(user=request.auth)
@@ -111,7 +111,7 @@ async def languages(request, data: LanguageData):
         return 201, {"message": "Language added successfully"}
     return 404, {"message": "Personal data not found"}
 
-@details_api.get("/language", response={200: LanguageData, 404: Message, 409: Message}, description="User language data")
+@details_api.get("/languages", response={200: LanguageData, 404: Message, 409: Message}, description="User language data")
 async def languages_data(request):
     if await Personal.objects.filter(user=request.auth).aexists():
         personal = await Personal.objects.aget(user=request.auth)
@@ -119,7 +119,7 @@ async def languages_data(request):
         return 200, language
     return 404, {"message": "Personal data not found"}
 
-@details_api.patch("/language", response={201: Message, 404: Message, 403: Message, 409: Message}, description="User language data update")
+@details_api.patch("/update_language", response={201: Message, 404: Message, 403: Message, 409: Message}, description="User language data update")
 async def update_languages_data(request, data: PatchDict[LanguageData], language_id:int):
     if await Personal.objects.filter(user=request.auth).aexists():
         personal = await Personal.objects.aget(user=request.auth)
@@ -134,7 +134,7 @@ async def update_languages_data(request, data: PatchDict[LanguageData], language
         return 409, {"message": "No language data found"}
     return 404, {"message": "Personal data not found"}
 
-@details_api.delete("/language", response={200: Message, 404: Message, 409: Message}, description="User preference data")
+@details_api.delete("/delete_language", response={200: Message, 404: Message, 409: Message}, description="User preference data")
 async def delete_languages_data(request):
     if await Personal.objects.filter(user=request.auth).aexists():
         personal = await Personal.objects.aget(user=request.auth)
