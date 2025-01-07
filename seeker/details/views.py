@@ -132,8 +132,8 @@ async def update_languages_data(request, data: PatchDict[LanguageData], language
         language = await sync_to_async(lambda: personal.languages)()
         if language:
             if "id" not in data:
-                language[language_id] = data.items()
-                personal.language = language
+                language[language_id] = dict(data.items())
+                personal.languages = language
                 await personal.asave()
                 return 201, {"message": "Language updated successfully"}
             return 403, {"message": "Id should not be passed in body"}
