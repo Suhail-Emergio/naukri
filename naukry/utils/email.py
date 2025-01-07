@@ -8,22 +8,23 @@ from asgiref.sync import sync_to_async
 async def send_mails(email, name, password):
     username = email
     temporary_password = password
-    subject = "Verify Your Naukri Account Email"
+    project_name = settings.PROJECT_NAME
+    subject = f"Verify Your {project_name} Account Email"
 
     text_content = f"""
         Dear {name},
 
-        Welcome to Naukri! To ensure the security of your account and access all our features, please verify your email address.
+        Welcome to {project_name}! To ensure the security of your account and access all our features, please verify your email address.
 
         Verification code is:
         {password}
 
         This link will expire in 24 hours for security purposes.
 
-        If you didn't create a Naukri account, please ignore this email.
+        If you didn't create a {project_name} account, please ignore this email.
 
         Best regards,
-        Naukri Team
+        {project_name} Team
     """
 
     html_content = f"""
@@ -32,7 +33,7 @@ async def send_mails(email, name, password):
             <head>
                 <meta charset="UTF-8">
                 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-                <title>Verify Your Naukri Account</title>
+                <title>Verify Your {project_name} Account</title>
                 <style>
                     body {{
                         font-family: Arial, sans-serif;
@@ -100,7 +101,7 @@ async def send_mails(email, name, password):
             </head>
             <body>
                 <div class="header">
-                    Verify Your Naukri Account
+                    Verify Your {project_name} Account
                 </div>
                 <div class="content">
                     <svg class="verification-icon" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -108,23 +109,23 @@ async def send_mails(email, name, password):
                         <path d="M7 12L10 15L17 8" stroke="#2196F3" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
                     </svg>
                     
-                    <h2>Welcome to Naukri!</h2>
+                    <h2>Welcome to {project_name}!</h2>
                     <p>Dear {name},</p>
-                    <p>Thank you for creating your Naukri account. To ensure the security of your account and access all our features, please verify your email address.</p>
+                    <p>Thank you for creating your {project_name} account. To ensure the security of your account and access all our features, please verify your email address.</p>
                     
                     <h2>OTP: {password}</h2>
                     
                     <div class="info-box">
                         <p><strong>Please Note:</strong></p>
                         <ul style="list-style-type: none; padding-left: 0;">
-                            <li>• This verification link will expire in 24 hours</li>
-                            <li>• If you didn't create a Naukri account, please ignore this email</li>
+                            <li>• This otp will expire in 60 seconds</li>
+                            <li>• If you didn't create a {project_name} account, please ignore this email</li>
                         </ul>
                     </div>
                 </div>
                 <div class="footer">
                     <p>This is an automated email, please do not reply.</p>
-                    <p>&copy; 2024 Naukri. All rights reserved.</p>
+                    <p>&copy; 2024 {project_name}. All rights reserved.</p>
                 </div>
             </body>
         </html>

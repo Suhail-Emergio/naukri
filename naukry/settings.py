@@ -23,6 +23,7 @@ ALLOWED_HOSTS = config('DJANGO_ALLOWED_HOSTS', default='').split(',')
 
 TWILIO_ACCOUNT_SID = config('TWILIO_ACCOUNT_SID')
 TWILIO_AUTH_TOKEN = config('TWILIO_AUTH_TOKEN')
+PROJECT_NAME = config('PROJECT_NAME')
 
 INSTALLED_APPS = [
     'django.contrib.admin',
