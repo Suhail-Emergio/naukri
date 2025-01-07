@@ -152,3 +152,12 @@ async def delete_languages_data(request, language_id: int):
             return 200, {"message": "language removed successfully"}
         return 409, {"message": "No language data found"}
     return 404, {"message": "Personal data not found"}
+
+@details_api.delete("/delete_all_languages", response={200: Message, 404: Message}, description="User languages data deletion")
+async def delete_all_languages(request):
+    if await Personal.objects.filter(user=request.auth).aexists():
+        personal = await Personal.objects.aget(user=request.auth)
+        personal.languages = {}
+        await personal.asave()
+        return 200, {"message": "All languages removed successfully"}
+    return 404, {"message": "Personal data not found"}
