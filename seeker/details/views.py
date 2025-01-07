@@ -108,6 +108,7 @@ async def languages(request, data: LanguageData):
         language = await sync_to_async(lambda: personal.languages)() or {}
         count = len(language)
         language[count + 1] = data.dict()
+        personal.languages = language
         await personal.asave()
         return 201, {"message": "Language added successfully"}
     return 404, {"message": "Personal data not found"}
