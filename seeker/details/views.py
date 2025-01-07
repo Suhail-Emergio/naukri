@@ -122,7 +122,7 @@ async def languages_data(request):
         if language:
             languages_list = [LanguageData(**lang) for lang in language.values()]
             return 200, languages_list
-        return 409, {"message": "No language data found"}
+        return 200, {}
     return 404, {"message": "Personal data not found"}
 
 @details_api.patch("/update_language", response={201: Message, 404: Message, 403: Message, 409: Message}, description="User language data update")
