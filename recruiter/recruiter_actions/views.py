@@ -45,7 +45,7 @@ async def resdex(request,
     if keywords:
         queries &= Q(skills__in=keywords)
     if experience_year and experience_month:
-        queries &= Q(total_experience_years__gte=experience_year) & Q(total_experience_month__gte=experience_month)
+        queries &= Q(total_experience_years__gte=experience_year) & Q(total_experience_months__gte=experience_month)
     if current_loc:
         queries &= Q(city__icontains=current_loc) | Q(state__icontains=current_loc)
     if nationality:
@@ -104,10 +104,12 @@ async def invite_candidates(request, data: InviteCandidateSchema):
         if await JobPosts.objects.filter(id=data.job_id).aexists():
             personal = await Personal.objects.aget(id=data.candidate_id)
             job = await JobPosts.objects.aget(id=data.job_id)
+            personal_user = await sync_to_async(lambda: personal.user)()
             candidate = await sync_to_async(lambda: personal.user)()
             if await InviteCandidate.objects.filter(user=user, application__user=candidate, application__job=job).aexists():
                 return 409, {"message": "Candidate already invited"}
-            await InviteCandidate.objects.acreate(user=user, application__user=candidate, application__job=job)
+            application = await ApplyJobs.objects.aget(user=personal_user, job=job)
+            await InviteCandidate.objects.acreate(user=user, application=application)
             return 200, {"message": "Candidate invited successfully"}
         return 404, {"message": "Job not found"}
     return 404, {"message": "Candidate not found"}
@@ -166,11 +168,13 @@ async def schedule_interview(request, data: InterviewScheduleSchema):
             job = await JobPosts.objects.aget(id=data.job_id)
             if await InterviewSchedule.objects.filter(user=user, application__user=candidate, application__job=job).aexists():
                 return 409, {"message": "Interview already scheduled"}
-            application = await ApplyJobs.objects.aget(user=candidate, job=job)
-            await InterviewSchedule.objects.acreate(user=user, application=application, schedule=data.schedule)
-            application.status = True
-            await application.asave()
-            return 200, {"message": "Interview scheduled successfully"}
+            if await ApplyJobs.objects.filter(user=candidate, job=job).aexists():
+                application = await ApplyJobs.objects.aget(user=candidate, job=job)
+                await InterviewSchedule.objects.acreate(user=user, application=application, schedule=data.schedule)
+                application.status = True
+                await application.asave()
+                return 200, {"message": "Interview scheduled successfully"}
+            return 404, {"message": "Applied job not found"}
         return 404, {"message": "Job not found"}
     return 404, {"message": "Candidate not found"}
 
