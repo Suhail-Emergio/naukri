@@ -78,7 +78,7 @@ async def saved_jobs(request):
 
 #################################  S E A R C H  &  F I L T E R  J O B S  #################################
 @job_actions_api.get("/search", response={200: List[JobCompanyData], 409: Message}, description="Retrieve all job posts a user searched & filtered")
-async def search_jobs(request, filters: FilterSchema = Query[FilterQuery]):
+async def search_jobs(request, filters: FilteringSchema = Query[FilterQuery]):
     # if specialization or query:
         # queries = Q()
 

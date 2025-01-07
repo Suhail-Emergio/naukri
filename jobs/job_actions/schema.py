@@ -44,7 +44,7 @@ class FilterQuery(Schema):
     experience_max : int = None
     freshness: int = None
 
-class FilterSchema(FilterSchema):
+class FilteringSchema(FilterSchema):
     specialization: Optional[str] = Field(None, q=['industry__icontains', 'functional_area__icontains'])
     query: Optional[str] = Field(None, q='title__icontains')
     job_category: Optional[str] = Field(None, q='category')
