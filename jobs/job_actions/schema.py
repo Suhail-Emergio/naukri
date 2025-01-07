@@ -2,12 +2,16 @@ from ninja import Schema
 from typing import *
 from ninja.orm import create_schema
 from .models import *
+from jobs.jobposts.schema import JobCompanyData
+from datetime import datetime
 
 # Job Post to save Schema
 class SavedJobsCreation(Schema):
     job_id : int
 
-SavedJobsData = create_schema(SaveJobs)
+class SavedJobsData(Schema):
+    job: List[JobCompanyData]
+    created_on: datetime
 
 # Job Post to apply Schema
 class ApplyJobsCreation(Schema):
@@ -21,7 +25,12 @@ class ApplyJobsCreation(Schema):
     job_id : int
     custom_qns : Optional[List[str]] = None
 
-ApplyJobsData = create_schema(ApplyJobs)
+class ApplyJobsData(Schema):
+    job: List[JobCompanyData]
+    custom_qns: Optional[List[str]]
+    status: str
+    viewed: str
+    created_on: datetime
 
 class FilterQuery(Schema):
     specialization: str = None

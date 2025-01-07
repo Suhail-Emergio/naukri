@@ -31,7 +31,9 @@ async def apply_jobs(request, data: ApplyJobsCreation):
 
 @job_actions_api.get("/applied_jobs", response={200: List[ApplyJobsData], 409: Message}, description="Retrieve all job posts a user applied")
 async def applied_jobs(request):
-    jobs = [i async for i in ApplyJobs.objects.filter(user=request.auth).order_by('-created_on')]
+    jobs = []
+    for i in ApplyJobs.objects.filter(user=request.auth).order_by('-created_on'):
+        jobs.append({"job": {"job_posts": i.job, "company_data": i.job.company}, "custom_qns": i.custom_qns, "status": i.status, "viewed": i.viewed, "created_on": i.created_on})
     return 200, jobs
 
 #################################  A P P L I C A T I O N S  #################################
@@ -69,7 +71,9 @@ async def save_jobs(request, data: SavedJobsCreation):
 
 @job_actions_api.get("/save", response={200: List[SavedJobsData], 409: Message}, description="Retrieve all job posts a user applied")
 async def saved_jobs(request):
-    jobs = [i async for i in SaveJobs.objects.filter(user=request.auth).order_by('-created_on')]
+    jobs = []
+    async for i in SaveJobs.objects.filter(user=request.auth).order_by('-created_on'):
+        jobs.append({"job": {"job_posts": i.job, "company_data": i.job.company}, "created_on": i.created_on})
     return 200, jobs
 
 #################################  S E A R C H  &  F I L T E R  J O B S  #################################
