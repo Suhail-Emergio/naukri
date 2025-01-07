@@ -13,7 +13,7 @@ User = get_user_model()
 job_actions_api = Router(tags=['job-actions'])
 
 #################################  A P P L Y  J O B S  #################################
-@job_actions_api.post("/apply", response={201: ApplyJobsData, 404: Message, 409: Message}, description="Apply for a job post")
+@job_actions_api.post("/apply", response={201: Message, 404: Message, 409: Message}, description="Apply for a job post")
 async def apply_jobs(request, data: ApplyJobsCreation):
     data_dict = data.dict()
     if await JobPosts.objects.filter(id=data_dict['job_id']).aexists():
@@ -26,7 +26,7 @@ async def apply_jobs(request, data: ApplyJobsCreation):
             invite.interested = True
             await invite.asave()
         apply_job = await ApplyJobs.objects.acreate(user=request.auth, job=job, custom_qns=custom_qns, invited=invited)
-        return 201, apply_job
+        return 201, {"message": "Successfully added"}
     return 404, {"message": "Job not found"}
 
 @job_actions_api.get("/applied_jobs", response={200: List[ApplyJobsData], 409: Message}, description="Retrieve all job posts a user applied")
@@ -53,7 +53,7 @@ async def view_job_applications(request, applied_id: int):
     return 404, {"message": "Applied job not found"}
 
 #################################  S A V E /  B O O K M A R K  J O B S  #################################
-@job_actions_api.post("/save", response={201: SavedJobsData, 200: Message, 404: Message, 409: Message}, description="Save/ Bookmark a job post if not already saved, if already saved remove it")
+@job_actions_api.post("/save", response={201: Message, 200: Message, 404: Message, 409: Message}, description="Save/ Bookmark a job post if not already saved, if already saved remove it")
 async def save_jobs(request, data: SavedJobsCreation):
     data_dict = data.dict()
     if await JobPosts.objects.filter(id=data_dict['job_id']).aexists():
@@ -66,7 +66,7 @@ async def save_jobs(request, data: SavedJobsCreation):
 
         ## Save job
         save_job = await SaveJobs.objects.acreate(user=request.auth, job=job)
-        return 201, save_job
+        return 201, {"message": "Successfully created"}
     return 404, {"message": "Job not found"}
 
 @job_actions_api.get("/save", response={200: List[SavedJobsData], 409: Message}, description="Retrieve all job posts a user applied")

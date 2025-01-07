@@ -1,4 +1,4 @@
-from ninja import Schema
+from ninja import Schema, FilterSchema
 from typing import *
 from ninja.orm import create_schema
 from .models import *
