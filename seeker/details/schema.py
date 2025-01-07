@@ -59,7 +59,9 @@ class PreferenceCreation(Schema):
 PreferenceData = create_schema(Preference)
 
 class LanguageData(Schema):
-    id: int | None = None
     language: str
     proficiency: str
     comfortability: str
+
+class Languages(Schema):
+    language: List[LanguageData]
