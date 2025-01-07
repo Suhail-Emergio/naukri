@@ -2,6 +2,7 @@ from ninja import Schema
 from typing import *
 from ninja.orm import create_schema
 from .models import *
+from datetime import date
 
 # Personal Schema
 class PersonalCreation(Schema):
@@ -59,7 +60,24 @@ class PreferenceCreation(Schema):
 PreferenceData = create_schema(Preference)
 
 class LanguageData(Schema):
-    id: int | None = None
+    id: Optional[int]
     language: str
     proficiency: str
     comfortability: str
+
+class ProjectData(Schema):
+    id: Optional[int]
+    title: str
+    client: str
+    status: str
+    started_on: str
+    ended_on: Optional[str]
+    details: str
+    skills: List[str]
+
+class CertificateData(Schema):
+    id: Optional[int]
+    title: str
+    publication: str
+    description: str
+    published_on: date

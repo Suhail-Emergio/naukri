@@ -154,11 +154,110 @@ async def delete_languages_data(request, language_id: int):
         return 409, {"message": "No language data found"}
     return 404, {"message": "Personal data not found"}
 
-@details_api.delete("/delete_all_languages", response={200: Message, 404: Message}, description="User languages data deletion")
-async def delete_all_languages(request):
+#################################  C E R T I F I C A T E S  #################################
+@details_api.post("/add_certificates", response={201: Message, 404: Message, 409: Message}, description="User certificate data creation")
+async def certificates(request, data: CertificateData):
     if await Personal.objects.filter(user=request.auth).aexists():
         personal = await Personal.objects.aget(user=request.auth)
-        personal.languages = {}
+        certificate = await sync_to_async(lambda: personal.certificates)() or {}
+        count = len(certificate)
+        certificate[count + 1] = data.dict()
+        certificate[count + 1]['id'] = count + 1
+        personal.certificates = certificate
         await personal.asave()
-        return 200, {"message": "All languages removed successfully"}
+        return 201, {"message": "certificate added successfully"}
+    return 404, {"message": "Personal data not found"}
+
+@details_api.get("/certificates", response={200: List[CertificateData], 404: Message, 409: Message}, description="User certificate data")
+async def certificates_data(request):
+    if await Personal.objects.filter(user=request.auth).aexists():
+        personal = await Personal.objects.aget(user=request.auth)
+        certificate = await sync_to_async(lambda: personal.certificates)()
+        if certificate:
+            certificates_list = [CertificateData(**lang) for lang in certificate.values()]
+            return 200, certificates_list
+        return 200, {}
+    return 404, {"message": "Personal data not found"}
+
+@details_api.patch("/update_certificate", response={201: Message, 404: Message, 403: Message, 409: Message}, description="User certificate data update")
+async def update_certificates_data(request, data: PatchDict[CertificateData], certificate_id:int):
+    if await Personal.objects.filter(user=request.auth).aexists():
+        personal = await Personal.objects.aget(user=request.auth)
+        certificate = await sync_to_async(lambda: personal.certificates)()
+        if certificate:
+            if "id" not in data:
+                certificate[certificate_id] = dict(data.items())
+                certificate[certificate_id]['id'] = certificate_id
+                personal.certificates = certificate
+                await personal.asave()
+                return 201, {"message": "certificate updated successfully"}
+            return 403, {"message": "Id should not be passed in body"}
+        return 409, {"message": "No certificate data found"}
+    return 404, {"message": "Personal data not found"}
+
+@details_api.delete("/delete_certificate", response={200: Message, 404: Message, 409: Message}, description="User certificate data deletion")
+async def delete_certificates_data(request, certificate_id: int):
+    if await Personal.objects.filter(user=request.auth).aexists():
+        personal = await Personal.objects.aget(user=request.auth)
+        certificate = await sync_to_async(lambda: personal.certificates)()
+        if certificate:
+            del certificate[str(certificate_id)]
+            personal.certificates = certificate
+            await personal.asave()
+            return 200, {"message": "certificate removed successfully"}
+        return 409, {"message": "No certificate data found"}
+    return 404, {"message": "Personal data not found"}
+
+#################################  P R O J E C T S  #################################
+@details_api.post("/add_project", response={201: Message, 404: Message, 409: Message}, description="User project data creation")
+async def projects(request, data: ProjectData):
+    if await Personal.objects.filter(user=request.auth).aexists():
+        personal = await Personal.objects.aget(user=request.auth)
+        project = await sync_to_async(lambda: personal.projects)() or {}
+        count = len(project)
+        project[count + 1] = data.dict()
+        project[count + 1]['id'] = count + 1
+        personal.projects = project
+        await personal.asave()
+        return 201, {"message": "project added successfully"}
+    return 404, {"message": "Personal data not found"}
+
+@details_api.get("/projects", response={200: List[ProjectData], 404: Message, 409: Message}, description="User project data")
+async def projects_data(request):
+    if await Personal.objects.filter(user=request.auth).aexists():
+        personal = await Personal.objects.aget(user=request.auth)
+        project = await sync_to_async(lambda: personal.projects)()
+        if project:
+            projects_list = [ProjectData(**lang) for lang in project.values()]
+            return 200, projects_list
+        return 200, {}
+    return 404, {"message": "Personal data not found"}
+
+@details_api.patch("/update_project", response={201: Message, 404: Message, 403: Message, 409: Message}, description="User project data update")
+async def update_projects_data(request, data: PatchDict[ProjectData], project_id:int):
+    if await Personal.objects.filter(user=request.auth).aexists():
+        personal = await Personal.objects.aget(user=request.auth)
+        project = await sync_to_async(lambda: personal.projects)()
+        if project:
+            if "id" not in data:
+                project[project_id] = dict(data.items())
+                project[project_id]['id'] = project_id
+                personal.projects = project
+                await personal.asave()
+                return 201, {"message": "project updated successfully"}
+            return 403, {"message": "Id should not be passed in body"}
+        return 409, {"message": "No project data found"}
+    return 404, {"message": "Personal data not found"}
+
+@details_api.delete("/delete_project", response={200: Message, 404: Message, 409: Message}, description="User project data deletion")
+async def delete_projects_data(request, project_id: int):
+    if await Personal.objects.filter(user=request.auth).aexists():
+        personal = await Personal.objects.aget(user=request.auth)
+        project = await sync_to_async(lambda: personal.projects)()
+        if project:
+            del project[str(project_id)]
+            personal.projects = project
+            await personal.asave()
+            return 200, {"message": "project removed successfully"}
+        return 409, {"message": "No project data found"}
     return 404, {"message": "Personal data not found"}
