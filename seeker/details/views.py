@@ -105,7 +105,7 @@ async def preference_data(request):
 async def languages(request, data: LanguageData):
     if await Personal.objects.filter(user=request.auth).aexists():
         personal = await Personal.objects.aget(user=request.auth)
-        language = await sync_to_async(lambda: personal.language)()
+        language = await sync_to_async(lambda: personal.languages)()
         count = len(language)
         language[count + 1] = data.dict()
         await preference.asave()
