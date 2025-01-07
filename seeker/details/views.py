@@ -114,7 +114,7 @@ async def languages(request, data: LanguageData):
         return 201, {"message": "Language added successfully"}
     return 404, {"message": "Personal data not found"}
 
-@details_api.get("/languages", response={200: Languages, 404: Message, 409: Message}, description="User language data")
+@details_api.get("/languages", response={200: List[Languages], 404: Message, 409: Message}, description="User language data")
 async def languages_data(request):
     if await Personal.objects.filter(user=request.auth).aexists():
         personal = await Personal.objects.aget(user=request.auth)
