@@ -62,6 +62,3 @@ class LanguageData(Schema):
     language: str
     proficiency: str
     comfortability: str
-
-class Languages(Schema):
-    language: List[LanguageData]
