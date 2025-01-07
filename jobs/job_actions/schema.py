@@ -22,3 +22,16 @@ class ApplyJobsCreation(Schema):
     custom_qns : Optional[List[str]] = None
 
 ApplyJobsData = create_schema(ApplyJobs)
+
+class FilterQuery(Schema):
+    specialization: str = None
+    query: str = None
+    filter: bool = False
+    job_category: str = None
+    job_type: str = None
+    city: str = None
+    salary_min: int = None
+    salary_max: int = None
+    experience_min : int = None
+    experience_max : int = None
+    freshness: int = None

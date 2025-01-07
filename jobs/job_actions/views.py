@@ -1,4 +1,4 @@
-from ninja import Router
+from ninja import Router, Query
 from django.contrib.auth import get_user_model
 from .schema import *
 from typing import *
@@ -74,19 +74,7 @@ async def saved_jobs(request):
 
 #################################  S E A R C H  &  F I L T E R  J O B S  #################################
 @job_actions_api.get("/search", response={200: List[JobCompanyData], 409: Message}, description="Retrieve all job posts a user searched & filtered")
-async def search_jobs(request, 
-        specialization: str = None, 
-        query: str = None, 
-        filter: bool = False, 
-        job_category: str = None,
-        job_type: str = None,
-        city: str = None,
-        salary_min: int = None,
-        salary_max: int = None,
-        experience_min : int = None,
-        experience_max : int = None,
-        freshness: int = None
-    ):
+async def search_jobs(request, filters: Query[FilterQuery]):
     if specialization or query:
         queries = Q()
 
