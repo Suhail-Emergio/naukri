@@ -60,7 +60,7 @@ async def email_login(request, data: LoginSchema):
         user = await User.objects.aget(email=data.username)
         # if user.role == "recruiter" and user.subscribed == False:
         #     return 403, {"message": "Please subscribe to a plan"}
-        if user.mobile_verified:
+        if user.phone_verified:
             refresh = RefreshToken.for_user(user)
             if data.password:
                 if user.email_verified:
