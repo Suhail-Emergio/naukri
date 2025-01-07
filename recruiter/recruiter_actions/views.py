@@ -168,6 +168,8 @@ async def schedule_interview(request, data: InterviewScheduleSchema):
                 return 409, {"message": "Interview already scheduled"}
             application = await ApplyJobs.objects.aget(user=candidate, job=job)
             await InterviewSchedule.objects.acreate(user=user, application=application, schedule=data.schedule)
+            application.status = True
+            await application.asave()
             return 200, {"message": "Interview scheduled successfully"}
         return 404, {"message": "Job not found"}
     return 404, {"message": "Candidate not found"}

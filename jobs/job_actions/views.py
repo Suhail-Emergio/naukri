@@ -42,6 +42,14 @@ async def job_applications(request, job_id: int):
         return 200, jobs
     return 404, {"message": "Job not found"}
 
+@job_actions_api.get("/view_job_applications", response={200: Message, 409: Message}, description="Update view on job application after recruiter views an application")
+async def view_job_applications(request, applied_id: int):
+    if await ApplyJobs.objects.filter(id=applied_id).aexists():
+        applied = await ApplyJobs.objects.aget(job__id=applied_id)
+        applied.viewed = True
+        return 200, {"message": "Updated successfully"}
+    return 404, {"message": "Applied job not found"}
+
 #################################  S A V E /  B O O K M A R K  J O B S  #################################
 @job_actions_api.post("/save", response={201: SavedJobsData, 200: Message, 404: Message, 409: Message}, description="Save/ Bookmark a job post if not already saved, if already saved remove it")
 async def save_jobs(request, data: SavedJobsCreation):

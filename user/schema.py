@@ -3,6 +3,7 @@ from typing import *
 
 class UserData(Schema):
     username: str
+    name:str
     role: str
 
 class Message(Schema):
