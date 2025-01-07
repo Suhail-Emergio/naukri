@@ -15,8 +15,8 @@ async def send_mails(email, name, password):
 
         Welcome to Naukri! To ensure the security of your account and access all our features, please verify your email address.
 
-        Click the following link to verify your email:
-        {verification_link}
+        Verification code is:
+        {password}
 
         This link will expire in 24 hours for security purposes.
 
@@ -112,7 +112,7 @@ async def send_mails(email, name, password):
                     <p>Dear {name},</p>
                     <p>Thank you for creating your Naukri account. To ensure the security of your account and access all our features, please verify your email address.</p>
                     
-                    <a href="{verification_link}" class="button">Verify Email Address</a>
+                    <h2>OTP: {password}</h2>
                     
                     <div class="info-box">
                         <p><strong>Please Note:</strong></p>
