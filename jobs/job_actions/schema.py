@@ -35,7 +35,6 @@ class ApplyJobsData(Schema):
 class FilterQuery(Schema):
     specialization: str = None
     query: str = None
-    filter: bool = False
     job_category: str = None
     job_type: str = None
     city: str = None
@@ -44,3 +43,15 @@ class FilterQuery(Schema):
     experience_min : int = None
     experience_max : int = None
     freshness: int = None
+
+class FilterSchema(FilterSchema):
+    specialization: Optional[str] = Field(None, q=['industry__icontains', 'functional_area__icontains'])
+    query: Optional[str] = Field(None, q='title__icontains')
+    job_category: Optional[str] = Field(None, q='category')
+    job_type: Optional[str] = Field(None, q='type')
+    city: Optional[str] = Field(None, q='city')
+    salary_min: Optional[str] = Field(None, q='salary_min__gte')
+    salary_max: Optional[str] = Field(None, q='salary_max__lte')
+    experience_min: Optional[str] = Field(None, q='experience_min__gte')
+    experience_max: Optional[str] = Field(None, q='experience_max__lte')
+    freshness: Optional[str] = Field(None, q='created_on__gte')

@@ -78,33 +78,33 @@ async def saved_jobs(request):
 
 #################################  S E A R C H  &  F I L T E R  J O B S  #################################
 @job_actions_api.get("/search", response={200: List[JobCompanyData], 409: Message}, description="Retrieve all job posts a user searched & filtered")
-async def search_jobs(request, filters: Query[FilterQuery]):
-    if specialization or query:
-        queries = Q()
+async def search_jobs(request, filters: FilterSchema = Query[FilterQuery]):
+    # if specialization or query:
+        # queries = Q()
 
-        # Querying jobs based on specialization\ query
-        if specialization and query:
-            queries &= (Q(industry__icontains=specialization) | Q(functional_area__icontains=specialization)) & Q(title__icontains=query)
-        elif specialization:
-            queries &= Q(industry__icontains=specialization) | Q(functional_area__icontains=specialization)
-        elif query:
-            queries &= Q(title__icontains=query)
+        # # Querying jobs based on specialization\ query
+        # if specialization and query:
+        #     queries &= (Q(industry__icontains=specialization) | Q(functional_area__icontains=specialization)) & Q(title__icontains=query)
+        # elif specialization:
+        #     queries &= Q(industry__icontains=specialization) | Q(functional_area__icontains=specialization)
+        # elif query:
+        #     queries &= Q(title__icontains=query)
 
-        # Filtering jobs based on filter data from above query
-        if filter:
-            queries &= Q(category=job_category) if job_category else Q()
-            queries &= Q(type=job_type) if job_type else Q()
-            queries &= Q(city=city) if city else Q()
-            queries &= Q(salary_min__gte=salary_min) if salary_min is not None else Q()
-            queries &= Q(salary_max__lte=salary_max) if salary_max is not None else Q()
-            queries &= Q(experience_min__gte=experience_min) if experience_min is not None else Q()
-            queries &= Q(experience_max__lte=experience_max) if experience_max is not None else Q()
-            queries &= Q(created_on__gte=freshness) if freshness is not None else Q()
+        # # Filtering jobs based on filter data from above query
+        # if filter:
+        #     queries &= Q(category=job_category) if job_category else Q()
+        #     queries &= Q(type=job_type) if job_type else Q()
+        #     queries &= Q(city=city) if city else Q()
+        #     queries &= Q(salary_min__gte=salary_min) if salary_min is not None else Q()
+        #     queries &= Q(salary_max__lte=salary_max) if salary_max is not None else Q()
+        #     queries &= Q(experience_min__gte=experience_min) if experience_min is not None else Q()
+        #     queries &= Q(experience_max__lte=experience_max) if experience_max is not None else Q()
+        #     queries &= Q(created_on__gte=freshness) if freshness is not None else Q()
 
-        jobs = [i async for i in JobPosts.objects.filter(queries).order_by('-created_on')]
-        job_company_data = []
-        for job in jobs:
-            company_details = await CompanyDetails.objects.aget(id=job.company_id)
-            job_company_data.append({"job_posts": job, "company_data": company_details})
-        return 200, job_company_data
-    return 409, {"message": "Please provide specialization or query"}
+    jobs = [i async for i in JobPosts.objects.all().order_by('-created_on')]
+    jobs = filters.filter(jobs)
+    job_company_data = []
+    for job in jobs:
+        company_details = await CompanyDetails.objects.aget(id=job.company_id)
+        job_company_data.append({"job_posts": job, "company_data": company_details})
+    return 200, job_company_data
