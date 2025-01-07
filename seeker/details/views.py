@@ -146,7 +146,7 @@ async def delete_languages_data(request, language_id: int):
         personal = await Personal.objects.aget(user=request.auth)
         language = await sync_to_async(lambda: personal.languages)()
         if language:
-            language.pop(language_id, None)
+            del languages[str(language_id)]
             personal.languages = language
             await personal.asave()
             return 200, {"message": "language removed successfully"}
