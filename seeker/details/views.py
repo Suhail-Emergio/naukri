@@ -5,6 +5,7 @@ from typing import *
 from .models import *
 from user.schema import *
 from django.db.models import Q
+from asgiref.sync import sync_to_async
 
 User = get_user_model()
 details_api = Router(tags=['details'])
