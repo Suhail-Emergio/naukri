@@ -31,27 +31,3 @@ class ApplyJobsData(Schema):
     status: str
     viewed: str
     created_on: datetime
-
-class FilterQuery(Schema):
-    specialization: str = None
-    query: str = None
-    job_category: str = None
-    job_type: str = None
-    city: str = None
-    salary_min: int = None
-    salary_max: int = None
-    experience_min : int = None
-    experience_max : int = None
-    freshness: int = None
-
-class FilteringSchema(FilterSchema):
-    specialization: Optional[str] = Field(None, q=['industry__icontains', 'functional_area__icontains'])
-    query: Optional[str] = Field(None, q='title__icontains')
-    job_category: Optional[str] = Field(None, q='category')
-    job_type: Optional[str] = Field(None, q='type')
-    city: Optional[str] = Field(None, q='city')
-    salary_min: Optional[str] = Field(None, q='salary_min__gte')
-    salary_max: Optional[str] = Field(None, q='salary_max__lte')
-    experience_min: Optional[str] = Field(None, q='experience_min__gte')
-    experience_max: Optional[str] = Field(None, q='experience_max__lte')
-    freshness: Optional[str] = Field(None, q='created_on__gte')
