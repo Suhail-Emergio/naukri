@@ -108,7 +108,7 @@ async def languages(request, data: LanguageData):
         language = await sync_to_async(lambda: personal.languages)() or {}
         count = len(language)
         language[count + 1] = data.dict()
-        await preference.asave()
+        await personal.asave()
         return 201, {"message": "Language added successfully"}
     return 404, {"message": "Personal data not found"}
 
@@ -123,13 +123,13 @@ async def languages_data(request):
 @details_api.patch("/update_language", response={201: Message, 404: Message, 403: Message, 409: Message}, description="User language data update")
 async def update_languages_data(request, data: PatchDict[LanguageData], language_id:int):
     if await Personal.objects.filter(user=request.auth).aexists():
-        personal_data = await Personal.objects.aget(user=request.auth)
-        language = await sync_to_async(lambda: personal_data.languages)()
+        personal = await Personal.objects.aget(user=request.auth)
+        language = await sync_to_async(lambda: personal.languages)()
         if language:
             if "id" not in data:
                 language[language_id] = data.dict()
-                personal_data.language = language
-                await personal_data.asave()
+                personal.language = language
+                await personal.asave()
                 return 201, {"message": "Language updated successfully"}
             return 403, {"message": "Id should not be passed in body"}
         return 409, {"message": "No language data found"}
