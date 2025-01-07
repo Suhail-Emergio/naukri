@@ -121,9 +121,6 @@ async def send_mails(email, name, password):
                             <li>• If you didn't create a Naukri account, please ignore this email</li>
                         </ul>
                     </div>
-                    
-                    <p>If the button above doesn't work, copy and paste this link into your browser:</p>
-                    <p style="word-break: break-all; font-size: 12px; color: #666;">{verification_link}</p>
                 </div>
                 <div class="footer">
                     <p>This is an automated email, please do not reply.</p>
