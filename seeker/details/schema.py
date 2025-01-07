@@ -81,3 +81,9 @@ class CertificateData(Schema):
     publication: str
     description: str
     published_on: date
+
+class CountData(Schema):
+    Validation: List[str]
+    applied_jobs_count: int
+    jobs_viewed_count: int
+    interview_scheduled_count: int

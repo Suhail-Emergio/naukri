@@ -6,6 +6,7 @@ from .models import *
 from user.schema import *
 from django.db.models import Q
 from asgiref.sync import sync_to_async
+from jobs.job_actions.models import ApplyJobs
 
 User = get_user_model()
 details_api = Router(tags=['details'])
@@ -261,3 +262,52 @@ async def delete_projects_data(request, project_id: int):
             return 200, {"message": "project removed successfully"}
         return 409, {"message": "No project data found"}
     return 404, {"message": "Personal data not found"}
+
+#################################  C O U N T S  #################################
+@details_api.get("/user_counts", response={200: List[CountData], 404: Message, 409: Message}, description="showing perc of profile completion, Count of jobs applied, Count of jobs viewed by recruiers, Count of interviews scheduled by recruiers, remaining datas to enter in profile ")
+async def counts(request):
+    validation_results = {'empty_models': [], 'models_with_empty_fields': {}}
+    models_to_check = {'Personal': Personal, 'Employment': Employment, 'Qualification': Qualification}
+    total_fields = 0
+    empty_fields_count = 0
+    for model_name, model_class in models_to_check.items():
+        if model_class == Personal:
+            instance = await model_class.objects.aget(user=request.auth)
+            instances = [instance]
+        else:
+            instances = [i async for i in model_class.objects.filter(user=request.auth)]
+        if not instances:
+            validation_results['empty_models'].append(model_name)
+            continue
+        empty_fields = set()
+        for instance in instances:
+            for field in model_class._meta.fields:
+                if field.name in ['id', 'user']:
+                    continue
+                total_fields += 1
+                value = getattr(instance, field.name)
+                is_empty = False
+                if isinstance(field, models.FileField) or isinstance(field, models.ImageField):
+                    is_empty = not bool(value)
+                elif isinstance(field, models.JSONField):
+                    is_empty = value is None or value == {} or value == []
+                elif isinstance(field, models.CharField):
+                    is_empty = value is None or value.strip() == ''
+                else:
+                    is_empty = value is None
+                if is_empty:
+                    empty_fields.add(field.name)
+                    empty_fields_count += 1
+            if empty_fields:
+                validation_results['models_with_empty_fields'][model_name] = list(empty_fields)
+    profile_completion_percentage = ((total_fields - empty_fields_count) / total_fields) * 100 if total_fields > 0 else 0
+    validation_results['profile_completion_percentage'] = profile_completion_percentage
+    applied_jobs_count = await ApplyJobs.objects.filter(user=request.auth).acount()
+    jobs_viewed_count = await ApplyJobs.objects.filter(user=request.auth, viewed=False).acount()
+    interview_scheduled_count = await ApplyJobs.objects.filter(user=request.auth, status="shortlisted").acount()
+    return 200, {
+        "data": validation_results, 
+        "applied_jobs_count": applied_jobs_count,
+        "jobs_viewed_count": jobs_viewed_count,
+        "interview_scheduled_count": interview_scheduled_count
+    }

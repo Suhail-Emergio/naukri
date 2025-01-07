@@ -5,7 +5,7 @@ User = get_user_model()
 
 class Personal(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE)
-    intro = models.CharField(max_length=250)
+    intro = models.TextField()
     employed = models.BooleanField(default=False)
     city = models.CharField(max_length=250)
     state = models.CharField(max_length=250)

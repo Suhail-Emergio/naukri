@@ -58,20 +58,23 @@ async def mobile_login(request, data: LoginSchema):
 async def email_login(request, data: LoginSchema):
     if await User.objects.filter(email=data.username).aexists():
         user = await User.objects.aget(email=data.username)
-        if user.phone_verified:
-            # if user.role == "recruiter" and user.subscribed == False:
-            #     return 403, {"message": "Please subscribe to a plan"}
+        # if user.role == "recruiter" and user.subscribed == False:
+        #     return 403, {"message": "Please subscribe to a plan"}
+        if user.mobile_verified:
             refresh = RefreshToken.for_user(user)
             if data.password:
-                if check_password(data.password, user.password):
-                    return 200, {'access': str(refresh.access_token), 'refresh': str(refresh), 'role': user.role}
+                if user.email_verified:
+                    if check_password(data.password, user.password):
+                        return 200, {'access': str(refresh.access_token), 'refresh': str(refresh), 'role': user.role}
+                return 403, {"message": "Email not verified for login"}
 
             ## SOCIAL LOGIN
             else:
                 user.email_verified = True
                 await user.asave()
                 return 200, {'access': str(refresh.access_token), 'refresh': str(refresh), 'role': user.role}
-        return 403, {"message": "Mobile not verified"}
+            return 401, {"message": "Invalid credentials"}
+        return 403, {"message": "Verify your account to continue login"}
     return 401, {"message": "Invalid credentials"}
 
 #################################  V E R I F I C A T I O N S  #################################
