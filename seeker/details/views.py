@@ -116,7 +116,7 @@ async def languages(request, data: LanguageData):
 async def languages_data(request):
     if await Personal.objects.filter(user=request.auth).aexists():
         personal = await Personal.objects.aget(user=request.auth)
-        language = await sync_to_async(lambda: personal.language)()
+        language = await sync_to_async(lambda: personal.languages)()
         return 200, language
     return 404, {"message": "Personal data not found"}
 
@@ -124,7 +124,7 @@ async def languages_data(request):
 async def update_languages_data(request, data: PatchDict[LanguageData], language_id:int):
     if await Personal.objects.filter(user=request.auth).aexists():
         personal = await Personal.objects.aget(user=request.auth)
-        language = await sync_to_async(lambda: personal.language)()
+        language = await sync_to_async(lambda: personal.languages)()
         if language:
             if "id" not in data:
                 language[language_id] = data.dict()
@@ -135,9 +135,15 @@ async def update_languages_data(request, data: PatchDict[LanguageData], language
         return 409, {"message": "No language data found"}
     return 404, {"message": "Personal data not found"}
 
-@details_api.delete("/delete_language", response={200: Message, 404: Message, 409: Message}, description="User preference data")
-async def delete_languages_data(request):
+@details_api.delete("/delete_language", response={200: Message, 404: Message, 409: Message}, description="User language data deletion")
+async def delete_languages_data(request, language_id: int):
     if await Personal.objects.filter(user=request.auth).aexists():
         personal = await Personal.objects.aget(user=request.auth)
-        return 200, {"message": "Delete language from personal data"}
+        language = await sync_to_async(lambda: personal.languages)()
+        if language:
+            language.pop(language_id, None)
+            personal.languages = language
+            await personal.asave()
+            return 200, {"message": "language removed successfully"}
+        return 409, {"message": "No language data found"}
     return 404, {"message": "Personal data not found"}
