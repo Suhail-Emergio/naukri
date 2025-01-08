@@ -7,7 +7,7 @@ from recruiter.company.schema import CompanyCreation
 # Job Post Schema
 class JobCreation(Schema):
     title : str
-    description : str
+    description : Union[List[str], Dict[str, Any]]
     type : str
     category : str
     city : str
@@ -19,13 +19,13 @@ class JobCreation(Schema):
     nationality : Optional[str] = None
     experience_min : Optional[int] = None
     experience_max : Optional[int] = None
-    candidate_location : Optional[List[str]] = None
+    candidate_location : Optional[Union[List[str], Dict[str, Any]]] = None
     education : Optional[str] = None
     salary_min : Optional[int] = None
     salary_max : Optional[int] = None
     currency : Optional[str] = None
-    skills : Optional[List[str]] = None
-    custom_qns : Optional[List[str]] = None
+    skills : Optional[Union[List[str], Dict[str, Any]]] = None
+    custom_qns : Optional[Union[List[str], Dict[str, Any]]] = None
 
 JobData = create_schema(JobPosts)
 

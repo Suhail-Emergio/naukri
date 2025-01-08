@@ -9,7 +9,7 @@ class CompanyCreation(Schema):
     about : str
     website : str
     functional_area : str
-    address : List[str]
+    address : Union[List[str], Dict[str, Any]]
     city : str
     country : str
     postal_code : str

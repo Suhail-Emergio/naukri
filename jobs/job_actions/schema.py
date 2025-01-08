@@ -27,7 +27,7 @@ class ApplyJobsCreation(Schema):
 
 class ApplyJobsData(Schema):
     job: JobCompanyData
-    custom_qns: Optional[List[str]]
+    custom_qns: Optional[Union[List[str], Dict[str, Any]]]
     status: str
     viewed: bool
     created_on: datetime

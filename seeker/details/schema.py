@@ -12,14 +12,14 @@ class PersonalCreation(Schema):
     state : str
     employed : bool
     cv : Optional[str] = None
-    skills : List[str]
+    skills : Union[List[str], Dict[str, Any]]
     prefered_salary_pa : int
-    prefered_work_loc : str
+    prefered_work_loc : Union[List[str], Dict[str, Any]]
     nationality : str
     gender : str
     total_experience_years : int
     total_experience_months : int
-    address: List[str]
+    address: Union[List[str], Dict[str, Any]]
     differently_abled: bool
     dob: date
 
@@ -30,14 +30,14 @@ class PersonalData(Schema):
     state : str
     employed : bool
     cv : Optional[str] = None
-    skills : List[str]
+    skills : Union[List[str], Dict[str, Any]]
     prefered_salary_pa : int
-    prefered_work_loc : str
+    prefered_work_loc : Union[List[str], Dict[str, Any]]
     nationality : str
     gender : str
     total_experience_years : int
     total_experience_months : int
-    address: List[str] | None = None
+    address: Union[List[str], Dict[str, Any]] | None = None
     differently_abled: bool | None = None
     dob: date | None = None
 
@@ -73,9 +73,9 @@ class PreferenceCreation(Schema):
     job_type: str
     employment_type: str
     job_shift: str
-    job_role: List[str]
+    job_role: Union[List[str], Dict[str, Any]]
     pref_salary: int
-    job_location: List[str]
+    job_location: Union[List[str], Dict[str, Any]]
 
 PreferenceData = create_schema(Preference)
 
@@ -93,7 +93,7 @@ class ProjectData(Schema):
     started_on: str
     ended_on: Optional[str]
     details: str
-    skills: List[str]
+    skills: Union[List[str], Dict[str, Any]]
 
 class CertificateData(Schema):
     id: Optional[int]
@@ -103,8 +103,8 @@ class CertificateData(Schema):
     published_on: date
 
 class CountData(Schema):
-    models_with_empty_fields: Dict[str, List[str]]
-    empty_models: List[str]
+    models_with_empty_fields: Union[List[str], Dict[str, Any]]
+    empty_models: Union[List[str], Dict[str, Any]]
     profile_completion_percentage: float
     applied_jobs_count: int
     jobs_viewed_count: int
