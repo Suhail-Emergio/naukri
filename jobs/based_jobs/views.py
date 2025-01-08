@@ -7,6 +7,7 @@ from user.schema import *
 from django.db.models import Q
 from seeker.details.models import Preference, Personal, Employment
 from recruiter.company.models import CompanyDetails
+from common_actions.models import Subscription
 
 User = get_user_model()
 based_jobs_api = Router(tags=['based-jobs'])
@@ -69,8 +70,18 @@ async def similar_jobs(request, job_id: str):
     jobs = [i async for i in JobPosts.objects.filter(Q(title__icontains=job.title) | Q(type=job.type) | Q(industry=job.industry)).exclude(id=job_id)]
     job_company_data = []
     for job in jobs:
-        company_details = await CompanyDetails.objects.aget(id=job.company_id)
+        company = await sync_to_async(lambda: job.company)()
         job_company_data.append({"job_posts": job, "company_data": company_details})
     return 200, job_company_data
 
-# async def featured_jobs(request):
+@based_jobs_api.get("/featured_jobs", response={200: List[JobCompanyData], 404: Message, 409: Message}, description="Retrieve all featured job posts based on category")
+async def featured_jobs(request):
+    jobs = [i async for i in JobPosts.objects.filter(category=category, company__user__subscribed=True)]
+    job_company_data = []
+    for job in jobs:
+        company = await sync_to_async(lambda: job.company)()
+        user = await sync_to_async(lambda: company.user)()
+        if await Subscription.objects.filter(user=user, plan__feature=True).aexists():
+            company_details = await CompanyDetails.objects.aget(id=job.company_id)
+            job_company_data.append({"job_posts": job, "company_data": company_details})
+    return 200, job_company_data

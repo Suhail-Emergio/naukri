@@ -10,6 +10,7 @@ class Plans(models.Model):
     posts = models.IntegerField(null=True, blank=True)
     audience = models.CharField(max_length=20, choices=[('seeker','seeker'), ('recruiter','recruiter')], default="seeker")
     rate = models.IntegerField()
+    feature = models.BooleanField(default=False)
     created_on = models.DateTimeField(auto_now=True)
 
 class Banner(models.Model):
