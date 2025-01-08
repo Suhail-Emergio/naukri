@@ -37,9 +37,9 @@ class PersonalData(Schema):
     gender : str
     total_experience_years : int
     total_experience_months : int
-    address: List[str]
-    differently_abled: bool
-    dob: date
+    address: List[str] | None = None
+    differently_abled: bool | None = None
+    dob: date | None = None
 
 # Employment Schema
 class EmploymentCreation(Schema):
