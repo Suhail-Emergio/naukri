@@ -38,7 +38,8 @@ INSTALLED_APPS = [
     'recruiter',
     'seeker',
     'jobs',
-    'common_actions'
+    'common_actions',
+    'administrator'
 ]
 
 MIDDLEWARE = [

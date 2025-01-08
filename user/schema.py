@@ -1,10 +1,14 @@
 from ninja import Schema
 from typing import *
+from ninja import ModelSchema
+from django.contrib.auth import get_user_model
 
-class UserData(Schema):
-    username: str
-    name:str
-    role: str
+User = get_user_model()
+
+class UserData(ModelSchema):
+    class Meta:
+        model = User
+        fields = ['id', 'username', 'name', 'role', 'email']
 
 class Message(Schema):
     message: str

@@ -11,6 +11,9 @@ class Personal(models.Model):
     state = models.CharField(max_length=250)
     nationality = models.CharField(max_length=250, null=True, blank=True)
     gender = models.CharField(max_length=250, null=True, blank=True)
+    ##address
+    ##differently_abled
+    ##dob
     cv = models.FileField(upload_to="details/resume/", null=True, blank=True)
     profile_image = models.ImageField(upload_to="details/profile/", null=True, blank=True)
     skills = models.JSONField()
@@ -31,6 +34,7 @@ class Employment(models.Model):
     ctc = models.IntegerField()
     notice_pd = models.IntegerField()
     department = models.CharField(max_length=200)
+    industry = models.CharField(max_length=200)
     job_role = models.CharField(max_length=500)
     role_category = models.CharField(max_length=500)
 

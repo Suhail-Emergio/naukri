@@ -3,6 +3,7 @@ from typing import *
 from ninja.orm import create_schema
 from .models import *
 from datetime import date
+from user.schema import UserData
 
 # Personal Schema
 class PersonalCreation(Schema):
@@ -19,7 +20,20 @@ class PersonalCreation(Schema):
     total_experience_years : int
     total_experience_months : int
 
-PersonalData = create_schema(Personal)
+class PersonalData(Schema):
+    user: UserData
+    intro : str
+    city : str
+    state : str
+    employed : bool
+    cv : Optional[str] = None
+    skills : List[str]
+    prefered_salary_pa : int
+    prefered_work_loc : str
+    nationality : str
+    gender : str
+    total_experience_years : int
+    total_experience_months : int
 
 # Employment Schema
 class EmploymentCreation(Schema):
