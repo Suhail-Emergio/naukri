@@ -34,7 +34,7 @@ class Employment(models.Model):
     ctc = models.IntegerField()
     notice_pd = models.IntegerField()
     department = models.CharField(max_length=200)
-    industry = models.CharField(max_length=200)
+    industry = models.CharField(max_length=200, default='')
     job_role = models.CharField(max_length=500)
     role_category = models.CharField(max_length=500)
 

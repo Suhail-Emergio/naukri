@@ -41,8 +41,8 @@ async def mobile_login(request, data: LoginSchema):
     if await User.objects.filter(username=data.username).aexists():
         user = await User.objects.aget(username=data.username)
         if user.phone_verified:
-            # if user.role == "recruiter" and user.subscribed == False:
-            #     return 403, {"message": "Please subscribe to a plan"}
+            if user.role == "recruiter" and user.subscribed == False:
+                return 403, {"message": "Please subscribe to a plan"}
             otp = random.randint(1111,9999)
             key = f'otp_{user.username}'
             cache_value = await sync_to_async(cache.get)(key)
@@ -58,8 +58,8 @@ async def mobile_login(request, data: LoginSchema):
 async def email_login(request, data: LoginSchema):
     if await User.objects.filter(email=data.username).aexists():
         user = await User.objects.aget(email=data.username)
-        # if user.role == "recruiter" and user.subscribed == False:
-        #     return 403, {"message": "Please subscribe to a plan"}
+        if user.role == "recruiter" and user.subscribed == False:
+            return 403, {"message": "Please subscribe to a plan"}
         if user.phone_verified:
             refresh = RefreshToken.for_user(user)
             if data.password:
