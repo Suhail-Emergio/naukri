@@ -72,7 +72,7 @@ async def email_login(request, data: LoginSchema):
             else:
                 user.email_verified = True
                 await user.asave()
-                return 200, {'access': str(refresh.access_token), 'refresh': str(refresh), 'role': user.role}
+                return 200, {'access': str(refresh.access_token), 'refresh': str(refresh), 'role': user.role, "name": user.name}
             return 401, {"message": "Invalid credentials"}
         return 403, {"message": "Verify your account to continue login"}
     return 401, {"message": "Invalid credentials"}

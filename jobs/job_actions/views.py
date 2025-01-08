@@ -8,6 +8,7 @@ from jobs.jobposts.schema import JobCompanyData
 from jobs.jobposts.models import JobPosts
 from recruiter.company.models import CompanyDetails
 from recruiter.recruiter_actions.models import InviteCandidate
+from asgiref.sync import sync_to_async
 
 User = get_user_model()
 job_actions_api = Router(tags=['job-actions'])
@@ -20,9 +21,9 @@ async def apply_jobs(request, data: ApplyJobsCreation):
         job = await JobPosts.objects.aget(id=data_dict['job_id'])
         custom_qns = data_dict['custom_qns'] if data_dict['custom_qns'] else None
         invited = False
-        if await InviteCandidate.objects.filter(application__user=request.auth, job=job).aexists():
+        if await InviteCandidate.objects.filter(application__user=request.auth, application__job=job).aexists():
             invited = True
-            invite = await InviteCandidate.objects.aget(application__user=request.auth, job=job)
+            invite = await InviteCandidate.objects.aget(application__user=request.auth, application__job=job)
             invite.interested = True
             await invite.asave()
         apply_job = await ApplyJobs.objects.acreate(user=request.auth, job=job, custom_qns=custom_qns, invited=invited)
@@ -32,8 +33,15 @@ async def apply_jobs(request, data: ApplyJobsCreation):
 @job_actions_api.get("/applied_jobs", response={200: List[ApplyJobsData], 409: Message}, description="Retrieve all job posts a user applied")
 async def applied_jobs(request):
     jobs = []
-    for i in ApplyJobs.objects.filter(user=request.auth).order_by('-created_on'):
-        jobs.append({"job": {"job_posts": i.job, "company_data": i.job.company}, "custom_qns": i.custom_qns, "status": i.status, "viewed": i.viewed, "created_on": i.created_on})
+    async for i in ApplyJobs.objects.filter(user=request.auth).order_by('-created_on'):
+        job = await sync_to_async(lambda: i.job)()
+        created_on = await sync_to_async(lambda: i.created_on)()
+        custom_qns = await sync_to_async(lambda: i.custom_qns)()
+        status = await sync_to_async(lambda: i.status)()
+        viewed = await sync_to_async(lambda: i.viewed)()
+        created_on = await sync_to_async(lambda: i.created_on)()
+        company = await sync_to_async(lambda: job.company)()
+        jobs.append({"job": {"job_posts": job, "company_data": company}, "custom_qns": custom_qns, "status": status, "viewed": viewed, "created_on": created_on})
     return 200, jobs
 
 #################################  A P P L I C A T I O N S  #################################
@@ -73,7 +81,10 @@ async def save_jobs(request, data: SavedJobsCreation):
 async def saved_jobs(request):
     jobs = []
     async for i in SaveJobs.objects.filter(user=request.auth).order_by('-created_on'):
-        jobs.append({"job": {"job_posts": i.job, "company_data": i.job.company}, "created_on": i.created_on})
+        job = await sync_to_async(lambda: i.job)()
+        created_on = await sync_to_async(lambda: i.created_on)()
+        company = await sync_to_async(lambda: job.company)()
+        jobs.append({"job": {"job_posts": job, "company_data": company}, "created_on": created_on})
     return 200, jobs
 
 #################################  S E A R C H  &  F I L T E R  J O B S  #################################

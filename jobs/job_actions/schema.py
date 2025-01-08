@@ -10,7 +10,7 @@ class SavedJobsCreation(Schema):
     job_id : int
 
 class SavedJobsData(Schema):
-    job: List[JobCompanyData]
+    job: JobCompanyData
     created_on: datetime
 
 # Job Post to apply Schema
@@ -26,8 +26,8 @@ class ApplyJobsCreation(Schema):
     custom_qns : Optional[List[str]] = None
 
 class ApplyJobsData(Schema):
-    job: List[JobCompanyData]
+    job: JobCompanyData
     custom_qns: Optional[List[str]]
     status: str
-    viewed: str
+    viewed: bool
     created_on: datetime
