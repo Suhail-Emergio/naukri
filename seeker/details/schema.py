@@ -30,9 +30,9 @@ class PersonalData(Schema):
     state : str
     employed : bool
     cv : Optional[str] = None
-    skills : List[str] = None
+    skills : List[str]| None = None
     prefered_salary_pa : int
-    prefered_work_loc : str = None
+    prefered_work_loc : str| None = None
     nationality : str
     gender : str
     total_experience_years : int
