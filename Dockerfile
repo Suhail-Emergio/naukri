@@ -24,7 +24,7 @@ RUN --mount=type=cache,target=/root/.cache/pip \
 COPY . .
 
 # Expose the port the application listens on
-EXPOSE 8000  
+EXPOSE 8000
 
 # Run the application
 CMD ["gunicorn", "--bind", "0.0.0.0:8002", "naukry.wsgi:application"]
