@@ -264,7 +264,7 @@ async def delete_projects_data(request, project_id: int):
     return 404, {"message": "Personal data not found"}
 
 #################################  C O U N T S  #################################
-@details_api.get("/user_counts", response={200: List[CountData], 404: Message, 409: Message}, description="showing perc of profile completion, Count of jobs applied, Count of jobs viewed by recruiers, Count of interviews scheduled by recruiers, remaining datas to enter in profile ")
+@details_api.get("/user_counts", response={200: CountData, 404: Message, 409: Message}, description="showing perc of profile completion, Count of jobs applied, Count of jobs viewed by recruiers, Count of interviews scheduled by recruiers, remaining datas to enter in profile ")
 async def counts(request):
     empty_models = []
     models_with_empty_fields = {}
