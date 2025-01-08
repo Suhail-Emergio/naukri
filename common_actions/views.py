@@ -52,10 +52,11 @@ async def subscriptions(request):
         return 200, subscription
     return 404, {"message" : "Subscription doesnot exists"}
 
-@common_api.delete("/delete_subscription", response={200: SubscriptionData, 404: Message, 409:Message}, description="subscription taken by a user")
-async def delete_subscription(request):
+@common_api.delete("/delete_subscription", response={200: Message, 404: Message, 409:Message}, description="subscription taken by a user")
+async def delete_subscription(request, id: int):
     user = request.auth
-    if await Subscription.objects.filter(user=user).aexists():
-        subscription = await Subscription.objects.aget(user=user)
-        return 200, subscription
+    if await Subscription.objects.filter(id=id).aexists():
+        subscription = await Subscription.objects.aget(id=id)
+        await subscription.adelete()
+        return 200, {"message" : "Subscription deleted successfully"}
     return 404, {"message" : "Subscription doesnot exists"}
