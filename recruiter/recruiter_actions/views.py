@@ -15,7 +15,7 @@ recruiter_actions_api = Router(tags=['recruiter_actions'])
 #################################  A L L  S E E K E R  #################################
 @recruiter_actions_api.get("/all_seekers", response={200: List[SeekerData], 404: Message, 409: Message}, description="Retrieve all candidates")
 async def all_seekers(request):
-    candidate = [i async for i in Personal.objects.exclude(user__is_active=False).order_by('-id')]
+    candidate = [i async for i in Personal.objects.exclude(user__is_active=False).order_by('-user__subscribed', '-id')]
     candidates = []
     for i in candidate:
         candidate_user = await sync_to_async(lambda: i.user)()
@@ -55,7 +55,7 @@ async def resdex(request,
 
     candidates = []
     if queries:
-        candidate = [i async for i in Personal.objects.filter(queries).exclude(user__is_active=False).order_by('-id')]
+        candidate = [i async for i in Personal.objects.filter(queries).exclude(user__is_active=False).order_by('-user__subscribed', '-id')]
         for i in candidate:
             user = await sync_to_async(lambda: i.user)()
             employment = None

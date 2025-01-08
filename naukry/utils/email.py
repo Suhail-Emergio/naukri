@@ -136,7 +136,13 @@ async def send_mails(email, name, password):
     await sync_to_async(msg.send)()
     return {"status": True,"message" :"Email sended successfully"}
 
-async def send_interview_schedule(email, subject, body):
-    msg = EmailMultiAlternatives(subject, body, settings.EMAIL_HOST_USER, [email])
+async def send_interview_schedule(email, from_email, subject, body):
+    msg = EmailMultiAlternatives(
+        subject=subject,
+        body=body,
+        from_email=from_email,
+        to=[email_to],
+        reply_to=[sender_email] if sender_email else None
+    )
     await sync_to_async(msg.send)()
     return {"status": True,"message" :"Email sended successfully"}

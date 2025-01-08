@@ -19,6 +19,8 @@ class InviteCandidate(models.Model):
     created_on = models.DateTimeField(auto_now=True)
 
 class EmailTemplate(models.Model):
+    name = models.CharField(max_length=30, default="")
+    email = models.CharField(max_length=100, default="")
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     job = models.ForeignKey(JobPosts, on_delete=models.CASCADE)
     subject = models.CharField(max_length=255)

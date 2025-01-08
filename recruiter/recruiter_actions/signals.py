@@ -14,4 +14,4 @@ def log_model_save(sender, instance, created, **kwargs):
         send_updates(company.name, instance.job.title, instance.schedule, instance.candidate.user.phone)
         if EmailTemplate.objects.filter(job=instance.job).exists():
             template = EmailTemplate.objects.get(job=instance.job)
-            send_interview_schedule(instance.candidate.user.email, template.subject, template.body)
+            send_interview_schedule(instance.candidate.user.email, template.email, template.subject, template.body)
