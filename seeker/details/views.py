@@ -266,7 +266,9 @@ async def delete_projects_data(request, project_id: int):
 #################################  C O U N T S  #################################
 @details_api.get("/user_counts", response={200: List[CountData], 404: Message, 409: Message}, description="showing perc of profile completion, Count of jobs applied, Count of jobs viewed by recruiers, Count of interviews scheduled by recruiers, remaining datas to enter in profile ")
 async def counts(request):
-    validation_results = {'empty_models': [], 'models_with_empty_fields': {}}
+    empty_models = []
+    models_with_empty_fields = {}
+    profile_completion_percentage = 0
     models_to_check = {'Personal': Personal, 'Employment': Employment, 'Qualification': Qualification}
     total_fields = 0
     empty_fields_count = 0
@@ -277,7 +279,7 @@ async def counts(request):
         else:
             instances = [i async for i in model_class.objects.filter(user=request.auth)]
         if not instances:
-            validation_results['empty_models'].append(model_name)
+            empty_models.append(model_name)
             continue
         empty_fields = set()
         for instance in instances:
@@ -299,14 +301,15 @@ async def counts(request):
                     empty_fields.add(field.name)
                     empty_fields_count += 1
             if empty_fields:
-                validation_results['models_with_empty_fields'][model_name] = list(empty_fields)
-    profile_completion_percentage = ((total_fields - empty_fields_count) / total_fields) * 100 if total_fields > 0 else 0
-    validation_results['profile_completion_percentage'] = profile_completion_percentage
+                models_with_empty_fields[model_name] = list(empty_fields)
+    profile_completion_percentage += ((total_fields - empty_fields_count) / total_fields) * 100 if total_fields > 0 else 0
     applied_jobs_count = await ApplyJobs.objects.filter(user=request.auth).acount()
     jobs_viewed_count = await ApplyJobs.objects.filter(user=request.auth, viewed=False).acount()
     interview_scheduled_count = await ApplyJobs.objects.filter(user=request.auth, status="shortlisted").acount()
     return 200, {
-        "data": validation_results, 
+        "profile_completion_percentage": profile_completion_percentage,
+        "empty_models": empty_models,
+        "models_with_empty_fields": models_with_empty_fields,
         "applied_jobs_count": applied_jobs_count,
         "jobs_viewed_count": jobs_viewed_count,
         "interview_scheduled_count": interview_scheduled_count

@@ -103,7 +103,9 @@ class CertificateData(Schema):
     published_on: date
 
 class CountData(Schema):
-    data: List[str]
+    models_with_empty_fields: List[str]
+    empty_models: List[str]
+    profile_completion_percentage: int
     applied_jobs_count: int
     jobs_viewed_count: int
     interview_scheduled_count: int
