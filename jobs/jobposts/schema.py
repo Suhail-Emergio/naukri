@@ -30,5 +30,5 @@ class JobCreation(Schema):
 JobData = create_schema(JobPosts)
 
 class JobCompanyData(Schema):
-    job_posts : JobCreation
+    job_posts : JobData
     company_data : CompanyCreation
