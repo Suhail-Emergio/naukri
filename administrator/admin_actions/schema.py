@@ -4,3 +4,4 @@ from ninja.orm import create_schema
 from .models import *
 
 PlanData = create_schema(Plans)
+BannerData = create_schema(Banner)

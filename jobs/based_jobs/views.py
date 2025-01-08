@@ -74,9 +74,9 @@ async def similar_jobs(request, job_id: str):
         job_company_data.append({"job_posts": job, "company_data": company_details})
     return 200, job_company_data
 
-@based_jobs_api.get("/featured_jobs", response={200: List[JobCompanyData], 404: Message, 409: Message}, description="Retrieve all featured job posts based on category")
+@based_jobs_api.get("/featured_jobs", response={200: List[JobCompanyData], 404: Message, 409: Message}, description="Retrieve all featured job posts")
 async def featured_jobs(request):
-    jobs = [i async for i in JobPosts.objects.filter(category=category, company__user__subscribed=True)]
+    jobs = [i async for i in JobPosts.objects.filter(category=category, company__user__subscribed=True).order_by('-id')]
     job_company_data = []
     for job in jobs:
         company = await sync_to_async(lambda: job.company)()

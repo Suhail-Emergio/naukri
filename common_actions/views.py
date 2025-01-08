@@ -5,8 +5,8 @@ from .schema import *
 from typing import *
 from .models import *
 from user.schema import *
-from administrator.admin_actions.models import Plans
-from administrator.admin_actions.schema import PlanData
+from administrator.admin_actions.models import Plans, Banner
+from administrator.admin_actions.schema import PlanData, BannerData
 
 User = get_user_model()
 common_api = Router(tags=['common'])
@@ -25,6 +25,13 @@ async def all_plans(request):
     user = request.auth
     plans = [i async for i in Plans.objects.filter(audience=user.role)]
     return 200, plans
+
+#################################  B A N N E R S  #################################
+@common_api.post("/banners", response={200: List[BannerData], 404: Message, 409:Message}, description="All plans")
+async def banners(request):
+    user = request.auth
+    banner = [i async for i in Banner.objects.all()]
+    return 200, banner
 
 #################################  S U B S C R I P T I O N S  #################################
 @common_api.post("/subscribe", response={201: Message, 404: Message, 409:Message}, description="Add subscription")
