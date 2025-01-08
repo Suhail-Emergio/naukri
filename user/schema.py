@@ -38,6 +38,7 @@ class UserCreation(Schema):
     email: str
     phone: str
     role: str
+    onesignal_id: str
     whatsapp_updations: bool
 
 class TokenSchema(Schema):
