@@ -11,9 +11,9 @@ class Personal(models.Model):
     state = models.CharField(max_length=250)
     nationality = models.CharField(max_length=250, null=True, blank=True)
     gender = models.CharField(max_length=250, null=True, blank=True)
-    ##address
-    ##differently_abled
-    ##dob
+    address = models.JSONField(null=True, blank=True)
+    differently_abled = models.BooleanField(default=False)
+    dob = models.DateField(null=True, blank=True)
     cv = models.FileField(upload_to="details/resume/", null=True, blank=True)
     profile_image = models.ImageField(upload_to="details/profile/", null=True, blank=True)
     skills = models.JSONField()
