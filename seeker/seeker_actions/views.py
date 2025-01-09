@@ -19,7 +19,7 @@ seeker_actions_api = Router(tags=['seeker_actions'])
 @seeker_actions_api.get("/job_invitations", response={200: List[JobInvitations], 409: Message}, description="Retrieve all invitations for a user") 
 async def job_invitations(request):
     user = request.auth
-    invites = [i async for i in InviteCandidate.objects.filter(application__user=user).order_by('-id')]
+    invites = [i async for i in InviteCandidate.objects.filter(candidate__user=user).order_by('-id')]
     return 200, invites
 
 @seeker_actions_api.patch("/read_invitations", response={200: Message, 409: Message}, description="Mark an invitation as read") 
