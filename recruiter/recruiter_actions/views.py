@@ -109,7 +109,7 @@ async def invite_candidates(request, data: InviteCandidateSchema):
             if await InviteCandidate.objects.filter(user=user, application__user=candidate, application__job=job).aexists():
                 return 409, {"message": "Candidate already invited"}
             application = await ApplyJobs.objects.aget(user=personal_user, job=job)
-            await InviteCandidate.objects.acreate(user=user, application=application)
+            await InviteCandidate.objects.acreate(user=user, job=job, candidate=candidate)
             return 200, {"message": "Candidate invited successfully"}
         return 404, {"message": "Job not found"}
     return 404, {"message": "Candidate not found"}
@@ -118,7 +118,7 @@ async def invite_candidates(request, data: InviteCandidateSchema):
 async def candidates_invited(request, job_id: int = None):
     user = request.auth
     candidates = []
-    invites = [i async for i in InviteCandidate.objects.filter(user=user, application__job__id=job_id).order_by('-id')] if job_id else [i async for i in InviteCandidate.objects.filter(user=user).order_by('-id')]
+    invites = [i async for i in InviteCandidate.objects.filter(user=user, job__id=job_id).order_by('-id')] if job_id else [i async for i in InviteCandidate.objects.filter(user=user).order_by('-id')]
     for i in invites:
         personal = await sync_to_async(lambda: i.candidate)()
         user = await sync_to_async(lambda: personal.user)()
