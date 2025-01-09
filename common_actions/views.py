@@ -40,7 +40,7 @@ async def subscribe(request, data: SubscriptionCreation):
     user = request.auth
     if await Plans.objects.filter(id=data.plan_id).aexists():
         plan = await Plans.objects.aget(id=data.plan_id)
-        audience = await sync_to_async(lambda: i.audience)()
+        audience = await sync_to_async(lambda: plan.audience)()
         if user.role == audience:
             if await Subscription.objects.filter(user=user).aexists():
                 already_sub = await Subscription.objects.aget(user=user)
