@@ -27,15 +27,15 @@ def log_model_save(sender, instance, created, **kwargs):
 @receiver(post_save, sender=InviteCandidate)
 def log_model_save(sender, instance, created, **kwargs):
     if created:
-        company = CompanyDetails.objects.get(user=instance.user)
-        if EmailTemplate.objects.filter(job=instance.job).exists():
-            template = EmailTemplate.objects.get(job=instance.job)
-            send_interview_schedule(instance.candidate.user.email, template.email, template.subject, template.body)
-        body=( 
-            f"Hello! This is a message from {company.name}.\n"
-            f"Your interview for the position of {job_title} has been scheduled at {instance.schedule}.\n"
-            f"Please check your email for further details and instructions. We look forward to connecting with you!"
-        ),
-        send_updates(body, instance.candidate.user.phone)
-        if instance.user.onesignal_id:
-            send_notifications(subject=f"Your Interview is Scheduled for the Position: {instance.job.title}", title="Interview Scheduled - Next Steps Await!", onesignal_id=instance.user.onesignal_id)
+        subject = f"A company has invited your profile for a job post. Access you acount for more information"
+        title = "New Invitation"
+        onesignal_id = instance.candidate.user.onesignal_id
+        phone = instance.candidate.user.phone
+        if onesignal_id:
+            send_notifications(
+                subject=subject,
+                title=title,
+                onesignal_id=onesignal_id
+            )
+        send_updates(subject, phone)
+    return
