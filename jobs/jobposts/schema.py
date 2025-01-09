@@ -7,7 +7,10 @@ from recruiter.company.schema import CompanyCreation
 # Job Post Schema
 class JobCreation(Schema):
     title : str
-    description : Union[List[str], Dict[str, Any]]
+    description : str
+    requirements : str
+    roles : str
+    benefits : str
     type : str
     category : str
     city : str

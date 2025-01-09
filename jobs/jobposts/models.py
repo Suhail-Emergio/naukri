@@ -6,7 +6,10 @@ class JobPosts(models.Model):
     ## Job Details
     company = models.ForeignKey(Company, on_delete=models.CASCADE, null=True, blank=True)
     title = models.CharField(max_length=250)
-    description = models.JSONField()
+    description = models.TextField()
+    requirements = models.TextField()
+    roles = models.TextField()
+    benefits = models.TextField()
     type = models.CharField(max_length=250) # `Full-time, Part-time, Contract, Internship`
     category = models.CharField(max_length=250, choices=[('remote', 'remote'), ('onsite', 'onsite'), ('hybrid', 'hybrid')], default='remote') # Remote, Onsite, Hybrid
     city = models.CharField(max_length=250, default='')
