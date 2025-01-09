@@ -17,12 +17,13 @@ def log_model_save(sender, instance, created, **kwargs):
             send_interview_schedule(instance.candidate.user.email, template.email, template.subject, template.body)
         body=( 
             f"Hello! This is a message from {company.name}.\n"
-            f"Your interview for the position of {job_title} has been scheduled at {instance.schedule}.\n"
+            f"interview for the position of {job_title} has been scheduled at {instance.schedule}.\n"
             f"Please check your email for further details and instructions. We look forward to connecting with you!"
         ),
         send_updates(body, instance.candidate.user.phone)
         if instance.user.onesignal_id:
-            send_notifications(subject=f"Your Interview is Scheduled for the Position: {instance.job.title}", title="Interview Scheduled - Next Steps Await!", onesignal_id=instance.user.onesignal_id)
+            send_notifications(subject=f"Interview is Scheduled for the Position: {instance.job.title}", title="Interview Scheduled - Next Steps Await!", onesignal_id=instance.user.onesignal_id)
+            send_updates(f"Interview is Scheduled for the Position: {instance.job.title}", instance.user.phone)
 
 @receiver(post_save, sender=InviteCandidate)
 def log_model_save(sender, instance, created, **kwargs):
