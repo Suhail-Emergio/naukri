@@ -1,3 +1,4 @@
+import asyncio
 from ninja import Router, PatchDict
 from django.contrib.auth import get_user_model
 from asgiref.sync import sync_to_async
@@ -59,11 +60,42 @@ async def subscriptions(request):
         return 200, subscription
     return 404, {"message" : "Subscription doesnot exists"}
 
-@common_api.delete("/delete_subscription", response={200: Message, 404: Message, 409:Message}, description="subscription taken by a user")
-async def delete_subscription(request, id: int):
+@common_api.delete("/delete_subscription", response={200: Message, 404: Message, 409:Message}, description="delete subscription taken by a user")
+async def delete_subscription(request):
     user = request.auth
-    if await Subscription.objects.filter(id=id).aexists():
-        subscription = await Subscription.objects.aget(id=id)
+    if await Subscription.objects.filter(user=user).aexists():
+        subscription = await Subscription.objects.aget(user=user)
         await subscription.adelete()
         return 200, {"message" : "Subscription deleted successfully"}
     return 404, {"message" : "Subscription doesnot exists"}
+
+#################################  S U B S C R I P T I O N S  #################################
+@common_api.get("/notification", response={200: List[NotificationData], 404: Message, 409:Message}, description="Notification based on logged user")
+async def notifications(request):
+    user = request.user
+    notification = []
+    async for i in user.notifications.all().order_by('-id'):
+        read = await i.read_by.filter(id=user.id).aexists()
+        notification.append({'id': i.id, 'noti': i, 'read': read})
+    asyncio.create_task(mark_notifications_read(user.notifications.all().order_by('-id'), user))
+    return 200, notification
+
+async def mark_notifications_read(notifications, user):
+    await asyncio.sleep(10)
+
+    @sync_to_async
+    def update_notification(notification, user):
+        notification.read_by.add(user)
+        notification.save()
+
+    async for notification in notifications:
+        if not await notification.read_by.filter(id=user.id).aexists():
+            await update_notification(notification, user)
+
+@common_api.delete("/delete_notification", response={200: Message, 404: Message, 409:Message}, description="Delete notfications")
+async def notifications(request, id: int):
+    if await Notification.objects.filter(id=id).aexists():
+        noti = await Notification.objects.aget(id=id)
+        await noti.user.aremove(request.auth)
+        return 200, {"messsage": "Notitfication data deleted successfully"}
+    return 404, {"messsage": "Notitfication data not found"}

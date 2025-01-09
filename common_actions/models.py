@@ -16,3 +16,12 @@ class Subscription(models.Model):
     remaining_posts = models.IntegerField(default=0)
     transaction_id = models.CharField(max_length=100)
     subscribed_on = models.DateField(auto_now=True)
+
+class Notification(models.Model):
+    user = models.ManyToManyField(User, related_name='notifications')
+    title =  models.CharField(max_length=100)
+    description = models.TextField()
+    image = models.FileField(upload_to='notification/image', null=True, blank=True)
+    url = models.URLField(max_length=200,null=True,blank=True)
+    created_on = models.DateTimeField(auto_now=True)
+    read_by = models.ManyToManyField(User, related_name='read_notifications', blank=True)

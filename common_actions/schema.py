@@ -18,3 +18,24 @@ class SubscriptionData(Schema):
     remaining_posts: int
     transaction_id: str
     subscribed_on: datetime
+
+class NotificationCreation(Schema):
+    user_id: Optional[int]
+    all_users: Optional[bool]
+    audience: Optional[str]
+    title: str
+    description: str
+    image: Optional[str]
+    url: Optional[str]
+
+class NotificationSchema(Schema):
+    title: str
+    description: str
+    image: Optional[str]
+    url: Optional[str]
+    created_on: datetime
+
+class NotificationData(Schema):
+    id: int
+    noti: NotificationSchema    
+    read: bool
