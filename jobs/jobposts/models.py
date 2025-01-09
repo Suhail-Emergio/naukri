@@ -1,5 +1,6 @@
 from django.db import models
 from recruiter.company.models import CompanyDetails as Company
+from datetime import date
 
 class JobPosts(models.Model):
     ## Job Details
@@ -14,6 +15,7 @@ class JobPosts(models.Model):
     industry = models.CharField(max_length=250)
     functional_area = models.CharField(max_length=250)
     created_on = models.DateTimeField(auto_now=True)
+    expire_on = models.DateField(default=date.today)
 
     ## Preffered Employee Details
     gender = models.CharField(max_length=50, choices=[('male', 'male'), ('female', 'female')], null=True, blank=True)

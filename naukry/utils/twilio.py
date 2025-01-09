@@ -16,14 +16,10 @@ def send_otp(otp, number):
     )
     print(f"Message sent with SID: {message.sid}")
 
-def send_updates(company_name, job_title, time, number):
+def send_updates(body, number):
     client = Client(settings.TWILIO_ACCOUNT_SID, settings.TWILIO_AUTH_TOKEN)
     message = client.messages.create(
-        body=( 
-            f"Hello! This is a message from {company_name}.\n"
-            f"Your interview for the position of {job_title} has been scheduled at {time}.\n"
-            f"Please check your email for further details and instructions. We look forward to connecting with you!"
-        ),
+        body=body,
         from_='whatsapp:+917594088814',
         to=f'whatsapp:+91{number}',
     )
