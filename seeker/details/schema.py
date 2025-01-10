@@ -89,7 +89,7 @@ class LanguageData(Schema):
     comfortability: str
 
 class ProjectData(Schema):
-    id: Optional[int]
+    id: Optional[int] = None
     title: str
     client: str
     status: str
@@ -99,7 +99,7 @@ class ProjectData(Schema):
     skills: Union[List[str], Dict[str, Any]]
 
 class CertificateData(Schema):
-    id: Optional[int]
+    id: Optional[int] = None
     title: str
     publication: str
     description: str
