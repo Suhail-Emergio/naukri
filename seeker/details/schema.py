@@ -24,7 +24,6 @@ class PersonalCreation(Schema):
     dob: date
 
 class PersonalData(Schema):
-    user: UserData
     intro : str
     city : str
     state : str
@@ -40,6 +39,10 @@ class PersonalData(Schema):
     address: Union[List[str], Dict[str, Any]] | None = None
     differently_abled: bool | None = None
     dob: date | None = None
+
+class PersonalSchema(Schema):
+    personal: PersonalData
+    user: UserData
 
 # Employment Schema
 class EmploymentCreation(Schema):

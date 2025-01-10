@@ -19,20 +19,20 @@ async def personal(request, data: PersonalCreation):
     personal = await Personal.objects.acreate(**data.dict(), user=request.auth)
     return 201, personal
 
-@details_api.patch("/personal", response={201: PersonalData, 404: Message, 409: Message}, description="User personal data update")
+@details_api.patch("/personal", response={201: Message, 404: Message, 409: Message}, description="User personal data update")
 async def update_personal_data(request, data: PatchDict[PersonalCreation]):
     if await Personal.objects.filter(user=request.auth).aexists():
         personal = await Personal.objects.aget(user=request.auth)
         for attr, value in data.items():
             setattr(personal, attr, value)
         await personal.asave()
-        return 201, personal
+        return 201, {"message": "Succesfully updated"}
     return 404, {"message": "Personal data not found"}
 
-@details_api.get("/personal", response={200: List[PersonalData], 409: Message}, description="User personal data")
+@details_api.get("/personal", response={200: PersonalSchema, 409: Message}, description="User personal data")
 async def personal_data(request):
-    personal = [i async for i in Personal.objects.filter(user=request.auth)]
-    return 200, personal
+    personal = await Personal.objects.aget(user=request.auth)
+    return 200, {"personal": personal, "user": request.auth}
 
 #################################  E M P L O Y M E N T  D A T A  #################################
 @details_api.post("/employment", response={201: EmploymentData, 409: Message}, description="User employment data creation")
