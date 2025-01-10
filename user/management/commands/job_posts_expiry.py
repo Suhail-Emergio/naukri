@@ -11,7 +11,9 @@ class Command(BaseCommand):
         is_weekend = today.weekday() in (5)
         JobPosts.objects.filter(expire_on=today).delete()
         if is_weekend:
-            subject="Your job posts validity is gonna expire soon. Contact admin for increasing validity"
+            subject="Your job posts validity is gonna expire soon. Contact admin for increasing validity."
             for i in JobPosts.objects.filter(expire_on__lte=today):
-                send_notifications(onesignal_id=i.company.user.onesignal_id, subject=subject, title="Job posts updations")
-                send_updates(body=subject, number=i.company.user.phone)
+                if i.company.user.onesignal_id:
+                    send_notifications(onesignal_id=i.company.user.onesignal_id, subject=subject, title="Job posts updations")
+                if i.company.user.whatsapp_updations:
+                    send_updates(body=subject, number=i.company.user.phone)
