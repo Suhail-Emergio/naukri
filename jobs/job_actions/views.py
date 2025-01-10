@@ -14,7 +14,7 @@ User = get_user_model()
 job_actions_api = Router(tags=['job-actions'])
 
 #################################  A P P L Y  J O B S  #################################
-@job_actions_api.post("/apply", response={201: Message, 404: Message, 405 Message, 409: Message}, description="Apply for a job post")
+@job_actions_api.post("/apply", response={201: Message, 404: Message, 405: Message, 409: Message}, description="Apply for a job post")
 async def apply_jobs(request, data: ApplyJobsCreation):
     data_dict = data.dict()
     if await JobPosts.objects.filter(id=data_dict['job_id']).aexists():
