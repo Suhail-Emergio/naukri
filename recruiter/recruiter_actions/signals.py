@@ -14,13 +14,13 @@ def log_model_save(sender, instance, created, **kwargs):
         company = CompanyDetails.objects.get(user=instance.user)
         if EmailTemplate.objects.filter(job=instance.application.job).exists():
             template = EmailTemplate.objects.get(job=instance.application.job)
-            send_interview_schedule(instance.application.candidate.user.email, template.email, template.subject, template.body)
+            send_interview_schedule(instance.application.user.email, template.email, template.subject, template.body)
         body=(
             f"Hello! This is a message from {company.name}.\n"
             f"interview for the position of {job_title} has been scheduled at {instance.schedule}.\n"
             f"Please check your email for further details and instructions. We look forward to connecting with you!"
         ),
-        send_updates(body, instance.application.candidate.user.phone)
+        send_updates(body, instance.application.user.phone)
         if instance.user.onesignal_id:
             send_notifications(subject=f"Interview is Scheduled for the Position: {instance.application.job.title}", title="Interview Scheduled - Next Steps Await!", onesignal_id=instance.user.onesignal_id)
             send_updates(f"Interview is Scheduled for the Position: {instance.application.job.title}", instance.user.phone)
