@@ -207,7 +207,7 @@ async def template_creation(request, data: TemplateCreation):
     return 404, {"message": "Job not found"}
 
 @recruiter_actions_api.patch("/update_template", response={200: Message, 404: Message, 409: Message}, description="Update email template")
-async def template_updation(request, data: PatchDict[TemplateCreation], id: int):
+async def template_updation(request, data: PatchDict[EmailTemplates], id: int):
     if await EmailTemplate.objects.filter(id=id).aexists():
         template = await EmailTemplate.objects.aget(id=id)
         for attr, value in data.items():
