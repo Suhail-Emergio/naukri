@@ -17,7 +17,7 @@ class SearchCriteria(Schema):
     additional: Optional[str] = None
 
 class SeekerData(Schema):
-    personal : PersonalData
+    personal : PersonalSchema
     employment: List[Optional[EmploymentData]] = None
     qualification: List[Optional[QualificationData]] = None
 
