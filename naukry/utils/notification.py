@@ -2,7 +2,6 @@
 from onesignal_sdk.client import Client
 from onesignal_sdk.client import AsyncClient
 from django.conf import settings
-from .enc_utils import *
 from asgiref.sync import sync_to_async
 
 def send_notifications(subject, title, onesignal_id):
