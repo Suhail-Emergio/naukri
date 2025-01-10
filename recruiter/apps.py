@@ -1,9 +1,9 @@
 from django.apps import AppConfig
 
 
-class JobActionsConfig(AppConfig):
+class RecruiterActionsConfig(AppConfig):
     default_auto_field = 'django.db.models.BigAutoField'
-    name = 'job_actions'
+    name = 'recruiter'
 
     def ready(self):
-        import jobs.job_actions.signals
+        import recruiter.recruiter_actions.signals

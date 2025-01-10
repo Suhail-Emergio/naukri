@@ -4,7 +4,6 @@
 # Notification for inactive users
 
 
-# Email for post completion
 # Email for saved jobs expiry
 # Email for feedback request
 # Email for inactive users
