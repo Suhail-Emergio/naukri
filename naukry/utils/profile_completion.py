@@ -1,5 +1,6 @@
 #################################  D A T A  O N  P R O F I L E  C O M P L E T E D  B Y  U S E R  #################################
 from seeker.details.models import Personal, Employment, Qualification
+from django.db import models
 
 async def completion_data(user):
     empty_models = []
