@@ -150,7 +150,6 @@ def send_interview_schedule(email, from_email, subject, body):
     msg.send()
     print("Email on scheduling interview sended successfully")
 
-
 async def send_updates(email, subject, text_content, html_content):
     msg = EmailMultiAlternatives(subject, text_content, settings.EMAIL_HOST_USER, [email])
     msg.attach_alternative(html_content, "text/html")
