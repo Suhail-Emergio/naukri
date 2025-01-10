@@ -8,23 +8,22 @@ from asgiref.sync import sync_to_async
 emails = {
     "verify" :
         {
-            text_content: f"""
-            Dear {name},
+            "text_content": f"""
+                Dear {name},
 
-            Welcome to {project_name}! To ensure the security of your account and access all our features, please verify your email address.
+                Welcome to {project_name}! To ensure the security of your account and access all our features, please verify your email address.
 
-            Verification code is:
-            {password}
+                Verification code is:
+                {password}
 
-            This link will expire in 24 hours for security purposes.
+                This link will expire in 24 hours for security purposes.
 
-            If you didn't create a {project_name} account, please ignore this email.
+                If you didn't create a {project_name} account, please ignore this email.
 
-            Best regards,
-            {project_name} Team
-            """,
-
-            html_content : f"""
+                Best regards,
+                {project_name} Team
+                """,
+            "html_content" : f"""
                 <!DOCTYPE html>
                 <html lang="en">
                     <head>
@@ -126,7 +125,7 @@ emails = {
                         </div>
                     </body>
                 </html>
-            """
+                """
         }, 
 }
 
