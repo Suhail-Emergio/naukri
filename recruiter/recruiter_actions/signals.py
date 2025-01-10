@@ -23,7 +23,7 @@ def log_model_save(sender, instance, created, **kwargs):
         send_updates(body, instance.application.user.phone)
         if instance.user.onesignal_id:
             send_notifications(subject=f"Interview is Scheduled for the Position: {instance.application.job.title}", title="Interview Scheduled - Next Steps Await!", onesignal_id=instance.user.onesignal_id)
-        send_updates("An interview has been scheduled. Please check your email for further details and instructions. Or", instance.application.user.phone)
+        send_updates("An interview has been scheduled", instance.application.user.phone)
 
 @receiver(post_save, sender=InviteCandidate)
 def log_model_save(sender, instance, created, **kwargs):
