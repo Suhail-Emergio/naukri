@@ -25,7 +25,7 @@ async def all_seekers(request):
         qualification = None
         if await Qualification.objects.filter(user=candidate_user).aexists():
             qualification = [i async for i in Qualification.objects.filter(user=candidate_user).order_by('-id')]
-        candidates.append({"personal": {"personal": candidate, "user": candidate_user}, "employment": employment, "qualification": qualification})
+        candidates.append({"personal": {"personal": i, "user": candidate_user}, "employment": employment, "qualification": qualification})
     return 200, candidates
 
 #################################  F I L T E R  C A N D I D A T E S  B A S E D  #################################
