@@ -13,7 +13,7 @@ class SaveCandidate(models.Model):
 
 class InviteCandidate(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE)
-    candidate = models.ForeignKey(Personal, on_delete=models.CASCADE)
+    candidate = models.ForeignKey(Personal, on_delete=models.CASCADE, null=True, blank=True)
     job = models.ForeignKey(JobPosts, on_delete=models.CASCADE)
     read = models.BooleanField(default=False)
     interested = models.BooleanField(default=False)
