@@ -83,7 +83,7 @@ class PreferenceCreation(Schema):
 PreferenceData = create_schema(Preference)
 
 class LanguageData(Schema):
-    id: Optional[int]
+    id: Optional[int] = None
     language: str
     proficiency: str
     comfortability: str
