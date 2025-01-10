@@ -23,7 +23,7 @@ def send_updates(body, number):
         content_sid="HX2c2d60626811876c3f71b2112405047d",
         from_='whatsapp:+917594088814',
         to=f'whatsapp:+91{number}',
-        content_variables=json.dumps({"1": str(body).strip()}),
+        content_variables=json.dumps({"1": body}),
     )
     print(f"Message sent with SID: {message.sid}")
 
