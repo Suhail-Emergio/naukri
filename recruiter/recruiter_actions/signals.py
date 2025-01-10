@@ -19,11 +19,11 @@ def log_model_save(sender, instance, created, **kwargs):
             f"Hello! This is a message from {company.name}.\n"
             f"interview for the position of {instance.application.job.title} has been scheduled at {instance.schedule}.\n"
             f"Please check your email for further details and instructions. We look forward to connecting with you!"
-        ),
-        send_updates(body, instance.application.user.phone)
+        )
         if instance.user.onesignal_id:
             send_notifications(subject=f"Interview is Scheduled for the Position: {instance.application.job.title}", title="Interview Scheduled - Next Steps Await!", onesignal_id=instance.user.onesignal_id)
-        send_updates("An interview has been scheduled", instance.application.user.phone)
+        if instance.user.whatsapp_updations:
+            send_updates("An interview has been scheduled", instance.application.user.phone)
 
 @receiver(post_save, sender=InviteCandidate)
 def log_model_save(sender, instance, created, **kwargs):
@@ -38,5 +38,6 @@ def log_model_save(sender, instance, created, **kwargs):
                 title=title,
                 onesignal_id=onesignal_id
             )
-        send_updates(subject, phone)
+        if instance.candidate.user.whatsapp_updations:
+            send_updates(subject, phone)
     return
