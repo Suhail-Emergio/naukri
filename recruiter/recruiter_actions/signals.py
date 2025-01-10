@@ -15,15 +15,11 @@ def log_model_save(sender, instance, created, **kwargs):
         if EmailTemplate.objects.filter(job=instance.application.job).exists():
             template = EmailTemplate.objects.get(job=instance.application.job)
             send_interview_schedule(instance.application.user.email, template.email, template.subject, template.body)
-        body=(
-            f"Hello! This is a message from {company.name}.\n"
-            f"interview for the position of {instance.application.job.title} has been scheduled at {instance.schedule}.\n"
-            f"Please check your email for further details and instructions. We look forward to connecting with you!"
-        )
+        subject =f"Your interview has been officially scheduled for the position of {instance.application.job.title}. This is an important step in the hiring process, offering an opportunity to showcase your skills, experience, and enthusiasm for the role. Please review the scheduled details carefully and make any necessary preparations to ensure a successful and productive conversation. We look forward to connecting with you and exploring how you can contribute to the success of our team!"
         if instance.user.whatsapp_updations:
-            send_updates("An interview has been scheduled", instance.application.user.phone)
+            send_updates(subject, instance.application.user.phone)
         if instance.user.onesignal_id:
-            send_notifications(subject=f"Interview is Scheduled for the Position: {instance.application.job.title}", title="Interview Scheduled - Next Steps Await!", onesignal_id=instance.user.onesignal_id)
+            send_notifications(subject=subject, title="Interview Scheduled - Next Steps Await!", onesignal_id=instance.user.onesignal_id)
 
 @receiver(post_save, sender=InviteCandidate)
 def log_model_save(sender, instance, created, **kwargs):
