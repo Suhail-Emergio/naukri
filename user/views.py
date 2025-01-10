@@ -78,7 +78,7 @@ async def email_login(request, data: LoginSchema):
     return 401, {"message": "Invalid credentials"}
 
 #################################  V E R I F I C A T I O N S  #################################
-@user_api.post("/mobile_otp_verify", auth=None, response={200: TokenSchema, 401: Message, 403: Message}, description="Verify OTP using mobile number")
+@user_api.post("/mobile_otp_verify", auth=None, response={200: TokenSchema, 203: Message, 401: Message, 403: Message}, description="Verify OTP using mobile number")
 async def mobile_otp_verify(request, data: MobileOtpVerify):
     key = f'otp_{data.phone}'
     cache_value = await sync_to_async(cache.get)(key)
@@ -89,6 +89,8 @@ async def mobile_otp_verify(request, data: MobileOtpVerify):
                 user.phone_verified = True
                 await user.asave()
             refresh = RefreshToken.for_user(user)
+            if not user.subscribed and user.role == "recruiter":
+                return 203, {'access': str(refresh.access_token), 'refresh': str(refresh), 'role': user.role, "name": user.name}
             return 200, {'access': str(refresh.access_token), 'refresh': str(refresh), 'role': user.role, "name": user.name}
         return 403, {"message": "Invalid OTP"}
     return 401, {"message": "OTP expired"}
