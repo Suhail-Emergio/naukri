@@ -132,7 +132,7 @@ async def update_languages_data(request, data: PatchDict[LanguageData]):
         personal = await Personal.objects.aget(user=request.auth)
         language = await sync_to_async(lambda: personal.languages)()
         if language:
-            language[language_id] = dict(data.items())
+            language[data.get("id")] = dict(data.items())
             personal.languages = language
             await personal.asave()
             return 201, {"message": "Language updated successfully"}
