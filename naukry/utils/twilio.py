@@ -18,7 +18,7 @@ def send_otp(otp, number):
 
 def send_updates(body, number):
     client = Client(settings.TWILIO_ACCOUNT_SID, settings.TWILIO_AUTH_TOKEN)
-    content_variables = {"1": body.strip()}
+    content_variables = {"1": str(body).strip()}
     message = client.messages.create(
         content_sid="HX745a5f3373407b031007738f57b6ceb6",
         from_='whatsapp:+917594088814',
