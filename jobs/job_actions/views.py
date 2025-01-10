@@ -14,13 +14,15 @@ User = get_user_model()
 job_actions_api = Router(tags=['job-actions'])
 
 #################################  A P P L Y  J O B S  #################################
-@job_actions_api.post("/apply", response={201: Message, 404: Message, 409: Message}, description="Apply for a job post")
+@job_actions_api.post("/apply", response={201: Message, 404: Message, 405 Message, 409: Message}, description="Apply for a job post")
 async def apply_jobs(request, data: ApplyJobsCreation):
     data_dict = data.dict()
     if await JobPosts.objects.filter(id=data_dict['job_id']).aexists():
         job = await JobPosts.objects.aget(id=data_dict['job_id'])
         custom_qns = data_dict['custom_qns'] if data_dict['custom_qns'] else None
         invited = False
+        if await ApplyJobs.objects.filter(user=request.auth, job=job).aexists():
+            return 405, {"message": "Already applied"}
         if await InviteCandidate.objects.filter(candidate__user=request.auth, job=job).aexists():
             invited = True
             invite = await InviteCandidate.objects.aget(candidate__user=request.auth, job=job)
