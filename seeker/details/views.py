@@ -127,18 +127,15 @@ async def languages_data(request):
     return 404, {"message": "Personal data not found"}
 
 @details_api.patch("/update_language", response={201: Message, 404: Message, 403: Message, 409: Message}, description="User language data update")
-async def update_languages_data(request, data: PatchDict[LanguageData], language_id:int):
+async def update_languages_data(request, data: PatchDict[LanguageData]):
     if await Personal.objects.filter(user=request.auth).aexists():
         personal = await Personal.objects.aget(user=request.auth)
         language = await sync_to_async(lambda: personal.languages)()
         if language:
-            if "id" not in data:
-                language[language_id] = dict(data.items())
-                language[language_id]['id'] = language_id
-                personal.languages = language
-                await personal.asave()
-                return 201, {"message": "Language updated successfully"}
-            return 403, {"message": "Id should not be passed in body"}
+            language[language_id] = dict(data.items())
+            personal.languages = language
+            await personal.asave()
+            return 201, {"message": "Language updated successfully"}
         return 409, {"message": "No language data found"}
     return 404, {"message": "Personal data not found"}
 
