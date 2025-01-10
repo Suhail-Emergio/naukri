@@ -24,6 +24,7 @@ class PersonalCreation(Schema):
     dob: date
 
 class PersonalData(Schema):
+    id: int
     intro : str
     city : str
     state : str
