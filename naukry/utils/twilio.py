@@ -20,7 +20,7 @@ def send_updates(body, number):
     client = Client(settings.TWILIO_ACCOUNT_SID, settings.TWILIO_AUTH_TOKEN)
     message = client.messages.create(
         content_sid="HX745a5f3373407b031007738f57b6ceb6",
-        content_variables=json.dumps({"1":body}),
+        content_variables=json.dumps({"1": str(body)}),
         from_='whatsapp:+917594088814',
         to=f'whatsapp:+91{number}',
     )
