@@ -90,7 +90,7 @@ async def mobile_otp_verify(request, data: MobileOtpVerify):
                 await user.asave()
             refresh = RefreshToken.for_user(user)
             if not user.subscribed and user.role == "recruiter":
-                return 203, {'access': str(refresh.access_token), 'refresh': str(refresh), 'role': user.role, "name": user.name}
+                return 203, {'message': "Subscribe to continue"}
             return 200, {'access': str(refresh.access_token), 'refresh': str(refresh), 'role': user.role, "name": user.name}
         return 403, {"message": "Invalid OTP"}
     return 401, {"message": "OTP expired"}
@@ -99,17 +99,14 @@ async def mobile_otp_verify(request, data: MobileOtpVerify):
 async def retry_otp(request, data: ForgotPassword):
     if await User.objects.filter(phone=data.phone).aexists():
         user = await User.objects.aget(phone=data.phone)
-        verified = await sync_to_async(lambda: user.phone_verified)()
-        if not verified:
-            otp = random.randint(1111,9999)
-            key = f'otp_{data.phone}'
-            cache_value = await sync_to_async(cache.get)(key)
-            if cache_value:
-                await sync_to_async(cache.delete)(key)
-            await sync_to_async(cache.set)(key, f"{otp:04d}", timeout=60)
-            await whatsapp_message(otp, data.phone)
-            return 201, {"message": "Otp send successfully"}
-        return 403, {"message": "Mobile already verified"}
+        otp = random.randint(1111,9999)
+        key = f'otp_{data.phone}'
+        cache_value = await sync_to_async(cache.get)(key)
+        if cache_value:
+            await sync_to_async(cache.delete)(key)
+        await sync_to_async(cache.set)(key, f"{otp:04d}", timeout=60)
+        await whatsapp_message(otp, data.phone)
+        return 201, {"message": "Otp send successfully"}
     return 401, {"message": "User not registered"}
 
 @user_api.post("/send_email_otp", response={200: Message}, description="Send OTP to email")
