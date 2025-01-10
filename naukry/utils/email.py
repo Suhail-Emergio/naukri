@@ -145,15 +145,15 @@ async def send_interview_schedule(email, from_email, subject, body):
         subject=subject,
         body=body,
         from_email=from_email,
-        to=[email_to],
+        to=[email],
         reply_to=[sender_email] if sender_email else None
     )
     await sync_to_async(msg.send)()
-    return {"status": True,"message" :"Email sended successfully"}
+    print("Email on scheduling interview sended successfully")
 
 
 async def send_updates(email, subject, text_content, html_content):
     msg = EmailMultiAlternatives(subject, text_content, settings.EMAIL_HOST_USER, [email])
     msg.attach_alternative(html_content, "text/html")
     await sync_to_async(msg.send)()
-    return {"status": True,"message" :"Email sended successfully"}
+    print("Email sended successfully")
