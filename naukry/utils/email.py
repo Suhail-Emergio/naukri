@@ -152,12 +152,7 @@ async def send_interview_schedule(email, from_email, subject, body):
     return {"status": True,"message" :"Email sended successfully"}
 
 
-async def send_updates(email, name, password):
-    username = email
-    temporary_password = password
-    project_name = settings.PROJECT_NAME
-    subject = f"Verify Your {project_name} Account Email"
-
+async def send_updates(email, subject, text_content, html_content):
     msg = EmailMultiAlternatives(subject, text_content, settings.EMAIL_HOST_USER, [email])
     msg.attach_alternative(html_content, "text/html")
     await sync_to_async(msg.send)()
