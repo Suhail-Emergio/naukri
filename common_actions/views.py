@@ -21,7 +21,7 @@ async def suggestions(request, data: SuggestionCreation):
     return 201, {"message" : "Suggestion created successfuly"}
 
 #################################  P L A N S  #################################
-@common_api.post("/all_plans", response={200: List[PlanData], 404: Message, 409:Message}, description="All plans")
+@common_api.get("/all_plans", response={200: List[PlanData], 404: Message, 409:Message}, description="All plans")
 async def all_plans(request):
     user = request.auth
     plans = [i async for i in Plans.objects.filter(audience=user.role)]
