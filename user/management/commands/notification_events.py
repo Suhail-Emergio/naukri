@@ -12,6 +12,7 @@ from django.db.models import Q
 from common_actions.models import Notification
 from django.utils.timezone import now
 from seeker.details.models import SearchApps
+from seeker.details.models import NotificationPrefernce as Np
 
 User = get_user_model()
 
@@ -23,10 +24,11 @@ class Command(BaseCommand):
         self.post_completion(today)
         self.saved_jobs(today)
         self.feedback_request(today)
+        self.search_apps_creation()
         # self.inactive_users()
         # self.recommendations()
 
-    def search_apps_creation(self, today):
+    def search_apps_creation(self):
         for i in User.objects.filter(role="seeker"):
             SearchApps.objects.create(user=i)
 

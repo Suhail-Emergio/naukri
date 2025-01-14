@@ -113,7 +113,7 @@ async def invite_candidates(request, data: InviteCandidateSchema):
             job = await JobPosts.objects.aget(id=data.job_id)
             personal_user = await sync_to_async(lambda: personal.user)()
             candidate = await sync_to_async(lambda: personal.user)()
-            if await InviteCandidate.objects.filter(user=user, application__user=candidate, application__job=job).aexists():
+            if await InviteCandidate.objects.filter(user=user, candidate=candidate, job=job).aexists():
                 return 409, {"message": "Candidate already invited"}
             application = await ApplyJobs.objects.aget(user=personal_user, job=job)
             await InviteCandidate.objects.acreate(user=user, job=job, candidate=candidate)
