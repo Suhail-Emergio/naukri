@@ -57,3 +57,8 @@ class Preference(models.Model):
     job_role = models.JSONField()
     pref_salary = models.IntegerField()
     job_location = models.JSONField()
+
+class SearchApps(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    date = models.DateField(auto_now=True)
+    count = models.IntegerField(default=0)

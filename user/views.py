@@ -58,9 +58,9 @@ async def mobile_login(request, data: LoginSchema):
 async def email_login(request, data: LoginSchema):
     if await User.objects.filter(email=data.username).aexists():
         user = await User.objects.aget(email=data.username)
-        if user.role == "recruiter" and user.subscribed == False:
-            return 403, {"message": "Please subscribe to a plan"}
         if user.phone_verified:
+            if user.role == "recruiter" and user.subscribed == False:
+                return 403, {"message": "Please subscribe to a plan"}
             refresh = RefreshToken.for_user(user)
             if data.password:
                 if user.email_verified:
@@ -140,7 +140,7 @@ async def email_verify(request, data: EmailOtpVerify):
 def refresh_token(request, token_data: TokenRefreshSchema):
     try:
         refresh = RefreshToken(token_data.refresh)
-        return 200, {'access': str(refresh.access_token),'refresh': str(refresh)}
+        return 200, {'access': str(refresh.access_token),'refresh': str(refresh), 'role': "", "name": ""}
     except Exception:
         return 401, {"message": "Invalid refresh token"}
 

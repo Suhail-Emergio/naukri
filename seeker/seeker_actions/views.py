@@ -4,13 +4,16 @@ from typing import *
 from user.schema import *
 from django.db.models import Q
 from .schema import *
+from datetime import datetime, timedelta
+from django.utils import timezone
 from .models import BlockedCompanies
 from asgiref.sync import sync_to_async
-from recruiter.recruiter_actions.models import InviteCandidate
+from recruiter.recruiter_actions.models import InviteCandidate, SaveCandidate
 from recruiter.company.models import CompanyDetails
 from recruiter.company.schema import CompanyData
 from recruiter.recruiter_actions.models import InterviewSchedule
 from recruiter.recruiter_actions.schema import ScheduledInterviews
+from recruiter.company.models import CompanyDetails
 
 User = get_user_model()
 seeker_actions_api = Router(tags=['seeker_actions'])
@@ -72,3 +75,39 @@ async def interviews_scheduled(request):
     user = request.auth
     interviews = [i async for i in InterviewSchedule.objects.filter(application__user=user).order_by('-id')]
     return 200, interviews
+
+#################################  R E C R U I T E R  A C T I O N S  #################################
+@seeker_actions_api.get("/recruiter_action", description="Count, & Info on recruiter actions")
+def recruiter_action(request):
+    user = request.auth
+    today = timezone.now()
+    ninety_days_ago = today - timedelta(days=90)
+    recruiter_actions = []
+
+    ## Count, & Info for bookmarking user profile by recruiter
+    saved_candidates = []
+    for i in SaveCandidate.objects.filter(created_on__gte=ninety_days_ago, candidate__user=user):
+        saved_candidates.append({"company": CompanyDetails.objects.get(user=i.user), "created_on": i.created_on})
+
+    ## Count, & Info for nvites send to user by recruiter
+    invited_data = []
+    for i in InviteCandidate.objects.filter(created_on__gte=ninety_days_ago, candidate__user=user):
+        invited_data.append({"company": i.job.company, "job": i.job, "created_on": i.created_on})
+
+    count_invited = InviteCandidate.objects.filter(created_on__gte=ninety_days_ago, candidate__user=user).count()
+    count_saved = SaveCandidate.objects.filter(created_on__gte=ninety_days_ago, candidate__user=user).count()
+    recruiter_actions.append(
+        {
+            "saved": saved_candidates,
+            "invitations": invited_data,
+            "count_total": count_invited + count_saved,
+            "count_invited": count_invited,
+            "count_saved": count_saved,
+        }
+    )
+    return recruiter_actions
+
+@seeker_actions_api.get("/seach_apps", description="Invite candidates for job")
+async def seach_apps(request):
+    user = request.auth
+    

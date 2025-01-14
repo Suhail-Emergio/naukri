@@ -11,6 +11,7 @@ from seeker.details.models import Personal, Preference
 from django.db.models import Q
 from common_actions.models import Notification
 from django.utils.timezone import now
+from seeker.details.models import SearchApps
 
 User = get_user_model()
 
@@ -24,6 +25,10 @@ class Command(BaseCommand):
         self.feedback_request(today)
         # self.inactive_users()
         # self.recommendations()
+
+    def search_apps_creation(self, today):
+        for i in User.objects.filter(role="seeker"):
+            SearchApps.objects.create(user=i)
 
     def post_completion(self, today):
         noti_day = today.weekday() in (6)
@@ -78,7 +83,6 @@ class Command(BaseCommand):
     #                     Q(type__in=preferences.employment_type) |
     #                     Q(title__icontains=preferences.job_role)
     #                 )[:10]
-
 
     def send_noti(self, onesignal_id, whatsapp_updations, phone, subject, title):
         if onesignal_id:
