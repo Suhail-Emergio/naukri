@@ -123,4 +123,4 @@ class NotificationPreferencePatch(Schema):
     applications: Literal["daily", "ban"]
     promotions: Literal["daily", "ban"]
 
-NotifactionPreferenceData = create_schema(NotificationPrefernce)
+NotifactionPreferenceData = create_schema(NotificationPreference)
