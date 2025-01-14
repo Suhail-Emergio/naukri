@@ -20,7 +20,7 @@ async def all_seekers(request):
     candidates = []
     for i in candidate:
         candidate_user = await sync_to_async(lambda: i.user)()
-        search_apps = await SearchApps.objects.filter(user=candidate_user).latest()
+        search_apps = await SearchApps.objects.filter(user=candidate_user).alatest('date')
         search_apps.count += 1
         await search_apps.asave()
         employment = None
@@ -62,7 +62,7 @@ async def resdex(request,
         candidate = [i async for i in Personal.objects.filter(queries).exclude(user__is_active=False).order_by('-user__subscribed', '-id')]
         for i in candidate:
             user = await sync_to_async(lambda: i.user)()
-            search_apps = await SearchApps.objects.filter(user=user).latest()
+            search_apps = await SearchApps.objects.filter(user=user).alatest('date')
             search_apps.count += 1
             await search_apps.asave()
             employment = None

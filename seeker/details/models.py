@@ -63,7 +63,7 @@ class SearchApps(models.Model):
     date = models.DateField(auto_now=True)
     count = models.IntegerField(default=0)
 
-class NotificationPrefernce(models.Model):
+class NotificationPreference(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     recommendations = models.CharField(max_length=50, choices=[('daily','daily'), ('weekly','weekly'), ('ban','ban')], default="daily")
     alerts = models.CharField(max_length=50, choices=[('daily','daily'), ('weekly','weekly'), ('ban','ban')], default="daily")

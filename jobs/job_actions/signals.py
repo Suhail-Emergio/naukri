@@ -5,6 +5,7 @@ from django.utils import timezone
 from naukry.utils.email import send_interview_schedule
 from naukry.utils.twilio import send_updates
 from naukry.utils.notification import send_notifications
+from seeker.details.models import NotificationPreference
 
 @receiver(post_save, sender=ApplyJobs)
 def log_model_save(sender, instance, created, **kwargs):
@@ -22,11 +23,12 @@ def log_model_save(sender, instance, created, **kwargs):
                 title = "Your Application Status Has Changed"
                 onesignal_id = instance.user.onesignal_id
                 phone = instance.user.phone
-    if onesignal_id:
-        send_notifications(
-            subject=subject,
-            title=title,
-            onesignal_id=onesignal_id
-        )
-    send_updates(subject, phone)
+    if NotificationPreference.objects.get(user=instance.job.company.user).applications == "daily":
+        if onesignal_id  and NotificationPreference.objects.get(user=instance.application.user).mobile_notifications:
+            send_notifications(
+                subject=subject,
+                title=title,
+                onesignal_id=onesignal_id
+            )
+        send_updates(subject, phone)
     return

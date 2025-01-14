@@ -12,7 +12,7 @@ from django.db.models import Q
 from common_actions.models import Notification
 from django.utils.timezone import now
 from seeker.details.models import SearchApps
-from seeker.details.models import NotificationPrefernce as Np
+from seeker.details.models import NotificationPreference as Np
 
 User = get_user_model()
 
@@ -21,10 +21,13 @@ class Command(BaseCommand):
 
     def handle(self, *args, **options):
         today = timezone.now().date()
-        self.post_completion(today)
-        self.saved_jobs(today)
-        self.feedback_request(today)
         self.search_apps_creation()
+        for j in NotificationPreference.objects.all():
+            noti_day = today.weekday() == 6 if j.alerts == "weekly" else True if j.alerts == "daily" else None
+            if noti_day:
+                self.post_completion(j.user)
+                self.saved_jobs(today, j.user)
+                self.feedback_request(today, j.user)
         # self.inactive_users()
         # self.recommendations()
 
@@ -32,43 +35,36 @@ class Command(BaseCommand):
         for i in User.objects.filter(role="seeker"):
             SearchApps.objects.create(user=i)
 
-    def post_completion(self, today):
-        noti_day = today.weekday() in (6)
-        if noti_day:
-            for i in User.objects.filter(role="seeker"):
-                profile_completion_percentage, empty_models, models_with_empty_fields = await sync_to_async(completion_data(i))
-                if profile_completion_percentage < 100:
-                    self.send_noti(onesignal_id=i.onesignal_id, whatsapp_updations=i.whatsapp_updations, phone=i.phone, subject="Complete your profile for better visibility to recruiters.", title="Profile completion")
-                    notification = Notification.objects.create(
-                        title="Profile completion",
-                        description="Complete your profile for better visibility to recruiters.",
-                        created_on=now()
-                    )
-                    notification.user.add(i)
+    def post_completion(self, user):
+        profile_completion_percentage, empty_models, models_with_empty_fields = await sync_to_async(completion_data(user))
+        if profile_completion_percentage < 100:
+            self.send_noti(onesignal_id=user.onesignal_id, whatsapp_updations=user.whatsapp_updations, phone=user.phone, subject="Complete your profile for better visibility to recruiters.", title="Profile completion")
+            notification = Notification.objects.create(
+                title="Profile completion",
+                description="Complete your profile for better visibility to recruiters.",
+                created_on=now()
+            )
+            notification.user.add(i)
 
-    def saved_jobs(self, today):
-        noti_day = today.weekday() in (3)
-        if noti_day:
-            for i in SaveJobs.objects.filter(job__expire_on__lt=today):
-                self.send_noti(onesignal_id=i.user.onesignal_id, whatsapp_updations=i.user.whatsapp_updations, phone=i.user.phone, subject="Your saved jobs gonna expire soon. Take action before late.", title="Saved jobs updations")
-                notification = Notification.objects.create(
-                    title="Saved jobs updations",
-                    description="Your saved jobs gonna expire soon. Take action before late.",
-                    created_on=now()
-                )
-                notification.user.add(i.user)
+    def saved_jobs(self, today, user):
+        if SaveJobs.objects.filter(job__expire_on__lt=today, user=user):
+            self.send_noti(onesignal_id=user.onesignal_id, whatsapp_updations=user.whatsapp_updations, phone=user.phone, subject="Your saved jobs gonna expire soon. Take action before late.", title="Saved jobs updations")
+            notification = Notification.objects.create(
+                title="Saved jobs updations",
+                description="Your saved jobs gonna expire soon. Take action before late.",
+                created_on=now()
+            )
+            notification.user.add(user)
 
-    def feedback_request(self, today):
-        month_start = today.replace(day=1)
-        for i in User.objects.all():
-            if not Suggestions.objects.filter(user=i).exists():
-                self.send_noti(onesignal_id=i.user.onesignal_id, whatsapp_updations=i.user.whatsapp_updations, phone=i.user.phone, subject="Give us your feedback & suggestions", title="Feedback & Suggestions")
-                notification = Notification.objects.create(
-                    title="Feedback & Suggestions",
-                    description="Give us your feedback & suggestions",
-                    created_on=now()
-                )
-                notification.user.add(i)
+    def feedback_request(self, today, user):
+        if not Suggestions.objects.filter(user=user).exists():
+            self.send_noti(onesignal_id=user.onesignal_id, whatsapp_updations=user.whatsapp_updations, phone=user.phone, subject="Give us your feedback & suggestions", title="Feedback & Suggestions")
+            notification = Notification.objects.create(
+                title="Feedback & Suggestions",
+                description="Give us your feedback & suggestions",
+                created_on=now()
+            )
+            notification.user.add(user)
 
     # def inactive_users(self, today):
     #     pass
