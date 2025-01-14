@@ -62,3 +62,12 @@ class SearchApps(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     date = models.DateField(auto_now=True)
     count = models.IntegerField(default=0)
+
+class NotificationPrefernce(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    recommendations = models.CharField(max_length=50, choices=[('daily','daily'), ('weekly','weekly'), ('ban','ban')], default="daily")
+    alerts = models.CharField(max_length=50, choices=[('daily','daily'), ('weekly','weekly'), ('ban','ban')], default="daily")
+    mobile_notifications = models.BooleanField(default=True)
+    messages_recruiter = models.CharField(max_length=50, choices=[('immediately','immediately'), ('ban','ban')], default="immediately")
+    applications = models.CharField(max_length=50, choices=[('daily','daily'), ('ban','ban')], default="daily")
+    promotions = models.CharField(max_length=50, choices=[('daily','daily'), ('ban','ban')], default="daily")

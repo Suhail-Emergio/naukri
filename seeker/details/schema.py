@@ -113,3 +113,14 @@ class CountData(Schema):
     applied_jobs_count: int
     jobs_viewed_count: int
     interview_scheduled_count: int
+
+# Notification Preference Schema
+class NotificationPreferencePatch(Schema):
+    recommendations: Literal["daily", "weekly", "ban"]
+    alerts: Literal["daily", "weekly", "ban"]
+    mobile_notifications: bool
+    messages_recruiter: Literal["immediately", "ban"]
+    applications: Literal["daily", "ban"]
+    promotions: Literal["daily", "ban"]
+
+NotifactionPreferenceData = create_schema(NotificationPrefernce)
