@@ -17,7 +17,7 @@ SECRET_KEY = config('SECRET_KEY')
 DEBUG = config('DEBUG')
 
 ALLOWED_HOSTS = config('DJANGO_ALLOWED_HOSTS', default='').split(',')
-CSRF_TRUSTED_ORIGINS = config('DJANGO_CSRF_TRUSTED_ORIGINS', default='').split(',')
+# CSRF_TRUSTED_ORIGINS = config('DJANGO_CSRF_TRUSTED_ORIGINS', default='').split(',')
 CSRF_ALLOWED_ORIGINS = config('DJANGO_CSRF_ALLOWED_ORIGINS', default='').split(',')
 CORS_ORIGINS_WHITELIST = config('DJANGO_CORS_ORIGINS_WHITELIST', default='').split(',')
 
@@ -87,15 +87,7 @@ NINJA_JWT = {
     'AUTH_HEADER_TYPES': ('Bearer',),
 }
 
-NINJA_PAGINATION_CLASS = "ninja.pagination.PageNumberPagination"
-NINJA_PAGINATION_PER_PAGE = 100
-NINJA_PAGINATION_MAX_LIMIT = 1000
-NINJA_NUM_PROXIES = None
-NINJA_DEFAULT_THROTTLE_RATES = {
-    "user": "100/hour",
-    "anon": "50/hour",
-}
-
+ASGI_APPLICATION = 'naukry.asgi.application'
 WSGI_APPLICATION = 'naukry.wsgi.application'
 
 CACHES = {
