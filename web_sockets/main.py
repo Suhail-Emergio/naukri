@@ -74,29 +74,3 @@ async def websocket_endpoint(websocket: WebSocket):
     except WebSocketDisconnect:
         if 'user_id' in locals():
             manager.disconnect(websocket, user.id)
-
-@router.post("/update_counts")
-async def update_counts(
-    counts: NotificationCount,
-    # auth: HTTPAuthorizationCredentials = Depends(security)
-):
-    token = websocket.headers.get("Authorization")
-    if not token:
-        print("No token in headers")
-        await websocket.close(code=4001, reason="No token provided in headers")
-        return
-    token = token.replace("Bearer ", "").strip()
-    user = await authenticate_user(token)
-    if not user:
-        print("No user found")
-        await websocket.close(code=4002, reason="Invalid user ID")
-        return
-    message = WSMessage(
-        type="counts_update",
-        data={
-            "notification_count": counts.notification_count,
-            "invitation_count": counts.invitation_count
-        }
-    )
-    await manager.broadcast_to_user(message.dict(), user.id)
-    print("Working...")
