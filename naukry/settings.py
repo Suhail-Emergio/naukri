@@ -21,6 +21,7 @@ CSRF_TRUSTED_ORIGINS = config('DJANGO_CSRF_TRUSTED_ORIGINS', default='').split('
 CSRF_ALLOWED_ORIGINS = config('DJANGO_CSRF_ALLOWED_ORIGINS', default='').split(',')
 CORS_ORIGINS_WHITELIST = config('DJANGO_CORS_ORIGINS_WHITELIST', default='').split(',')
 
+WEBSOCKET_URL = config('DJANGO_ALLOWED_HOSTS')
 PROJECT_NAME = config('PROJECT_NAME')
 TWILIO_ACCOUNT_SID = config('TWILIO_ACCOUNT_SID')
 TWILIO_AUTH_TOKEN = config('TWILIO_AUTH_TOKEN')
@@ -59,7 +60,6 @@ CORS_ALLOW_ALL_ORIGINS = True
 CORS_ALLOW_CREDENTIALS = True 
 CORS_ALLOW_METHODS = ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS']
 CORS_ALLOW_HEADERS = ['accept', 'accept-encoding', 'authorization', 'content-type', 'origin', 'user-agent']
-
 ROOT_URLCONF = 'naukry.urls'
 AUTH_USER_MODEL = 'user.UserProfile'
 
@@ -85,6 +85,15 @@ NINJA_JWT = {
     'USER_ID_FIELD': 'id',
     'USER_ID_CLAIM': 'user_id', 
     'AUTH_HEADER_TYPES': ('Bearer',),
+}
+
+NINJA_PAGINATION_CLASS = "ninja.pagination.PageNumberPagination"
+NINJA_PAGINATION_PER_PAGE = 100
+NINJA_PAGINATION_MAX_LIMIT = 1000
+NINJA_NUM_PROXIES = None
+NINJA_DEFAULT_THROTTLE_RATES = {
+    "user": "100/hour",
+    "anon": "50/hour",
 }
 
 WSGI_APPLICATION = 'naukry.wsgi.application'

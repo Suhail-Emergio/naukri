@@ -278,7 +278,7 @@ async def counts(request):
 
 #################################   N O T I F I C A T  I O N  P R E F E R E N C E  #################################
 @details_api.patch("/update_notification_preference", response={201: Message, 404: Message, 409: Message}, description="User preference data update")
-async def update_preference_data(request, data: PatchDict[NotificationPreferencePatch]):
+async def update_notification_preference(request, data: PatchDict[NotificationPreferencePatch]):
     if await Preference.objects.filter(user=request.auth).aexists():
         preference = await NotificationPreference.objects.aget(user=request.auth)
         for attr, value in data.items():
@@ -288,7 +288,7 @@ async def update_preference_data(request, data: PatchDict[NotificationPreference
     return 404, {"message": "Preference data not found"}
 
 @details_api.get("/notification_preference", response={200: NotifactionPreferenceData, 404: Message, 409: Message}, description="User preference data")
-async def preference_data(request):
+async def notification_preference(request):
     if await NotificationPreference.objects.filter(user=request.auth).aexists():
         preference = await NotificationPreference.objects.aget(user=request.auth)
         return 200, preference

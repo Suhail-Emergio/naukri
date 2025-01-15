@@ -93,7 +93,7 @@ async def mark_notifications_read(notifications, user):
             await update_notification(notification, user)
 
 @common_api.delete("/delete_notification", response={200: Message, 404: Message, 409:Message}, description="Delete notfications")
-async def notifications(request, id: int):
+async def delete_notification(request, id: int):
     if await Notification.objects.filter(id=id).aexists():
         noti = await Notification.objects.aget(id=id)
         await noti.user.aremove(request.auth)
