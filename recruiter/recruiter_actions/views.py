@@ -163,7 +163,7 @@ async def interviews_scheduled(request, job_id: int = None):
         if await Qualification.objects.filter(user=candidate).aexists():
             qualification = [i async for i in Qualification.objects.filter(user=candidate).order_by('-id')]
         scheduled.append({"candidate": {"personal": personal, "employment": employment, "qualification": qualification}, "schedule": i.schedule, "created_on": i.created_on})
-    return 200, interviews
+    return 200, scheduled
 
 @recruiter_actions_api.post("/schedule_interview", response={200: List[ScheduledInterviews], 404: Message, 409: Message}, description="Invite candidates for job")
 async def schedule_interview(request, data: InterviewScheduleSchema):
