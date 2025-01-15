@@ -32,6 +32,7 @@ class JobInvitations(Schema):
 EmailTemplates = create_schema(EmailTemplate)
 
 class TemplateCreation(Schema):
+    name: str
     subject : str
     body : str
     job_id : int
