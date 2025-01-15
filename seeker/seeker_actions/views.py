@@ -16,16 +16,17 @@ from recruiter.company.schema import CompanyData
 from recruiter.recruiter_actions.models import InterviewSchedule
 from recruiter.recruiter_actions.schema import ScheduledInterviews
 from seeker.details.models import SearchApps
+from jobs.jobposts.schema import JobData
 
 User = get_user_model()
 seeker_actions_api = Router(tags=['seeker_actions'])
 
 #################################  J O B  I N V I T A T I O N S  #################################
-@seeker_actions_api.get("/job_invitations", response={200: List[JobInvitations], 409: Message}, description="Retrieve all invitations for a user") 
+@seeker_actions_api.get("/job_invitations", response={200: List[JobData], 409: Message}, description="Retrieve all invitations for a user") 
 async def job_invitations(request):
     user = request.auth
-    invites = [i async for i in InviteCandidate.objects.filter(candidate__user=user).order_by('-id')]
-    return 200, invites
+    invites = [i.job async for i in InviteCandidate.objects.filter(candidate__user=user).order_by('-id')]
+    return 200, {"job": invites}
 
 @seeker_actions_api.patch("/read_invitations", response={200: Message, 409: Message}, description="Mark an invitation as read") 
 async def read_invitations(request, id:int):
