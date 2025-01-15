@@ -181,7 +181,7 @@ async def delete_user(request):
     return 200, {"message": "Account Deleted Successfully"}
 
 #################################  F O R G O T  P A S S W O R D  #################################
-@user_api.post("/forgot_password", response={200: Message, 401: Message}, description="Send otp to user mobile to change password")
+@user_api.post("/forgot_password", auth=None, response={200: Message, 401: Message}, description="Send otp to user mobile to change password")
 async def forgot_pwd(request, data: ForgotPassword):
     if await User.objects.filter(phone=data.phone).aexists():
         user = await User.objects.aget(phone=data.phone)
@@ -195,7 +195,7 @@ async def forgot_pwd(request, data: ForgotPassword):
         return 200, {"message": "OTP sent to mobile"}
     return 401, {"message": "User not found"}
 
-@user_api.post("/change_password", response={200: Message, 400: Message, 401: Message, 403: Message}, description="Change password using OTP")
+@user_api.post("/change_password", auth=None, response={200: Message, 400: Message, 401: Message, 403: Message}, description="Change password using OTP")
 async def change_pwd(request, data: ResetPassword):
     key = f'change_pwd_{data.phone}'
     cache_value = await sync_to_async(cache.get)(key)
