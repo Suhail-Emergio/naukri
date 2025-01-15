@@ -48,13 +48,18 @@ async def applied_jobs(request):
 
 #################################  A P P L I C A T I O N S  #################################
 @job_actions_api.get("/job_applications", response={200: List[ApplyJobsData], 409: Message}, description="Retrieve all job applications for a company for a job post")
-async def job_applications(request, job_id: int):
-    if await JobPosts.objects.filter(id=job_id).aexists():
-        jobs = [i async for i in ApplyJobs.objects.filter(job__id=job_id).order_by('-created_on')]
-        return 200, jobs
-    return 404, {"message": "Job not found"}
+async def job_applications(request, job_id: Optional[int] = None):
+    if job_id:
+        if await JobPosts.objects.filter(id=job_id).aexists():
+            jobs = [i async for i in ApplyJobs.objects.filter(job__id=job_id).order_by('-created_on')]
+        else:
+            return 404, {"message": "Job not found"}
+    else:
+        user = request.auth
+        jobs = [i async for i in ApplyJobs.objects.filter(job__company__user=user).order_by('-created_on')]
+    return 200, jobs
 
-@job_actions_api.get("/view_job_applications", response={200: Message, 409: Message}, description="Update view on job application after recruiter views an application")
+@job_actions_api.patch("/view_job_applications", response={200: Message, 409: Message}, description="Update view on job application after recruiter views an application")
 async def view_job_applications(request, applied_id: int):
     if await ApplyJobs.objects.filter(id=applied_id).aexists():
         applied = await ApplyJobs.objects.aget(job__id=applied_id)
