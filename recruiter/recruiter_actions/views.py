@@ -151,7 +151,7 @@ async def delete_invitation(request, id: int):
 @recruiter_actions_api.get("/interviews_scheduled", response={200: List[ScheduledInterviews], 404: Message, 409: Message}, description="Invite candidates for job")
 async def interviews_scheduled(request, job_id: int = None):
     user = request.auth
-    interviews = [i async for i in InterviewSchedule.objects.filter(user=user, job__id=job_id).order_by('-id')] if job_id else [i async for i in InterviewSchedule.objects.filter(user=user).order_by('-id')]
+    interviews = [i async for i in InterviewSchedule.objects.filter(user=user, application__job__id=job_id).order_by('-id')] if job_id else [i async for i in InterviewSchedule.objects.filter(user=user).order_by('-id')]
     scheduled = []
     for i in interviews:
         candidate = await sync_to_async(lambda: i.application.user)()
