@@ -26,7 +26,7 @@ def log_model_save(sender, instance, created, **kwargs):
 @receiver(post_save, sender=InviteCandidate)
 def log_model_save(sender, instance, created, **kwargs):
     if created:
-        if NotificationPreference.objects.get(user=instance.candidate.user.user).messages_recruiter == "immediately":
+        if NotificationPreference.objects.get(user=instance.candidate.user).messages_recruiter == "immediately":
             subject = f"A company has invited your profile for a job post. Access you acount for more information"
             title = "New Invitation"
             onesignal_id = instance.candidate.user.onesignal_id
