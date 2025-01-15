@@ -27,7 +27,8 @@ async def job_invitations(request):
     user = request.auth
     jobs = []
     async for i in InviteCandidate.objects.filter(candidate__user=user).order_by('-id'):
-        jobs.append(i.job)
+        job = await sync_to_async(lambda: i.job)()
+        jobs.append(job)
     return 200, jobs
 
 @seeker_actions_api.patch("/read_invitations", response={200: Message, 409: Message}, description="Mark an invitation as read") 
