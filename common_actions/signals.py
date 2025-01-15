@@ -9,8 +9,8 @@ import asyncio
 from ninja_jwt.tokens import RefreshToken, AccessToken
 from web_sockets.main import ConnectionManager as manager
 
-@receiver([post_save, post_delete], sender=Notification)
-@receiver([post_save, post_delete], sender=InviteCandidate)
+@receiver([post_save], sender=Notification)
+@receiver([post_save], sender=InviteCandidate)
 def update_counts(sender, instance, **kwargs):
     async def async_update():
         user = instance.user
