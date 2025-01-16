@@ -5,7 +5,7 @@ from common_actions.models import Notification
 from recruiter.recruiter_actions.models import InviteCandidate
 import httpx
 from django.conf import settings
-from asgiref.sync import sync_to_async
+from asgiref.sync import async_to_sync
 from ninja_jwt.tokens import RefreshToken, AccessToken
 from web_sockets.main import manager
 
@@ -25,4 +25,4 @@ def update_counts(sender, instance, **kwargs):
         },
     }
     print(message)
-    sync_to_async(manager.broadcast_to_user)(message=message, user_id=user.id)
+    async_to_sync(manager.broadcast_to_user)(message=message, user_id=user.id)
