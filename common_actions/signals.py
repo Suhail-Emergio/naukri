@@ -26,5 +26,6 @@ def update_counts(sender, instance, **kwargs):
                 "invitation_count": invitation_count,
             },
         }
+        print(message)
         await manager.broadcast_to_user(json.dumps(message), user.id)
     asyncio.run(async_update())
