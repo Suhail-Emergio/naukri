@@ -105,7 +105,7 @@ def recruiter_action(request):
     ## Count, & Info for bookmarking user profile by recruiter
     saved_candidates = []
     for i in SaveCandidate.objects.filter(created_on__gte=ninety_days_ago, candidate__user=user):
-        saved_candidates.append({"company": CompanyDetails.objects.get(user=i.user), "created_on": i.created_on})
+        saved_candidates.append({"company": CompanyDetails.objects.get(user=i.user).name, "created_on": i.created_on})
 
     ## Count, & Info for nvites send to user by recruiter
     invited_data = []
