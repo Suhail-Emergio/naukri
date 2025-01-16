@@ -104,12 +104,12 @@ def recruiter_action(request):
     ## Count, & Info for bookmarking user profile by recruiter
     saved_candidates = []
     for i in SaveCandidate.objects.filter(created_on__gte=ninety_days_ago, candidate__user=user):
-        saved_candidates.append({"company": CompanyDetails.objects.get(user=i.user).name, "created_on": i.created_on})
+        saved_candidates.append({"company": CompanyDetails.objects.get(user=i.user).name, "created_on": i.created_on.isoformat()})
 
     ## Count, & Info for nvites send to user by recruiter
     invited_data = []
     for i in InviteCandidate.objects.filter(created_on__gte=ninety_days_ago, candidate__user=user):
-        invited_data.append({"company": i.job.company, "job": i.job.title, "created_on": i.created_on})
+        invited_data.append({"company": i.job.company.name, "job": i.job.title, "created_on": i.created_on.isoformat()})
 
     count_invited = InviteCandidate.objects.filter(created_on__gte=ninety_days_ago, candidate__user=user).count()
     count_saved = SaveCandidate.objects.filter(created_on__gte=ninety_days_ago, candidate__user=user).count()
