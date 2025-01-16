@@ -8,6 +8,7 @@ from django.conf import settings
 import asyncio
 from ninja_jwt.tokens import RefreshToken, AccessToken
 from web_sockets.main import ConnectionManager as manager
+import json
 
 @receiver([post_save], sender=Notification)
 @receiver([post_save], sender=InviteCandidate)
