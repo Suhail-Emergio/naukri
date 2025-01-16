@@ -31,12 +31,12 @@ def log_model_save(sender, instance, created, **kwargs):
             title = "New Invitation"
             onesignal_id = instance.candidate.user.onesignal_id
             phone = instance.candidate.user.phone
+            if instance.candidate.user.whatsapp_updations:
+                send_updates(subject, phone)
             if onesignal_id and NotificationPreference.objects.get(user=instance.candidate.user).mobile_notifications:
                 send_notifications(
                     subject=subject,
                     title=title,
                     onesignal_id=onesignal_id
                 )
-            if instance.candidate.user.whatsapp_updations:
-                send_updates(subject, phone)
     return
