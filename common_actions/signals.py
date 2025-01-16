@@ -13,19 +13,17 @@ import json
 @receiver([post_save], sender=Notification)
 @receiver([post_save], sender=InviteCandidate)
 def update_counts(sender, instance, **kwargs):
+    print("WORKING!.....")
     user = instance.user
-    async def async_update():
-        print("WORKING!.....")
-        token = AccessToken.for_user(user)
-        notification_count = await Notification.objects.filter(user=user, read_by=False).acount()
-        invitation_count = await InviteCandidate.objects.filter(user=user, read=False).acount()
-        message = {
-            "type": "counts_update",
-            "data": {
-                "notification_count": notification_count,
-                "invitation_count": invitation_count,
-            },
-        }
-        print(message)
-        await manager.broadcast_to_user(json.dumps(message), user.id)
-    asyncio.run(async_update())
+    token = AccessToken.for_user(user)
+    notification_count = Notification.objects.filter(user=user, read_by=False).count()
+    invitation_count = InviteCandidate.objects.filter(user=user, read=False).count()
+    message = {
+        "type": "counts_update",
+        "data": {
+            "notification_count": notification_count,
+            "invitation_count": invitation_count,
+        },
+    }
+    print(message)
+    asyncio.create_task(manager.broadcast_to_user(json.dumps(message), user.id))
