@@ -13,7 +13,7 @@ from web_sockets.main import manager
 @receiver([post_save], sender=InviteCandidate)
 def update_counts(sender, instance, **kwargs):
     print("WORKING!.....")
-    user = instance.user
+    user = instance.candidate.user
     token = AccessToken.for_user(user)
     notification_count = Notification.objects.filter(user=user, read_by=False).count()
     invitation_count = InviteCandidate.objects.filter(user=user, read=False).count()
