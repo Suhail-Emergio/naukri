@@ -132,11 +132,11 @@ def seach_apps(request, type: str = "week"):
     appearences = 0
     if type == "week":
         start_date = today - timedelta(days=7) 
-        appearences = SearchApps.objects.filter(user=user, date__range=[start_date, today]).annotate(date=TruncDate("date")).values("date").annotate(total_count=Sum("count")).values("date", "total_count").order_by('date')
+        appearences = SearchApps.objects.filter(user=user, date__range=[start_date, today]).annotate(date=TruncDate("date")).values("value").annotate(total_count=Sum("count")).values("value", "total_count").order_by('date')
     elif type == "month":
         start_date = today - timedelta(days=30) 
         appearences = SearchApps.objects.filter(user=user, date__range=[start_date, today]).annotate(day_of_month=ExtractDay('date'), date_range=Case(When(day_of_month__lte=10, then=1), When(day_of_month__lte=20, then=2), When(day_of_month__lte=31, then=3), output_field=IntegerField(),)).values('date_range').annotate(total_count=Sum('count')).order_by('date_range')
     else:
         start_date = today - timedelta(days=90)
-        appearences = SearchApps.objects.filter(user=user, date__range=[start_date, today]).annotate(month=ExtractMonth("date")).values("date").annotate(total_count=Sum("count")).values("month", "total_count").order_by('date')
+        appearences = SearchApps.objects.filter(user=user, date__range=[start_date, today]).annotate(month=ExtractMonth("date")).values("month").annotate(total_count=Sum("count")).values("month", "total_count").order_by('date')
     return appearences
