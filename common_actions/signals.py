@@ -16,8 +16,8 @@ def update_counts(sender, instance, **kwargs):
     async def async_update():
         print("WORKING!.....")
         token = AccessToken.for_user(user)
-        notification_count = await Notification.objects.filter(user=user, read=False).acount()
-        invitation_count = await InviteCandidate.objects.filter(user=user, status='pending').acount()
+        notification_count = await Notification.objects.filter(user=user, read_by=False).acount()
+        invitation_count = await InviteCandidate.objects.filter(user=user, read=False).acount()
         message = {
             "type": "counts_update",
             "data": {
