@@ -17,6 +17,7 @@ from recruiter.recruiter_actions.models import InterviewSchedule
 from recruiter.recruiter_actions.schema import ScheduledInterviews
 from seeker.details.models import SearchApps
 from jobs.jobposts.schema import JobData
+from seeker.details.models import *
 
 User = get_user_model()
 seeker_actions_api = Router(tags=['seeker_actions'])
