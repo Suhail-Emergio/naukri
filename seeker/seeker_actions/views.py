@@ -130,9 +130,10 @@ def seach_apps(request, type: str = ""):
     appearences = 0
     if type == "week":
         start_date = today - timedelta(days=7) 
-        appearences = (SearchApps.objects.filter(user=user, date__range=[start_date, today])
+        appearences = (
+            SearchApps.objects.filter(user=user, date__range=[start_date, today])
             .annotate(truncated_date=TruncDate("date"))
-            .values("value", "truncated_date")
+            .values("date", "truncated_date")
             .annotate(total_count=Sum("count"))
             .order_by("truncated_date")
         )
