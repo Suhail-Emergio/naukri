@@ -100,7 +100,6 @@ def recruiter_action(request):
     user = request.auth
     today = timezone.now()
     ninety_days_ago = today - timedelta(days=90)
-    recruiter_actions = []
 
     ## Count, & Info for bookmarking user profile by recruiter
     saved_candidates = []
@@ -110,19 +109,17 @@ def recruiter_action(request):
     ## Count, & Info for nvites send to user by recruiter
     invited_data = []
     for i in InviteCandidate.objects.filter(created_on__gte=ninety_days_ago, candidate__user=user):
-        invited_data.append({"company": i.job.company, "job": i.job, "created_on": i.created_on})
+        invited_data.append({"company": i.job.company, "job": i.job.title, "created_on": i.created_on})
 
     count_invited = InviteCandidate.objects.filter(created_on__gte=ninety_days_ago, candidate__user=user).count()
     count_saved = SaveCandidate.objects.filter(created_on__gte=ninety_days_ago, candidate__user=user).count()
-    recruiter_actions.append(
-        {
-            "saved": saved_candidates,
-            "invitations": invited_data,
-            "count_total": count_invited + count_saved,
-            "count_invited": count_invited,
-            "count_saved": count_saved,
-        }
-    )
+    recruiter_actions = [{
+        "saved": saved_candidates,
+        "invitations": invited_data,
+        "count_total": count_invited + count_saved,
+        "count_invited": count_invited,
+        "count_saved": count_saved,
+    }]
     return recruiter_actions
 
 @seeker_actions_api.get("/seach_apps", description="Invite candidates for job")
