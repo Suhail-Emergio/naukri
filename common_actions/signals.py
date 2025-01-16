@@ -7,7 +7,7 @@ import httpx
 from django.conf import settings
 import asyncio
 from ninja_jwt.tokens import RefreshToken, AccessToken
-from web_sockets.main import ConnectionManager as manager
+from web_sockets.main import manager
 
 @receiver([post_save], sender=Notification)
 @receiver([post_save], sender=InviteCandidate)
