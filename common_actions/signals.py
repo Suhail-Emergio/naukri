@@ -24,5 +24,5 @@ def update_counts(sender, instance, **kwargs):
             "invitation_count": invitation_count,
         },
     }
-    print(message)
+    print(message, user.id)
     async_to_sync(manager.broadcast_to_user)(message=message, user_id=user.id)
