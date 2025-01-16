@@ -25,4 +25,11 @@ def update_counts(sender, instance, **kwargs):
         },
     }
     print(message)
+
+    try:
+        loop = asyncio.get_running_loop()
+    except RuntimeError:
+        loop = asyncio.new_event_loop()
+        asyncio.set_event_loop(loop)
+
     asyncio.create_task(manager.broadcast_to_user(message=message, user_id=user.id))
