@@ -37,7 +37,7 @@ async def banners(request):
 #################################  S U B S C R I P T I O N S  #################################
 @common_api.post("/subscribe", auth=None, response={201: Message, 404: Message, 409:Message}, description="Add subscription")
 async def subscribe(request, data: SubscriptionCreation):
-    if User.objects.filter(username=data.phone).aexists():
+    if await User.objects.filter(username=data.phone).aexists():
         user = await User.objects.aget(username=data.phone)
         role = await sync_to_async(lambda: user.role)()
         if await Plans.objects.filter(id=data.plan_id).aexists():
@@ -51,7 +51,7 @@ async def subscribe(request, data: SubscriptionCreation):
                 await subscription.asave()
                 user.subscribed = True
                 await user.asave()
-                return 201, {"message" : "Suggestion created successfuly"}
+                return 201, {"message" : "Subscription created successfuly"}
         return 404, {"message" : "Plan doesnot exists"}
     return 409, {"message" : "User doesnot exists"}
 
