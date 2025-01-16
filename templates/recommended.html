@@ -211,12 +211,10 @@
             <h1>Your Personalized Job Matches</h1>
             <p>Curated opportunities based on your profile</p>
         </div>
-
         <div class="recommendation-count">
-            We found {{ jobs|length }} jobs matching your preferences
+            We found {{ posts|length }} jobs matching your preferences
         </div>
-        
-        {% for job in jobs %}
+        {% for job in post %}
         <div class="job-card">
             {% if job.company_logo %}
             <div class="company-logo">
@@ -227,9 +225,7 @@
                 {{ job.company_name|slice:":2"|upper }}
             </div>
             {% endif %}
-            
             <div class="job-title">{{ job.title }}</div>
-            
             <div class="job-meta">
                 <div class="job-meta-item">
                     🏢 {{ job.company_name }}
@@ -244,11 +240,9 @@
                 {% endif %}
             </div>
             <div class="divider"></div>
-            
             <a href="{{ job_detail_url }}{{ job.id }}" class="cta-button">View Details</a>
         </div>
         {% endfor %}
-        
         <div class="footer">
             <p>You're receiving this email because you've subscribed to job recommendations.<br>
             Want to customize your preferences? <a href="{{ preferences_url }}">Update settings</a></p>

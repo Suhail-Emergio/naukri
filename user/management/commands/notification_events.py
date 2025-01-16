@@ -14,6 +14,9 @@ from django.utils.timezone import now
 from seeker.details.models import SearchApps
 from seeker.details.models import NotificationPreference as Np
 from django.template.loader import render_to_string
+from django.utils.html import strip_tags
+from naukry.utils.email import send_updates
+from recruiter.company.models import CompanyDetails
 
 User = get_user_model()
 
@@ -30,9 +33,9 @@ class Command(BaseCommand):
                 self.saved_jobs(today, j.user)
                 self.feedback_request(today, j.user)
         # self.inactive_users()
-            # rec_day = today.weekday() == 7 if j.recommendations == "weekly" else True if j.alerts == "daily" else None
-            # if rec_day:
-                # self.recommendations()
+            rec_day = today.weekday() == 7 if j.recommendations == "weekly" else True if j.alerts == "daily" else None
+            if rec_day:
+                self.recommendations()
 
     def search_apps_creation(self):
         for i in User.objects.filter(role="seeker"):
@@ -87,8 +90,16 @@ class Command(BaseCommand):
                 else:
                     posts = JobPosts.objects.all()[:10]
             else:
-                pass
-            
+                company = CompanyDetails.objects.get(user=i)
+                posts = Personal.objects.filter(skills__in=company.functional_area)[:10]
+            context = {
+                'posts': posts,
+                'job_detail_url': 'https://yourdomain.com/jobs/',
+                'unsubscribe_url': 'https://yourdomain.com/unsubscribe/'
+            }
+            html_message = render_to_string('job-recommendations-email.html', context)
+            plain_message = strip_tags(html_message)
+            send_updates(email=i.email, html_content=plain_message, text_content="Job Recommendations", subject="Job Recommendations")
 
     def send_noti(self, onesignal_id, whatsapp_updations, phone, subject, title):
         if onesignal_id:
