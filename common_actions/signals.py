@@ -15,7 +15,7 @@ def update_counts(sender, instance, **kwargs):
     user = instance.candidate.user
     token = AccessToken.for_user(user)
     notification_count = Notification.objects.filter(user=user, read_by=False).count()
-    invitation_count = InviteCandidate.objects.filter(candidate=user, read=False).count()
+    invitation_count = InviteCandidate.objects.filter(candidate__user=user, read=False).count()
     message = {
         "type": "counts_update",
         "data": {
