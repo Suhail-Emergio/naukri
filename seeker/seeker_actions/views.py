@@ -80,7 +80,18 @@ async def unblock_company(request, id:int):
 async def interviews_scheduled(request):
     user = request.auth
     interviews = [i async for i in InterviewSchedule.objects.filter(application__user=user).order_by('-id')]
-    return 200, interviews
+    scheduled = []
+    for i in interviews:
+        candidate = await sync_to_async(lambda: i.application.user)()
+        personal = await Personal.objects.aget(user=candidate)
+        employment = None
+        if await Employment.objects.filter(user=candidate).aexists():
+            employment = [i async for i in Employment.objects.filter(user=candidate).order_by('-id')]
+        qualification = None
+        if await Qualification.objects.filter(user=candidate).aexists():
+            qualification = [i async for i in Qualification.objects.filter(user=candidate).order_by('-id')]
+        scheduled.append({"candidate": {"personal": {"personal": personal, "user": candidate}, "employment": employment, "qualification": qualification}, "schedule": i.schedule, "created_on": i.created_on})
+    return 200, scheduled
 
 #################################  R E C R U I T E R  A C T I O N S  #################################
 @seeker_actions_api.get("/recruiter_action", description="Count, & Info on recruiter actions")
