@@ -8,7 +8,6 @@ from django.conf import settings
 import asyncio
 from ninja_jwt.tokens import RefreshToken, AccessToken
 from web_sockets.main import ConnectionManager as manager
-import json
 
 @receiver([post_save], sender=Notification)
 @receiver([post_save], sender=InviteCandidate)
@@ -26,4 +25,4 @@ def update_counts(sender, instance, **kwargs):
         },
     }
     print(message)
-    asyncio.create_task(manager.broadcast_to_user(json.dumps(message), user.id))
+    asyncio.create_task(manager.broadcast_to_user(message=message, user_id=user.id))
