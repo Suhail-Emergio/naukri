@@ -9,6 +9,7 @@ class SuggestionCreation(Schema):
     suggestions: str
 
 class SubscriptionCreation(Schema):
+    phone: str
     plan_id: int
     transaction_id: str
 
