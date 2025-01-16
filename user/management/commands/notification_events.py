@@ -97,7 +97,7 @@ class Command(BaseCommand):
                 'job_detail_url': 'https://yourdomain.com/jobs/',
                 'unsubscribe_url': 'https://yourdomain.com/unsubscribe/'
             }
-            html_message = render_to_string('job-recommendations-email.html', context)
+            html_message = render_to_string('templates\recommended.html', context)
             plain_message = strip_tags(html_message)
             send_updates(email=i.email, html_content=plain_message, text_content="Job Recommendations", subject="Job Recommendations")
 
