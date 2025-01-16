@@ -5,7 +5,7 @@ from common_actions.models import Notification
 from recruiter.recruiter_actions.models import InviteCandidate
 import httpx
 from django.conf import settings
-import asyncio
+from asgiref.sync import sync_to_async
 from ninja_jwt.tokens import RefreshToken, AccessToken
 from web_sockets.main import manager
 
@@ -25,11 +25,4 @@ def update_counts(sender, instance, **kwargs):
         },
     }
     print(message)
-
-    try:
-        loop = asyncio.get_running_loop()
-    except RuntimeError:
-        loop = asyncio.new_event_loop()
-        asyncio.set_event_loop(loop)
-
-    asyncio.create_task(manager.broadcast_to_user(message=message, user_id=user.id))
+    sync_to_async(manager.broadcast_to_user)(message=message, user_id=user.id)
