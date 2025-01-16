@@ -104,7 +104,7 @@ class CertificateData(Schema):
     title: str
     publication: str
     description: str
-    published_on: date
+    published_on: str
 
 class CountData(Schema):
     models_with_empty_fields: Union[List[str], Dict[str, Any]]
