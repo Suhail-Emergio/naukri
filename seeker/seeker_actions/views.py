@@ -123,7 +123,7 @@ def recruiter_action(request):
     return recruiter_actions
 
 @seeker_actions_api.get("/seach_apps", description="Invite candidates for job")
-def seach_apps(request, type: str = "week"):
+def seach_apps(request, type: str = ""):
     user = request.auth
     today = timezone.now()
     appearences = []
