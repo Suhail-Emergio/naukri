@@ -30,7 +30,7 @@ async def job(request, data: JobCreation):
         return 409, {"message": "Not Authorised"}
     return 401, {"message": "No subscriptions taken"}
 
-@jobs_api.patch("/edit", response={200: JobData, 404: Message, 409: Message}, description="User personal data update")
+@jobs_api.patch("/edit", response={200: JobData, 404: Message, 409: Message}, description="Job posts data update")
 async def update_jobpost(request, data: PatchDict[JobData]):
     if await JobPosts.objects.filter(id=data['id']).aexists():
         job = await JobPosts.objects.aget(id=data['id'])
@@ -38,7 +38,7 @@ async def update_jobpost(request, data: PatchDict[JobData]):
             setattr(job, attr, value)
         await job.asave()
         return 200, job
-    return 404, {"message": "Personal data not found"}
+    return 404, {"message": "Job data not found"}
 
 @jobs_api.get("/", response={200: List[JobData], 409: Message}, description="Job data passing of logged user")
 async def jobs(request):

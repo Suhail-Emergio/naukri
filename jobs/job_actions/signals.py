@@ -21,14 +21,14 @@ def log_model_save(sender, instance, created, **kwargs):
             if old_status != new_status:
                 subject=f"Updation on Your Application for the Job: {instance.job.title}"
                 title = "Your Application Status Has Changed"
-                onesignal_id = instance.user.onesignal_id
-                phone = instance.user.phone
-    if NotificationPreference.objects.get(user=instance.job.company.user).applications == "daily":
-        if onesignal_id  and NotificationPreference.objects.get(user=instance.application.user).mobile_notifications:
-            send_notifications(
-                subject=subject,
-                title=title,
-                onesignal_id=onesignal_id
-            )
-        send_updates(subject, phone)
+                onesignal_id = instance.job.company.onesignal_id
+                phone = instance.job.company.phone
+                if NotificationPreference.objects.get(user=instance.job.company.user).applications == "daily":
+                    if onesignal_id  and NotificationPreference.objects.get(user=instance.job.company.user).mobile_notifications:
+                        send_notifications(
+                            subject=subject,
+                            title=title,
+                            onesignal_id=onesignal_id
+                        )
+                    send_updates(subject, phone)
     return

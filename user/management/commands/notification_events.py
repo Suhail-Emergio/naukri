@@ -13,6 +13,7 @@ from common_actions.models import Notification
 from django.utils.timezone import now
 from seeker.details.models import SearchApps
 from seeker.details.models import NotificationPreference as Np
+from django.template.loader import render_to_string
 
 User = get_user_model()
 
@@ -22,14 +23,16 @@ class Command(BaseCommand):
     def handle(self, *args, **options):
         today = timezone.now().date()
         self.search_apps_creation()
-        for j in NotificationPreference.objects.all():
+        for j in Np.objects.all():
             noti_day = today.weekday() == 6 if j.alerts == "weekly" else True if j.alerts == "daily" else None
             if noti_day:
                 self.post_completion(j.user)
                 self.saved_jobs(today, j.user)
                 self.feedback_request(today, j.user)
         # self.inactive_users()
-        # self.recommendations()
+            # rec_day = today.weekday() == 7 if j.recommendations == "weekly" else True if j.alerts == "daily" else None
+            # if rec_day:
+                # self.recommendations()
 
     def search_apps_creation(self):
         for i in User.objects.filter(role="seeker"):
@@ -69,18 +72,23 @@ class Command(BaseCommand):
     # def inactive_users(self, today):
     #     pass
 
-    # def recommendations(self):
-    #     for i in User.objects.filter():
-    #         if Preference.objects.filter(user=i).exists():
-    #             preference = Preference.objects.get(user=i)
-    #             if i.role == "seeker":
-    #                 jobs = JobPosts.objects.filter(
-    #                     Q(type__in=preferences.job_type) |
-    #                     Q(city__in=preferences.job_location) |
-    #                     Q(type__in=preferences.employment_type) |
-    #                     Q(type__in=preferences.employment_type) |
-    #                     Q(title__icontains=preferences.job_role)
-    #                 )[:10]
+    def recommendations(self):
+        for i in User.objects.filter():
+            if i.role == "seeker":
+                if Preference.objects.filter(user=i).exists():
+                    preference = Preference.objects.get(user=i)
+                    posts = JobPosts.objects.filter(
+                        Q(type__in=preferences.job_type) |
+                        Q(city__in=preferences.job_location) |
+                        Q(type__in=preferences.employment_type) |
+                        Q(type__in=preferences.employment_type) |
+                        Q(title__icontains=preferences.job_role)
+                    )[:10]
+                else:
+                    posts = JobPosts.objects.all()[:10]
+            else:
+                pass
+            
 
     def send_noti(self, onesignal_id, whatsapp_updations, phone, subject, title):
         if onesignal_id:
