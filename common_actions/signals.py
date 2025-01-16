@@ -12,9 +12,9 @@ from web_sockets.main import ConnectionManager as manager
 @receiver([post_save], sender=Notification)
 @receiver([post_save], sender=InviteCandidate)
 def update_counts(sender, instance, **kwargs):
+    user = instance.user
     async def async_update():
-        user = instance.user
-        token = AccessToken.for_user(user)
+        token = await AccessToken.for_user(user)
         notification_count = await Notification.objects.filter(user=user, read=False).acount()
         invitation_count = await InviteCandidate.objects.filter(user=user, status='pending').acount()
         message = {
