@@ -23,20 +23,20 @@ def log_model_save(sender, instance, created, **kwargs):
             if instance.user.onesignal_id and NotificationPreference.objects.get(user=instance.application.user).mobile_notifications:
                 send_notifications(subject=subject, title="Interview Scheduled - Next Steps Await!", onesignal_id=instance.user.onesignal_id)
 
-@receiver(post_save, sender=InviteCandidate)
-def log_model_save(sender, instance, created, **kwargs):
-    if created:
-        if NotificationPreference.objects.get(user=instance.candidate.user).messages_recruiter == "immediately":
-            subject = f"A company has invited your profile for a job post. Access you acount for more information"
-            title = "New Invitation"
-            onesignal_id = instance.candidate.user.onesignal_id
-            phone = instance.candidate.user.phone
-            if instance.candidate.user.whatsapp_updations:
-                send_updates(subject, phone)
-            if onesignal_id and NotificationPreference.objects.get(user=instance.candidate.user).mobile_notifications:
-                send_notifications(
-                    subject=subject,
-                    title=title,
-                    onesignal_id=onesignal_id
-                )
-    return
+# @receiver(post_save, sender=InviteCandidate)
+# def log_model_save(sender, instance, created, **kwargs):
+#     if created:
+#         if NotificationPreference.objects.get(user=instance.candidate.user).messages_recruiter == "immediately":
+#             subject = f"A company has invited your profile for a job post. Access you acount for more information"
+#             title = "New Invitation"
+#             onesignal_id = instance.candidate.user.onesignal_id
+#             phone = instance.candidate.user.phone
+#             if instance.candidate.user.whatsapp_updations:
+#                 send_updates(subject, phone)
+#             if onesignal_id and NotificationPreference.objects.get(user=instance.candidate.user).mobile_notifications:
+#                 send_notifications(
+#                     subject=subject,
+#                     title=title,
+#                     onesignal_id=onesignal_id
+#                 )
+#     return
