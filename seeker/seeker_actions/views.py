@@ -7,7 +7,7 @@ from .schema import *
 from datetime import datetime, timedelta
 from django.utils import timezone
 from django.db.models.functions import ExtractMonth, TruncDate, ExtractDay
-from django.db.models import Case, When, IntegerField, F
+from django.db.models import Case, When, IntegerField, F, Sum
 from .models import BlockedCompanies
 from asgiref.sync import sync_to_async
 from recruiter.recruiter_actions.models import InviteCandidate, SaveCandidate
