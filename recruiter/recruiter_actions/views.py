@@ -100,7 +100,7 @@ async def saved_candidates(request):
         qualification = None
         if await Qualification.objects.filter(user=candidate_user).aexists():
             qualification = [i async for i in Qualification.objects.filter(user=candidate_user).order_by('-id')]
-        candidates.append({"personal": personal, "employment": employment, "qualification": qualification})
+        candidates.append({"personal": {"personal": personal, "user": candidate_user}, "employment": employment, "qualification": qualification})
     return 200, candidates
 
 #################################  I N V I T E  C A N D I D A T E S  #################################
