@@ -58,23 +58,21 @@ async def mobile_login(request, data: LoginSchema):
 async def email_login(request, data: LoginSchema):
     if await User.objects.filter(email=data.username).aexists():
         user = await User.objects.aget(email=data.username)
-        if user.phone_verified:
-            if user.role == "recruiter" and user.subscribed == False:
-                return 403, {"message": "Please subscribe to a plan"}
-            refresh = RefreshToken.for_user(user)
-            if data.password:
-                if user.email_verified:
-                    if check_password(data.password, user.password):
-                        return 200, {'access': str(refresh.access_token), 'refresh': str(refresh), 'role': user.role, "name": user.name}
-                return 403, {"message": "Email not verified for login"}
+        if user.role == "recruiter" and user.subscribed == False:
+            return 403, {"message": "Please subscribe to a plan"}
+        refresh = RefreshToken.for_user(user)
+        if data.password:
+            if user.email_verified:
+                if check_password(data.password, user.password):
+                    return 200, {'access': str(refresh.access_token), 'refresh': str(refresh), 'role': user.role, "name": user.name}
+            return 403, {"message": "Email not verified for login"}
 
-            ## SOCIAL LOGIN
-            else:
-                user.email_verified = True
-                await user.asave()
-                return 200, {'access': str(refresh.access_token), 'refresh': str(refresh), 'role': user.role, "name": user.name}
-            return 401, {"message": "Invalid credentials"}
-        return 403, {"message": "Verify your account to continue login"}
+        ## SOCIAL LOGIN
+        else:
+            user.email_verified = True
+            await user.asave()
+            return 200, {'access': str(refresh.access_token), 'refresh': str(refresh), 'role': user.role, "name": user.name}
+        return 401, {"message": "Invalid credentials"}
     return 401, {"message": "Invalid credentials"}
 
 #################################  V E R I F I C A T I O N S  #################################
@@ -109,31 +107,36 @@ async def retry_otp(request, data: ForgotPassword):
         return 201, {"message": "Otp send successfully"}
     return 401, {"message": "User not registered"}
 
-@user_api.post("/send_email_otp", response={200: Message}, description="Send OTP to email")
-async def send_email_otp(request):
-    user = request.auth
-    otp = random.randint(1111,9999)
-    key = f'email_otp_{user.email}'
-    cache_value = await sync_to_async(cache.get)(key)
-    if cache_value:
-        await sync_to_async(cache.delete)(key)
-    await send_mails(user.email, user.name, f"{otp:04d}")
-    await sync_to_async(cache.set)(key, f"{otp:04d}", timeout=60)
-    return 200, {"message": "OTP sent to email"}
+@user_api.post("/send_email_otp", auth=None, response={200: Message}, description="Send OTP to email")
+async def send_email_otp(request, data: EmailOtpVerify):
+    if await User.objects.filter(email=data.email).aexists():
+        user = await User.objects.aget(email=data.email)
+        name = await sync_to_async(lambda: user.name)()
+        otp = random.randint(1111,9999)
+        key = f'email_otp_{data.email}'
+        cache_value = await sync_to_async(cache.get)(key)
+        if cache_value:
+            await sync_to_async(cache.delete)(key)
+        await send_mails(data.email, name, f"{otp:04d}")
+        await sync_to_async(cache.set)(key, f"{otp:04d}", timeout=60)
+        return 200, {"message": "OTP sent to email"}
+    return 401, {"message": "User not registered"}
 
-@user_api.post("/email_verify", response={200: TokenSchema, 401: Message, 403: Message}, description="Verify OTP using email")
+@user_api.post("/email_verify", auth=None, response={200: TokenSchema, 401: Message, 403: Message}, description="Verify OTP using email")
 async def email_verify(request, data: EmailOtpVerify):
-    user = request.auth
-    key = f'email_otp_{user.email}'
-    cache_value = await cache.aget(key)
-    if cache_value:
-        if int(cache_value) == data.otp:
-            user.email_verified = True
-            await user.asave()
-            refresh = RefreshToken.for_user(user)
-            return 200, {'access': str(refresh.access_token), 'refresh': str(refresh), 'role': user.role, "name": user.name}
-        return 403, {"message": "Invalid OTP"}
-    return 401, {"message": "OTP expired"}
+    if await User.objects.filter(email=data.email).aexists():
+        user = await User.objects.aget(email=data.email)
+        key = f'email_otp_{data.email}'
+        cache_value = await cache.aget(key)
+        if cache_value:
+            if int(cache_value) == data.otp:
+                user.email_verified = True
+                await user.asave()
+                refresh = RefreshToken.for_user(user)
+                return 200, {'access': str(refresh.access_token), 'refresh': str(refresh), 'role': user.role, "name": user.name}
+            return 403, {"message": "Invalid OTP"}
+        return 401, {"message": "OTP expired"}
+    return 403, {"message": "User not registered"}
 
 #################################  T O K E N  R E F R E S H  #################################
 @user_api.post("/refresh", auth=None, response={200: TokenSchema, 401: Message}, description="Refresh AccessToken using RefreshToken")

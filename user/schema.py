@@ -22,7 +22,8 @@ class MobileOtpVerify(Schema):
     otp: str
 
 class EmailOtpVerify(Schema):
-    otp: int
+    email: str
+    otp: int | None = None
 
 class ForgotPassword(Schema):
     phone : str
