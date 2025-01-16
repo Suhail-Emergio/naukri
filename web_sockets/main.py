@@ -70,6 +70,11 @@ async def websocket_endpoint(websocket: WebSocket):
                 await websocket.close(code=4002, reason="Invalid user ID")
                 return
             await manager.connect(websocket, user.id)
+            try:
+                while True:
+                    await websocket.receive_text()
+            except WebSocketDisconnect:
+                manager.disconnect(websocket, user.id)
         except Exception as e:
             print(e)
             await websocket.close(code=4003, reason=str(e))
