@@ -53,22 +53,22 @@ async def job_applications(request, job_id: Optional[int] = None):
     if job_id:
         if await JobPosts.objects.filter(id=job_id).aexists():
             query = Q(job__id=job_id)
-            # jobs = [i async for i in ApplyJobs.objects.filter().order_by('-created_on')]
         else:
             return 404, {"message": "Job not found"}
     else:
         user = request.auth
         query = Q(job__company__user=user)
-        # jobs = [i async for i in ApplyJobs.objects.filter(job__company__user=user).order_by('-created_on')]
     applications = []
     async for i in ApplyJobs.objects.filter(query).order_by('-created_on'):
         job = await sync_to_async(lambda: i.job)()
+        id = await sync_to_async(lambda: i.id)()
         created_on = await sync_to_async(lambda: i.created_on)()
         company = await sync_to_async(lambda: job.company)()
         viewed = await sync_to_async(lambda: i.viewed)()
         status = await sync_to_async(lambda: i.status)()
         custom_qns = await sync_to_async(lambda: i.custom_qns)()
         applications.append({
+            "id": id,
             "job": {"job_posts": job,"company_data": company},
             "custom_qns": custom_qns,
             "status": status,

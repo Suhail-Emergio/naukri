@@ -26,6 +26,7 @@ class ApplyJobsCreation(Schema):
     custom_qns : Optional[List[str]] = None
 
 class ApplyJobsData(Schema):
+    id: int
     job: JobCompanyData
     custom_qns: Optional[Union[List[str], Dict[str, Any]]]
     status: str
