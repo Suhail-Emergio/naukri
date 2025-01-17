@@ -50,7 +50,7 @@ async def all_jobs(request):
     excludable_data = []
     if await BlockedCompanies.objects.filter(user=request.auth).aexists():
         excludable_data = [i.company for i in await BlockedCompanies.objects.filter(user=request.auth)]
-    jobs = [i async for i in JobPosts.objects.all().exclude(company__in=excludable_data)]
+    jobs = [i async for i in JobPosts.objects.all().exclude(company__in=excludable_data, active=False)]
     job_company_data = []
     for job in jobs:
         company_details = await CompanyDetails.objects.aget(id=job.company_id)

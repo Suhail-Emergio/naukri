@@ -57,7 +57,16 @@ async def job_applications(request, job_id: Optional[int] = None):
     else:
         user = request.auth
         jobs = [i async for i in ApplyJobs.objects.filter(job__company__user=user).order_by('-created_on')]
-    return 200, jobs
+    applications = []
+    async for i in jobs:
+        applications.append({
+            "job": {"job_posts": i.job,"company_data": i.job.company},
+            "custom_qns": i.custom_qns,
+            "status": i.status,
+            "viewed": i.viewed,
+            "created_on": i.created_on,
+        })
+    return 200, applications
 
 @job_actions_api.patch("/view_job_applications", response={200: Message, 409: Message}, description="Update view on job application after recruiter views an application")
 async def view_job_applications(request, applied_id: int):
@@ -131,7 +140,7 @@ async def search_jobs(request,
             queries &= Q(experience_max__lte=experience_max) if experience_max is not None else Q()
             queries &= Q(created_on__gte=freshness) if freshness is not None else Q()
 
-        jobs = [i async for i in JobPosts.objects.filter(queries).order_by('-created_on')]
+        jobs = [i async for i in JobPosts.objects.filter(queries).exclude(active=False).order_by('-created_on')]
         job_company_data = []
         for job in jobs:
             company_details = await CompanyDetails.objects.aget(id=job.company_id)

@@ -3,13 +3,15 @@ from jobs.jobposts.models import JobPosts
 from naukry.utils.twilio import send_updates
 from naukry.utils.notification import send_notifications
 from seeker.details.models import NotificationPreference
+from jobs.job_actions.models import SaveJobs
 
 class Command(BaseCommand):
     help = 'Notify user of expiry of job posts and on expiry date delete job posts'
 
     def handle(self, *args, **options):
         today = timezone.now().date()
-        JobPosts.objects.filter(expire_on=today).delete()
+        JobPosts.objects.filter(expire_on=today).update(active=False)
+        SaveJobs.objects.filter(job__expire_on=today).delete()
         for j in NotificationPreference.objects.all():
             noti_day = today.weekday() == 5 if j.alerts == "weekly" else True if j.alerts == "daily" else None
             if noti_day:

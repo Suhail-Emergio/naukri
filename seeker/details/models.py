@@ -47,7 +47,7 @@ class Qualification(models.Model):
     university = models.CharField(max_length=200)
     starting_yr = models.IntegerField()
     ending_yr = models.IntegerField()
-    grade = models.IntegerField()
+    grade = models.FloatField(default=0.0)
 
 class Preference(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE)

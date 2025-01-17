@@ -138,7 +138,7 @@ def seach_apps(request, type: str = ""):
             .order_by("truncated_date")
         )
     elif type == "month":
-        start_date = today - timedelta(days=30) 
+        start_date = today - timedelta(days=30)
         appearences = (SearchApps.objects.filter(user=user, date__range=[start_date, today]).annotate(day_of_month=ExtractDay('date'), date_range=Case(When(day_of_month__lte=10, then=1), When(day_of_month__lte=20, then=2), When(day_of_month__lte=31, then=3), output_field=IntegerField(),)).values('date_range').annotate(total_count=Sum('count')).order_by('date_range'))
     else:
         start_date = today - timedelta(days=90)

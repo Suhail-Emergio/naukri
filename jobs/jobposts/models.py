@@ -19,6 +19,7 @@ class JobPosts(models.Model):
     functional_area = models.CharField(max_length=250)
     created_on = models.DateTimeField(auto_now=True)
     expire_on = models.DateField(default=date.today)
+    active = models.BooleanField(default=True)
 
     ## Preffered Employee Details
     gender = models.CharField(max_length=50, choices=[('male', 'male'), ('female', 'female')], null=True, blank=True)
