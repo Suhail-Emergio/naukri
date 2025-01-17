@@ -60,7 +60,7 @@ async def reject_invitation(request, id:int):
 async def block_company(request, id:int):
     user = request.auth
     if await CompanyDetails.objects.filter(id=id).aexists():
-        company = await CompanyDetails.objects.aggregate(id=id)
+        company = await CompanyDetails.objects.aget(id=id)
         if await BlockedCompanies.objects.filter(company=company, user=user).aexists():
             return 409, {"message": "Company already blocked"}
         await BlockedCompanies.objects.acreate(company=company, user=user)
