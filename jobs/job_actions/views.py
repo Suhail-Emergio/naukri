@@ -61,13 +61,19 @@ async def job_applications(request, job_id: Optional[int] = None):
         query = Q(job__company__user=user)
         # jobs = [i async for i in ApplyJobs.objects.filter(job__company__user=user).order_by('-created_on')]
     applications = []
-    for i in ApplyJobs.objects.filter(query).order_by('-created_on'):
+    async for i in ApplyJobs.objects.filter(query).order_by('-created_on'):
+        job = await sync_to_async(lambda: i.job)()
+        created_on = await sync_to_async(lambda: i.created_on)()
+        company = await sync_to_async(lambda: job.company)()
+        viewed = await sync_to_async(lambda: i.viewed)()
+        status = await sync_to_async(lambda: i.status)()
+        custom_qns = await sync_to_async(lambda: i.custom_qns)()
         applications.append({
-            "job": {"job_posts": i.job,"company_data": i.job.company},
-            "custom_qns": i.custom_qns,
-            "status": i.status,
-            "viewed": i.viewed,
-            "created_on": i.created_on,
+            "job": {"job_posts": job,"company_data": company},
+            "custom_qns": custom_qns,
+            "status": status,
+            "viewed": viewed,
+            "created_on": created_on,
         })
     return 200, applications
 
