@@ -67,10 +67,17 @@ async def block_company(request, id:int):
         return 200, {"message": "Company blocked successfully"}
     return 404, {"message": "Company not found"}
 
-@seeker_actions_api.get("/blocked_companies", response={200: List[CompanyData], 409: Message}, description="Retrieve all blocked companies") 
+@seeker_actions_api.get("/blocked_companies", response={200: List[BlockedComp], 409: Message}, description="Retrieve all blocked companies") 
 async def blocked_companies(request):
     user = request.auth
-    blocked = [b async for b in BlockedCompanies.objects.filter(user=user)]
+    blocked = []
+    async for i in BlockedCompanies.objects.filter(user=user):
+        company = await sync_to_async(lambda: i.company)()
+        blocked_on = await sync_to_async(lambda: i.blocked_on)()
+        blocked.append({
+            "company": company,
+            "blocked_on": blocked_on
+        })
     return 200, blocked
 
 @seeker_actions_api.post("/unblock_company", response={200: List[CompanyData], 409: Message}, description="Retrieve all blocked companies") 
