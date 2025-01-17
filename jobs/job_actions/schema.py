@@ -32,3 +32,11 @@ class ApplyJobsData(Schema):
     status: str
     viewed: bool
     created_on: datetime
+
+class ApplyCandidatesData(Schema):
+    id: int
+    candidate: SeekerData
+    custom_qns: Optional[Union[List[str], Dict[str, Any]]]
+    status: str
+    viewed: bool
+    created_on: datetime

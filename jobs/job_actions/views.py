@@ -9,6 +9,7 @@ from jobs.jobposts.models import JobPosts
 from recruiter.company.models import CompanyDetails
 from recruiter.recruiter_actions.models import InviteCandidate
 from asgiref.sync import sync_to_async
+from seeker.details.models import *
 
 User = get_user_model()
 job_actions_api = Router(tags=['job-actions'])
@@ -60,16 +61,25 @@ async def job_applications(request, job_id: Optional[int] = None):
         query = Q(job__company__user=user)
     applications = []
     async for i in ApplyJobs.objects.filter(query).order_by('-created_on'):
+        candidate = await sync_to_async(lambda: i.user)()
+        candidates = []
+        personal = await Personal.objects.aget(user=candidate)
+        employment = None
+        if await Employment.objects.filter(user=candidate_user).aexists():
+            employment = [i async for i in Employment.objects.filter(user=candidate_user).order_by('-id')]
+        qualification = None
+        if await Qualification.objects.filter(user=candidate_user).aexists():
+            qualification = [i async for i in Qualification.objects.filter(user=candidate_user).order_by('-id')]
+        candidates.append({"personal": {"personal": personal, "user": candidate}, "employment": employment, "qualification": qualification})
         job = await sync_to_async(lambda: i.job)()
         id = await sync_to_async(lambda: i.id)()
         created_on = await sync_to_async(lambda: i.created_on)()
-        company = await sync_to_async(lambda: job.company)()
         viewed = await sync_to_async(lambda: i.viewed)()
         status = await sync_to_async(lambda: i.status)()
         custom_qns = await sync_to_async(lambda: i.custom_qns)()
         applications.append({
             "id": id,
-            "job": {"job_posts": job,"company_data": company},
+            "candidate": candidates,
             "custom_qns": custom_qns,
             "status": status,
             "viewed": viewed,
