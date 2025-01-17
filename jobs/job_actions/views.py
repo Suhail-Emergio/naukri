@@ -61,7 +61,7 @@ async def job_applications(request, job_id: Optional[int] = None):
         query = Q(job__company__user=user)
         # jobs = [i async for i in ApplyJobs.objects.filter(job__company__user=user).order_by('-created_on')]
     applications = []
-    async for i in ApplyJobs.objects.filter(query).order_by('-created_on'):
+    for i in ApplyJobs.objects.filter(query).order_by('-created_on'):
         applications.append({
             "job": {"job_posts": i.job,"company_data": i.job.company},
             "custom_qns": i.custom_qns,
