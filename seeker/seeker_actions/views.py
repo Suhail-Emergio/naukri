@@ -32,10 +32,10 @@ async def job_invitations(request):
         jobs.append(job)
     return 200, jobs
 
-@seeker_actions_api.patch("/read_invitations", response={200: Message, 409: Message}, description="Mark an invitation as read") 
+@seeker_actions_api.patch("/read_invitations", response={200: Message, 404: Message, 409: Message}, description="Mark an invitation as read") 
 async def read_invitations(request, id:int):
-    if await InviteCandidate.objects.filter(id=id).aexists():
-        invite = await InviteCandidate.objects.aget(id=id)
+    if await InviteCandidate.objects.filter(job__id=id).aexists():
+        invite = await InviteCandidate.objects.aget(job__id=id)
         invite.read = True
         await invite.save()
         return 200, {"message": "Invitation read successfully"}
