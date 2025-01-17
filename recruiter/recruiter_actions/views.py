@@ -9,6 +9,9 @@ from asgiref.sync import sync_to_async
 from jobs.job_actions.models import ApplyJobs
 from jobs.jobposts.models import JobPosts
 from seeker.details.models import SearchApps
+from seeker.details.schema import CountData
+from common_actions.models import Subscription
+from naukry.utils.profile_completion import completion_data
 
 User = get_user_model()
 recruiter_actions_api = Router(tags=['recruiter_actions'])
@@ -232,3 +235,28 @@ async def template_deletion(request, id: int):
         await template.adelete()
         return 200, {"message": "Template deleted successfully"}
     return 404, {"message": "Template not found"}
+
+#################################  C O U N T S  #################################
+@details_api.get("/recruiter_counts", description="showing perc of profile completion, Count of jobs applied, Count of jobs viewed by recruiers, Count of interviews scheduled by recruiers, remaining datas to enter in profile ")
+async def recruiter_counts(request):
+    profile_completion_percentage, empty_models, models_with_empty_fields = await completion_data(request.auth)
+    interview_scheduled_count = await InterviewSchedule.objects.filter(user=request.auth).acount()
+    application_count = await ApplyJobs.objects.filter(job__company__user=request.auth).acount()
+    active_jobs_count = await JobPosts.objects.filter(company__user=request.auth, active=True).acount()
+    inactive_jobs_count = await JobPosts.objects.filter(company__user=request.auth, active=False).acount()
+    subscription = await Subscription.objects.aget(user=request.auth)
+    plan = await sync_to_async(lambda: subscription.plan)()
+    posts = await sync_to_async(lambda: plan.posts)()
+    remaining_jobs_count = posts - await JobPosts.objects.filter(company__user=request.auth).acount()
+    used_jobs_count = await JobPosts.objects.filter(company__user=request.auth).acount()
+    return 200, {
+        "profile_completion_percentage": profile_completion_percentage,
+        "empty_models": empty_models,
+        "models_with_empty_fields": models_with_empty_fields,
+        "remaining_jobs_count": remaining_jobs_count,
+        "used_jobs_count": used_jobs_count,
+        "interview_scheduled_count": interview_scheduled_count,
+        "application_count": application_count,
+        "active_jobs_count": active_jobs_count,
+        "inactive_jobs_count": inactive_jobs_count
+    }

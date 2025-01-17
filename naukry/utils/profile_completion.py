@@ -1,16 +1,20 @@
 #################################  D A T A  O N  P R O F I L E  C O M P L E T E D  B Y  U S E R  #################################
 from seeker.details.models import Personal, Employment, Qualification
+from recruiter.company.models import CompanyDetails
 from django.db import models
 
 async def completion_data(user):
     empty_models = []
     models_with_empty_fields = {}
     profile_completion_percentage = 0
-    models_to_check = {'Personal': Personal, 'Employment': Employment, 'Qualification': Qualification}
+    if user.role == "recruiter":
+        models_to_check = {'CompanyDetails': CompanyDetails}
+    else:
+        models_to_check = {'Personal': Personal, 'Employment': Employment, 'Qualification': Qualification}
     total_fields = 0
     empty_fields_count = 0
     for model_name, model_class in models_to_check.items():
-        if model_class == Personal:
+        if model_class == Personal or model_class == CompanyDetails:
             if not await model_class.objects.filter(user=user).aexists():
                 return
             instance = await model_class.objects.aget(user=user)

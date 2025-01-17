@@ -7,7 +7,6 @@ User = get_user_model()
 class Plans(models.Model):
     title = models.CharField(max_length=30)
     description = models.JSONField()
-    duration = models.DurationField()
     posts = models.IntegerField(null=True, blank=True)
     duration = models.DurationField(default=timedelta(days=30))
     audience = models.CharField(max_length=20, choices=[('seeker','seeker'), ('recruiter','recruiter')], default="seeker")
