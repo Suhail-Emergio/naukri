@@ -81,8 +81,9 @@ async def save_candidate(request, id:int):
         personal = await Personal.objects.aget(id=id)
         user = request.auth
         if await SaveCandidate.objects.filter(user=user, candidate=personal).aexists():
-            return 409, {"message": "Candidate already saved"}
-        await SaveCandidate.objects.acreate(user=user, candidate=personal)
+            await SaveCandidate.objects.filter(user=user, candidate=personal).adelete()
+        else:
+            await SaveCandidate.objects.acreate(user=user, candidate=personal)
         return 200, {"message": "Candidate saved successfully"}
     return 404, {"message": "Candidate not found"}
 
