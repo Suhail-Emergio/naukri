@@ -16,7 +16,7 @@ class InviteCandidate(models.Model):
     candidate = models.ForeignKey(Personal, on_delete=models.CASCADE, null=True, blank=True)
     job = models.ForeignKey(JobPosts, on_delete=models.CASCADE, null=True, blank=True)
     read = models.BooleanField(default=False)
-    interested = models.BooleanField(default=False)
+    interested = models.BooleanField(null=True, blank=True)
     created_on = models.DateTimeField(auto_now=True)
 
 class EmailTemplate(models.Model):
