@@ -23,13 +23,17 @@ User = get_user_model()
 seeker_actions_api = Router(tags=['seeker_actions'])
 
 #################################  J O B  I N V I T A T I O N S  #################################
-@seeker_actions_api.get("/job_invitations", response={200: List[JobData], 409: Message}, description="Retrieve all invitations for a user") 
+@seeker_actions_api.get("/job_invitations", response={200: List[JobInvitations], 409: Message}, description="Retrieve all invitations for a user") 
 async def job_invitations(request):
     user = request.auth
     jobs = []
     async for i in InviteCandidate.objects.filter(candidate__user=user).order_by('-id'):
         job = await sync_to_async(lambda: i.job)()
-        jobs.append(job)
+        jobs.append({
+            "job": job,
+            "read": await sync_to_async(lambda: i.read)(),
+            "created_on": await sync_to_async(lambda: i.created_on)(),
+        })
     return 200, jobs
 
 @seeker_actions_api.patch("/read_invitations", response={200: Message, 404: Message, 409: Message}, description="Mark an invitation as read") 
