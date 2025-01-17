@@ -7,19 +7,30 @@ import httpx
 from django.conf import settings
 from asgiref.sync import async_to_sync
 from web_sockets.main import manager
+from jobs.job_actions.models import ApplyJobs
 
 @receiver([post_save], sender=Notification)
 @receiver([post_save], sender=InviteCandidate)
+@receiver([post_save], sender=ApplyJobs)
 def update_counts(sender, instance, **kwargs):
     user = instance.candidate.user
+    notification_count = Notification.objects.filter(user=user, read_by=False).count()
     if user.role == "seeker":
-        notification_count = Notification.objects.filter(user=user, read_by=False).count()
         invitation_count = InviteCandidate.objects.filter(candidate__user=user, read=False).count()
         message = {
             "type": "counts_update",
             "data": {
                 "notification_count": notification_count,
                 "invitation_count": invitation_count,
+            },
+        }
+    else:
+        application_count = ApplyJobs.objects.filter(job__company__user=user, viewed=False).count()
+        message = {
+            "type": "counts_update",
+            "data": {
+                "notification_count": notification_count,
+                "application_count": application_count,
             },
         }
     print(message, user.id)
