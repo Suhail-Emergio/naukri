@@ -37,7 +37,7 @@ async def read_invitations(request, id:int):
     if await InviteCandidate.objects.filter(job__id=id).aexists():
         invite = await InviteCandidate.objects.aget(job__id=id)
         invite.read = True
-        await invite.save()
+        await invite.asave()
         return 200, {"message": "Invitation read successfully"}
     return 404, {"message": "Invitation not found"}
 
