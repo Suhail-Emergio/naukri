@@ -77,10 +77,10 @@ async def job_applications(request, job_id: Optional[int] = None):
         })
     return 200, applications
 
-@job_actions_api.patch("/view_job_applications", response={200: Message, 409: Message}, description="Update view on job application after recruiter views an application")
-async def view_job_applications(request, applied_id: int):
+@job_actions_api.patch("/update_job_applications", response={200: Message, 409: Message}, description="Update view on job application after recruiter views an application")
+async def update_job_applications(request, applied_id: int):
     if await ApplyJobs.objects.filter(id=applied_id).aexists():
-        applied = await ApplyJobs.objects.aget(job__id=applied_id)
+        applied = await ApplyJobs.objects.aget(id=applied_id)
         applied.viewed = True
         return 200, {"message": "Updated successfully"}
     return 404, {"message": "Applied job not found"}
