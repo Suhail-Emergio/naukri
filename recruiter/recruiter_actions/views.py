@@ -237,7 +237,7 @@ async def template_deletion(request, id: int):
     return 404, {"message": "Template not found"}
 
 #################################  C O U N T S  #################################
-@details_api.get("/recruiter_counts", description="showing perc of profile completion, Count of jobs applied, Count of jobs viewed by recruiers, Count of interviews scheduled by recruiers, remaining datas to enter in profile ")
+@recruiter_actions_api.get("/recruiter_counts", description="showing perc of profile completion, Count of jobs applied, Count of jobs viewed by recruiers, Count of interviews scheduled by recruiers, remaining datas to enter in profile ")
 async def recruiter_counts(request):
     profile_completion_percentage, empty_models, models_with_empty_fields = await completion_data(request.auth)
     interview_scheduled_count = await InterviewSchedule.objects.filter(user=request.auth).acount()
