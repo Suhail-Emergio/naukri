@@ -82,9 +82,11 @@ async def save_candidate(request, id:int):
         user = request.auth
         if await SaveCandidate.objects.filter(user=user, candidate=personal).aexists():
             await SaveCandidate.objects.filter(user=user, candidate=personal).adelete()
+            message = "Removed successfully"
         else:
             await SaveCandidate.objects.acreate(user=user, candidate=personal)
-        return 200, {"message": "Candidate saved successfully"}
+            message = "Saved successfully"
+        return 200, {"message": message}
     return 404, {"message": "Candidate not found"}
 
 @recruiter_actions_api.get("/saved_candidates", response={200: List[SeekerData], 404: Message, 409: Message}, description="Retrieve all saved candidates")
