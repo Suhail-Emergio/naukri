@@ -32,6 +32,7 @@ async def job_invitations(request):
         jobs.append({
             "job": job,
             "read": await sync_to_async(lambda: i.read)(),
+            "interested": await sync_to_async(lambda: i.interested)(),
             "created_on": await sync_to_async(lambda: i.created_on)(),
         })
     return 200, jobs
@@ -45,10 +46,10 @@ async def read_invitations(request, id:int):
         return 200, {"message": "Invitation read successfully"}
     return 404, {"message": "Invitation not found"}
 
-@seeker_actions_api.delete("/reject_invitation", response={200: Message, 409: Message}, description="Reject an invitation") 
+@seeker_actions_api.delete("/reject_invitation", response={200: Message, 404: Message, 409: Message}, description="Reject an invitation") 
 async def reject_invitation(request, id:int):
-    if await InviteCandidate.objects.filter(id=id).aexists():
-        invite = await InviteCandidate.objects.aget(id=id)
+    if await InviteCandidate.objects.filter(job__id=id).aexists():
+        invite = await InviteCandidate.objects.aget(job__id=id)
         invite.interested = False
         await invite.asave()
         return 200, {"message": "Invitation rejected successfully"}

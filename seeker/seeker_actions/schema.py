@@ -9,4 +9,5 @@ from jobs.jobposts.schema import JobData
 class JobInvitations(Schema):
     job: JobData
     read: bool
+    interested: bool
     created_on: datetime
