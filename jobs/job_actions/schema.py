@@ -4,6 +4,7 @@ from ninja.orm import create_schema
 from .models import *
 from jobs.jobposts.schema import JobCompanyData
 from datetime import datetime
+from recruiter.recruiter_actions.schema import SeekerData
 
 # Job Post to save Schema
 class SavedJobsCreation(Schema):
