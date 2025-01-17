@@ -60,9 +60,10 @@ async def reject_invitation(request, id:int):
 async def block_company(request, id:int):
     user = request.auth
     if await CompanyDetails.objects.filter(id=id).aexists():
-        if await BlockedCompanies.objects.filter(company__id=id, user=user).aexists():
+        company = await CompanyDetails.objects.aggregate(id=id)
+        if await BlockedCompanies.objects.filter(company=company, user=user).aexists():
             return 409, {"message": "Company already blocked"}
-        await BlockedCompanies.objects.acreate(company__id=id, user=user)
+        await BlockedCompanies.objects.acreate(company=company, user=user)
         return 200, {"message": "Company blocked successfully"}
     return 404, {"message": "Company not found"}
 
@@ -75,8 +76,8 @@ async def blocked_companies(request):
 @seeker_actions_api.post("/unblock_company", response={200: List[CompanyData], 409: Message}, description="Retrieve all blocked companies") 
 async def unblock_company(request, id:int):
     user = request.auth
-    if await BlockedCompanies.objects.filter(id=id).aexists():
-        block = await BlockedCompanies.objects.aget(id=id)
+    if await BlockedCompanies.objects.filter(company__id=id).aexists():
+        block = await BlockedCompanies.objects.aget(company__id=id)
         await block.adelete()
         return 200, {"message": "Company unblocked successfully"}
     return 404, {"message": "Blocked company not found"}
