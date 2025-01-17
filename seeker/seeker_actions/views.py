@@ -80,7 +80,7 @@ async def blocked_companies(request):
         })
     return 200, blocked
 
-@seeker_actions_api.post("/unblock_company", response={200: List[CompanyData], 409: Message}, description="Retrieve all blocked companies") 
+@seeker_actions_api.post("/unblock_company", response={200: Message, 409: Message}, description="Retrieve all blocked companies") 
 async def unblock_company(request, id:int):
     user = request.auth
     if await BlockedCompanies.objects.filter(company__id=id).aexists():
