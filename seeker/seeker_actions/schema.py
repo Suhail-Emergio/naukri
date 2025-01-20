@@ -3,11 +3,11 @@ from typing import *
 from ninja.orm import create_schema
 from .models import *
 from datetime import date, datetime
-from jobs.jobposts.schema import JobData
+from jobs.jobposts.schema import JobData, JobCompanyData
 from recruiter.company.schema import CompanyData
 
 class JobInvitations(Schema):
-    job: JobData
+    job: JobCompanyData
     read: bool
     interested: bool
     created_on: datetime

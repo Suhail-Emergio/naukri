@@ -29,8 +29,9 @@ async def job_invitations(request):
     jobs = []
     async for i in InviteCandidate.objects.filter(candidate__user=user).order_by('-id'):
         job = await sync_to_async(lambda: i.job)()
+        company = await sync_to_async(lambda: job.company)()
         jobs.append({
-            "job": job,
+            "job": {"job_posts": job, "company_data": company},
             "read": await sync_to_async(lambda: i.read)(),
             "interested": await sync_to_async(lambda: i.interested)(),
             "created_on": await sync_to_async(lambda: i.created_on)(),
