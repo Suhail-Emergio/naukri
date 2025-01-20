@@ -48,7 +48,7 @@ async def applied_jobs(request):
     return 200, jobs
 
 #################################  A P P L I C A T I O N S  #################################
-@job_actions_api.get("/job_applications", response={200: List[ApplyJobsData], 409: Message}, description="Retrieve all job applications for a company for a job post")
+@job_actions_api.get("/job_applications", response={200: List[ApplyCandidatesData], 409: Message}, description="Retrieve all job applications for a company for a job post")
 async def job_applications(request, job_id: Optional[int] = None):
     query = ()
     if job_id:
