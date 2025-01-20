@@ -65,11 +65,11 @@ async def job_applications(request, job_id: Optional[int] = None):
         candidates = []
         personal = await Personal.objects.aget(user=candidate)
         employment = None
-        if await Employment.objects.filter(user=candidate_user).aexists():
-            employment = [i async for i in Employment.objects.filter(user=candidate_user).order_by('-id')]
+        if await Employment.objects.filter(user=candidate).aexists():
+            employment = [i async for i in Employment.objects.filter(user=candidate).order_by('-id')]
         qualification = None
-        if await Qualification.objects.filter(user=candidate_user).aexists():
-            qualification = [i async for i in Qualification.objects.filter(user=candidate_user).order_by('-id')]
+        if await Qualification.objects.filter(user=candidate).aexists():
+            qualification = [i async for i in Qualification.objects.filter(user=candidate).order_by('-id')]
         candidates.append({"personal": {"personal": personal, "user": candidate}, "employment": employment, "qualification": qualification})
         job = await sync_to_async(lambda: i.job)()
         id = await sync_to_async(lambda: i.id)()
