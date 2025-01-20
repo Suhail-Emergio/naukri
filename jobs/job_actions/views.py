@@ -38,13 +38,14 @@ async def applied_jobs(request):
     jobs = []
     async for i in ApplyJobs.objects.filter(user=request.auth).order_by('-created_on'):
         job = await sync_to_async(lambda: i.job)()
+        id = await sync_to_async(lambda: i.id)()
         created_on = await sync_to_async(lambda: i.created_on)()
         custom_qns = await sync_to_async(lambda: i.custom_qns)()
         status = await sync_to_async(lambda: i.status)()
         viewed = await sync_to_async(lambda: i.viewed)()
         created_on = await sync_to_async(lambda: i.created_on)()
         company = await sync_to_async(lambda: job.company)()
-        jobs.append({"job": {"job_posts": job, "company_data": company}, "custom_qns": custom_qns, "status": status, "viewed": viewed, "created_on": created_on})
+        jobs.append({"job": {"job_posts": job, "company_data": company}, "id": id, "custom_qns": custom_qns, "status": status, "viewed": viewed, "created_on": created_on})
     return 200, jobs
 
 #################################  A P P L I C A T I O N S  #################################

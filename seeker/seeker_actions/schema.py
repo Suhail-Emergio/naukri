@@ -9,7 +9,7 @@ from recruiter.company.schema import CompanyData
 class JobInvitations(Schema):
     job: JobCompanyData
     read: bool
-    interested: bool
+    interested: bool | None = None
     created_on: datetime
 
 class BlockedComp(Schema):
