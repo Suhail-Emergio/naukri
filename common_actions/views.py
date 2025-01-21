@@ -16,7 +16,7 @@ common_api = Router(tags=['common'])
 @common_api.post("/suggestion", response={201: Message, 409:Message}, description="Suggestion creations")
 async def suggestions(request, data: SuggestionCreation):
     user = request.auth
-    suggestion = await Suggestions.objects.acreate(**data.dict())
+    suggestion = await Suggestions.objects.acreate(**data.dict(), user=user)
     await suggestion.asave()
     return 201, {"message" : "Suggestion created successfuly"}
 
