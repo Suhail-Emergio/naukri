@@ -6,7 +6,7 @@ from administrator.admin_actions.schema import PlanData
 from datetime import datetime
 
 class SuggestionCreation(Schema):
-    suggestions: str
+    suggestion: str
 
 class SubscriptionCreation(Schema):
     phone: str
