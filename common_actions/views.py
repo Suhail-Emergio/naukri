@@ -79,10 +79,10 @@ async def notifications(request):
     notification = []
 
     @sync_to_async
-    def fetch_notifications():
+    def fetch_notifications(user):
         return user.notifications.all().order_by('-id')
 
-    noti = await fetch_notifications()
+    noti = await fetch_notifications(user)
     async for i in noti:
         read = await i.read_by.filter(id=user.id).aexists()
         notification.append({'id': i.id, 'noti': i, 'read': read})
