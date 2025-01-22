@@ -81,7 +81,6 @@ async def notifications(request):
     @sync_to_async
     def fetch_notifications():
         return list(user.notifications.all().order_by('-id'))
-        return await fetch_notifications()
 
     noti = await fetch_notifications()
     async for i in noti:
