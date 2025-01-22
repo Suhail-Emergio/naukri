@@ -45,6 +45,7 @@ async def profile_based_jobs(request):
     if await BlockedCompanies.objects.filter(user=request.auth).aexists():
         excludable_data = [i.company for i in await BlockedCompanies.objects.filter(user=request.auth)]
     if personal:
+        query = Q()
         if personal.employed and employment:
             query = Q(title=employment.job_title) | Q(industry=employment.department) | Q(functional_area=employment.job_role)
         query |= Q(city = personal.prefered_work_loc) | Q(country = personal.prefered_work_loc)
