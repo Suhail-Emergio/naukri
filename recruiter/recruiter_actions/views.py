@@ -40,7 +40,7 @@ async def all_seekers(request):
 async def resdex(request,
         keywords: List[str] = Query(None, description="List of keywords"), 
         experience_year: int = None, 
-        experience_month: int = None, 
+        experience_month: int = None,
         current_loc: str = None, 
         nationality: str = None, 
         salary_min: int = None, 

@@ -77,7 +77,8 @@ async def delete_subscription(request):
 async def notifications(request):
     user = request.user
     notification = []
-    async for i in user.notifications.all().order_by('-id'):
+    noti = await sync_to_async(list)(user.notifications.all().order_by('-id'))
+    async for i in noti:
         read = await i.read_by.filter(id=user.id).aexists()
         notification.append({'id': i.id, 'noti': i, 'read': read})
     asyncio.create_task(mark_notifications_read(user.notifications.all().order_by('-id'), user))
