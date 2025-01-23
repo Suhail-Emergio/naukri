@@ -74,9 +74,9 @@ async def delete_subscription(request):
 
 #################################  S U B S C R I P T I O N S  #################################
 @common_api.get("/notification", description="Notification based on logged user")
-def notifications(request):
+async def notifications(request):
     user = request.user
-    notification = []
+    return 200, await user.notifications.all().aorder_by('-id')
 
     # @sync_to_async
     # def fetch_notifications(user):
@@ -87,7 +87,6 @@ def notifications(request):
     #     # read = await i.read_by.filter(id=user.id).aexists()
     #     notification.append({'id': i.id, 'noti': i, 'read': read})
     # asyncio.create_task(mark_notifications_read(user.notifications.all().order_by('-id'), user))
-    return 200, user.notifications.all().order_by('-id')
 
 async def mark_notifications_read(notifications, user):
     await asyncio.sleep(10)
