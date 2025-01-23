@@ -89,17 +89,13 @@ def notifications(request):
     # asyncio.create_task(mark_notifications_read(user.notifications.all().order_by('-id'), user))
     return 200, notification
 
-async def mark_notifications_read(notifications, user):
-    await asyncio.sleep(10)
-
-    @sync_to_async
-    def update_notification(notification, user):
+@common_api.get("/read_notification", response={200: Message, 409:Message}, description="Notification based on logged user")
+def read_notifications(request):
+    user = request.auth
+    for i in user.notifications.all().order_by('-id'):
         notification.read_by.add(user)
         notification.save()
-
-    async for notification in notifications:
-        if not await notification.read_by.filter(id=user.id).aexists():
-            await update_notification(notification, user)
+    return 200, {"message": "Notifications marked as read"}
 
 @common_api.delete("/delete_notification", response={200: Message, 404: Message, 409:Message}, description="Delete notfications")
 async def delete_notification(request, id: int):
