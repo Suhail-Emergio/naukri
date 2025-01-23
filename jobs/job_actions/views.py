@@ -64,6 +64,8 @@ async def job_applications(request, job_id: Optional[int] = None):
     async for i in ApplyJobs.objects.filter(query).order_by('-created_on'):
         candidate = await sync_to_async(lambda: i.user)()
         candidates = []
+        if not await Personal.objects.filter(user=candidate).aexists():
+            continue
         personal = await Personal.objects.aget(user=candidate)
         employment = None
         if await Employment.objects.filter(user=candidate).aexists():
