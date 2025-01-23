@@ -82,7 +82,7 @@ async def job_applications(request, job_id: Optional[int] = None):
         custom_qns = await sync_to_async(lambda: i.custom_qns)()
         applications.append({
             "id": id,
-            "candidate": candidates,
+            "candidate": {"personal": {"personal": personal, "user": candidate}, "employment": employment, "qualification": qualification},
             "custom_qns": custom_qns,
             "status": status,
             "viewed": viewed,
