@@ -6,6 +6,8 @@ from naukry.utils.email import send_interview_schedule
 from naukry.utils.twilio import send_updates
 from naukry.utils.notification import send_notifications
 from seeker.details.models import NotificationPreference
+from web_sockets.main import manager
+from asgiref.sync import async_to_sync
 
 @receiver(post_save, sender=ApplyJobs)
 def log_model_save(sender, instance, created, **kwargs):
