@@ -74,7 +74,7 @@ async def resdex(request,
             qualification = None
             if await Qualification.objects.filter(user=user).aexists():
                 qualification = [i async for i in Qualification.objects.filter(user=user).order_by('-id')]
-            candidates.append({"personal": i, "employment": employment, "qualification": qualification})
+            candidates.append({"personal": {"personal": i, "user": user}, "employment": employment, "qualification": qualification})
     return 200, candidates
 
 #################################  S A V E  C A N D I D A T E S  #################################
