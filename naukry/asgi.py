@@ -28,7 +28,5 @@ django_application = get_asgi_application()
 async def application(scope, receive, send):
     if scope["type"] == "websocket":
         await fastapi_app(scope, receive, send)
-    elif scope["type"] == "http":
-        await django_application(scope, receive, send)
     else:
         await django_application(scope, receive, send)
