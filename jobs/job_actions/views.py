@@ -86,7 +86,8 @@ async def job_applications(request, job_id: Optional[int] = None):
             "viewed": viewed,
             "created_on": created_on,
         })
-    return 200, applications
+        return 200, applications
+    return 409, {"message": "No applications found"}
 
 @job_actions_api.patch("/update_job_applications", response={200: Message, 409: Message}, description="Update view on job application after recruiter views an application")
 async def update_job_applications(request, applied_id: int):
