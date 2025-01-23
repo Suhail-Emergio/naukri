@@ -126,7 +126,7 @@ async def invite_candidates(request, data: InviteCandidateSchema):
         return 404, {"message": "Job not found"}
     return 404, {"message": "Candidate not found"}
 
-@recruiter_actions_api.get("/candidates_invited", response={200: List[JobInvitations], 404: Message, 409: Message}, description="Invite candidates for job")
+@recruiter_actions_api.get("/candidates_invited", response={200: List[JobInvites], 404: Message, 409: Message}, description="Invite candidates for job")
 async def candidates_invited(request, job_id: int = None):
     user = request.auth
     candidates = []
@@ -140,7 +140,7 @@ async def candidates_invited(request, job_id: int = None):
         qualification = None
         if await Qualification.objects.filter(user=user).aexists():
             qualification = [i async for i in Qualification.objects.filter(user=personal.user).order_by('-id')]
-        candidates.append({"candidate":{"personal": {"personal": personal, "user": user}, "employment": employment, "qualification": qualification}, "read": i.read})
+        candidates.append({"candidate":{"personal": {"personal": personal, "user": user}, "employment": employment, "qualification": qualification}, "read": i.read, "job": i.job, "created_on": i.created_on})
     return 200, candidates
 
 @recruiter_actions_api.delete("/candidates_invited", response={200: Message, 404: Message, 409: Message}, description="Invite candidates for job")

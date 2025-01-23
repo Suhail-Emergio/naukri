@@ -27,8 +27,9 @@ class InviteCandidateSchema(Schema):
     candidate_id: int
     job_id: int
 
-class JobInvitations(Schema):
+class JobInvites(Schema):
     candidate: SeekerData
+    job: JobData
     read: bool
 
 EmailTemplates = create_schema(EmailTemplate)
