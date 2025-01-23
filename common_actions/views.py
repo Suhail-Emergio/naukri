@@ -76,6 +76,8 @@ async def delete_subscription(request):
 @common_api.get("/notification", description="Notification based on logged user")
 async def notifications(request):
     user = request.user
+    if not await Notification.objects.filter(user=user).aexists():
+        return 200, []
     return 200, await user.notifications.all().order_by('-id')
 
     # @sync_to_async
