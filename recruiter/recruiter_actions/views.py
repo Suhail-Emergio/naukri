@@ -222,6 +222,8 @@ async def template_creation(request, data: TemplateCreation):
 async def template_updation(request, data: PatchDict[EmailTemplates], id: int):
     if await EmailTemplate.objects.filter(id=id).aexists():
         template = await EmailTemplate.objects.aget(id=id)
+        if "job" in data:
+            data["job"] = await JobPosts.objects.aget(id=data["job"])
         for attr, value in data.items():
             setattr(template, attr, value)
         await template.asave()
