@@ -9,6 +9,7 @@ from seeker.details.models import Preference, Personal, Employment
 from recruiter.company.models import CompanyDetails
 from common_actions.models import Subscription
 from seeker.seeker_actions.models import BlockedCompanies
+from asgiref.sync import sync_to_async
 
 User = get_user_model()
 based_jobs_api = Router(tags=['based-jobs'])
