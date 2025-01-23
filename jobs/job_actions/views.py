@@ -73,7 +73,6 @@ async def job_applications(request, job_id: Optional[int] = None):
         qualification = None
         if await Qualification.objects.filter(user=candidate).aexists():
             qualification = [i async for i in Qualification.objects.filter(user=candidate).order_by('-id')]
-        candidates.append({"personal": {"personal": personal, "user": candidate}, "employment": employment, "qualification": qualification})
         job = await sync_to_async(lambda: i.job)()
         id = await sync_to_async(lambda: i.id)()
         created_on = await sync_to_async(lambda: i.created_on)()
