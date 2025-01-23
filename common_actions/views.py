@@ -73,21 +73,21 @@ async def delete_subscription(request):
     return 404, {"message" : "Subscription doesnot exists"}
 
 #################################  S U B S C R I P T I O N S  #################################
-@common_api.get("/notification", response={200: List[NotificationData], 404: Message, 409:Message}, description="Notification based on logged user")
-async def notifications(request):
+@common_api.get("/notification", description="Notification based on logged user")
+def notifications(request):
     user = request.user
     notification = []
 
-    @sync_to_async
-    def fetch_notifications(user):
-        return user.notifications.all().order_by('-id')
+    # @sync_to_async
+    # def fetch_notifications(user):
+    #     return user.notifications.all().order_by('-id')
 
-    noti = await fetch_notifications(user)
-    async for i in noti:
-        read = await i.read_by.filter(id=user.id).aexists()
-        notification.append({'id': i.id, 'noti': i, 'read': read})
-    asyncio.create_task(mark_notifications_read(user.notifications.all().order_by('-id'), user))
-    return 200, notification
+    # noti = await fetch_notifications(user)
+    # for i in user.notifications.all().order_by('-id'):
+    #     # read = await i.read_by.filter(id=user.id).aexists()
+    #     notification.append({'id': i.id, 'noti': i, 'read': read})
+    # asyncio.create_task(mark_notifications_read(user.notifications.all().order_by('-id'), user))
+    return 200, user.notifications.all().order_by('-id')
 
 async def mark_notifications_read(notifications, user):
     await asyncio.sleep(10)
