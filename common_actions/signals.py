@@ -26,19 +26,3 @@ def update_counts(sender, instance, **kwargs):
         }
         print(message, user.id)
         async_to_sync(manager.broadcast_to_user)(message=message, user_id=user.id)
-
-@receiver([post_save], sender=ApplyJobs)
-def update_counts(sender, instance, **kwargs):
-    user = instance.candidate.user
-    notification_count = Notification.objects.filter(user=user, read_by=False).count()
-    if user.role == "recruiter":
-        application_count = ApplyJobs.objects.filter(job__company__user=user, viewed=False).count()
-        message = {
-            "type": "counts_update",
-            "data": {
-                "notification_count": notification_count,
-                "application_count": application_count,
-            },
-        }
-        print(message, user.id)
-        async_to_sync(manager.broadcast_to_user)(message=message, user_id=user.id)

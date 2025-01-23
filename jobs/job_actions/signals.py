@@ -14,6 +14,14 @@ def log_model_save(sender, instance, created, **kwargs):
         title = "New Application"
         onesignal_id = instance.job.company.user.onesignal_id
         phone = instance.job.company.user.phone
+        if NotificationPreference.objects.get(user=instance.job.company.user).applications != "ban":
+            if onesignal_id  and NotificationPreference.objects.get(user=instance.job.company.user).mobile_notifications:
+                send_notifications(
+                    subject=subject,
+                    title=title,
+                    onesignal_id=onesignal_id
+                )
+            send_updates(subject, phone)
     else:
         if hasattr(instance, '_loaded_values'):
             old_status = instance._loaded_values.get('status')
@@ -21,9 +29,9 @@ def log_model_save(sender, instance, created, **kwargs):
             if old_status != new_status:
                 subject=f"Updation on Your Application for the Job: {instance.job.title}"
                 title = "Your Application Status Has Changed"
-                onesignal_id = instance.job.company.onesignal_id
-                phone = instance.job.company.phone
-                if NotificationPreference.objects.get(user=instance.job.company.user).applications == "daily":
+                onesignal_id = instance.user.onesignal_id
+                phone = instance.user.phone
+                if NotificationPreference.objects.get(user=instance.user).applications != "ban":
                     if onesignal_id  and NotificationPreference.objects.get(user=instance.job.company.user).mobile_notifications:
                         send_notifications(
                             subject=subject,
@@ -31,4 +39,18 @@ def log_model_save(sender, instance, created, **kwargs):
                             onesignal_id=onesignal_id
                         )
                     send_updates(subject, phone)
+
+    user = instance.job.company.user
+    notification_count = Notification.objects.filter(user=user, read_by=False).count()
+    if user.role == "recruiter":
+        application_count = ApplyJobs.objects.filter(job__company__user=user, viewed=False).count()
+        message = {
+            "type": "counts_update",
+            "data": {
+                "notification_count": notification_count,
+                "application_count": application_count,
+            },
+        }
+        print(message, user.id)
+        async_to_sync(manager.broadcast_to_user)(message=message, user_id=user.id)
     return
