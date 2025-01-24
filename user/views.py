@@ -177,6 +177,15 @@ async def update_user(request, data: PatchDict[UserCreation]):
     await user.asave()
     return 200, {"message": "Account Updated Successfully"}
 
+@user_api.patch("/onesignal", response={200: Message, 400: Message, 409: Message}, description="Update user information")
+async def update_onesignal(request, data: PatchDict[OneSignalSchema]):
+    user = request.auth
+    if user.onesignal_id == data.onesignal_id:
+        return 400, {"message": "Same OneSignal ID"}
+    user.onesignal_id = data.onesignal_id
+    await user.asave()
+    return 200, {"message": "OneSignal ID Updated Successfully"}
+
 @user_api.delete("/", response={200: Message, 409: Message}, description="Delete user account")
 async def delete_user(request):
     user = request.auth
@@ -189,7 +198,7 @@ async def forgot_pwd(request, data: ForgotPassword):
     if await User.objects.filter(phone=data.phone).aexists():
         user = await User.objects.aget(phone=data.phone)
         otp = random.randint(1111,9999)
-        key = f'change_pwd_{data.phone}'
+        key = f'otp_{data.phone}'
         cache_value = await sync_to_async(cache.get)(key)
         if cache_value:
             await sync_to_async(cache.delete)(key)
@@ -200,15 +209,9 @@ async def forgot_pwd(request, data: ForgotPassword):
 
 @user_api.post("/change_password", auth=None, response={200: Message, 400: Message, 401: Message, 403: Message}, description="Change password using OTP")
 async def change_pwd(request, data: ResetPassword):
-    key = f'change_pwd_{data.phone}'
-    cache_value = await sync_to_async(cache.get)(key)
-    if cache_value:
-        if int(cache_value) == data.otp:
-            user = await User.objects.aget(phone=data.phone)
-            if check_password(data.password, user.password):
-                return 400, {"message": "New password can't be same as old password"}
-            user.set_password(data.password)
-            await user.asave()
-            return 200, {"message": "Password changed successfully"}
-        return 403, {"message": "Invalid OTP"}
-    return 401, {"message": "OTP expired"}
+    user = await User.objects.aget(phone=data.phone)
+    if check_password(data.password, user.password):
+        return 400, {"message": "New password can't be same as old password"}
+    user.set_password(data.password)
+    await user.asave()
+    return 200, {"message": "Password changed successfully"}
