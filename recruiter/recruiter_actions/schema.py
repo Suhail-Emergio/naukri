@@ -4,6 +4,7 @@ from ninja.orm import create_schema
 from seeker.details.schema import *
 from .models import *
 from datetime import datetime
+from jobs.jobposts.schema import JobData
 
 class SearchCriteria(Schema):
     keywords: Optional[List[str]] = None
