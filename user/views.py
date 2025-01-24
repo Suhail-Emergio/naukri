@@ -178,11 +178,11 @@ async def update_user(request, data: PatchDict[UserCreation]):
     return 200, {"message": "Account Updated Successfully"}
 
 @user_api.patch("/onesignal", response={200: Message, 400: Message, 409: Message}, description="Update user information")
-async def update_onesignal(request, data: PatchDict[OneSignalSchema]):
+async def update_onesignal(request, onesignal_id: str):
     user = request.auth
-    if user.onesignal_id == data.onesignal_id:
+    if user.onesignal_id == onesignal_id:
         return 400, {"message": "Same OneSignal ID"}
-    user.onesignal_id = data.onesignal_id
+    user.onesignal_id = onesignal_id
     await user.asave()
     return 200, {"message": "OneSignal ID Updated Successfully"}
 
