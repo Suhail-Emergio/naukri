@@ -28,6 +28,7 @@ class InviteCandidateSchema(Schema):
     job_id: int
 
 class JobInvites(Schema):
+    id: int
     candidate: SeekerData
     job: JobData
     read: bool

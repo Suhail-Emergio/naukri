@@ -140,7 +140,7 @@ async def candidates_invited(request, job_id: int = None):
         qualification = None
         if await Qualification.objects.filter(user=user).aexists():
             qualification = [i async for i in Qualification.objects.filter(user=personal.user).order_by('-id')]
-        candidates.append({"candidate":{"personal": {"personal": personal, "user": user}, "employment": employment, "qualification": qualification}, "read": i.read, "job": i.job, "created_on": i.created_on})
+        candidates.append({"id": i.id, "candidate":{"personal": {"personal": personal, "user": user}, "employment": employment, "qualification": qualification}, "read": i.read, "job": i.job, "created_on": i.created_on})
     return 200, candidates
 
 @recruiter_actions_api.delete("/candidates_invited", response={200: Message, 404: Message, 409: Message}, description="Invite candidates for job")
