@@ -19,10 +19,8 @@ class SearchCriteria(Schema):
 
 class SeekerData(Schema):
     personal : PersonalSchema
-    # employment: List[Optional[EmploymentData]] = None
     employment: Optional[List[EmploymentData]] = None
     qualification: Optional[List[QualificationData]] = None
-    # qualification: List[Optional[QualificationData]] = None
 
 class InviteCandidateSchema(Schema):
     candidate_id: int
@@ -43,7 +41,9 @@ class TemplateCreation(Schema):
     job_id : int
 
 class ScheduledInterviews(Schema):
+    id: int
     candidate: SeekerData
+    job: JobData
     schedule: datetime
     created_on: datetime
 
