@@ -198,7 +198,7 @@ async def forgot_pwd(request, data: ForgotPassword):
     if await User.objects.filter(phone=data.phone).aexists():
         user = await User.objects.aget(phone=data.phone)
         otp = random.randint(1111,9999)
-        key = f'otp_{data.phone}'
+        key = f'change_pwd_{data.phone}'
         cache_value = await sync_to_async(cache.get)(key)
         if cache_value:
             await sync_to_async(cache.delete)(key)
@@ -209,9 +209,15 @@ async def forgot_pwd(request, data: ForgotPassword):
 
 @user_api.post("/change_password", auth=None, response={200: Message, 400: Message, 401: Message, 403: Message}, description="Change password using OTP")
 async def change_pwd(request, data: ResetPassword):
-    user = await User.objects.aget(phone=data.phone)
-    if check_password(data.password, user.password):
-        return 400, {"message": "New password can't be same as old password"}
-    user.set_password(data.password)
-    await user.asave()
-    return 200, {"message": "Password changed successfully"}
+    key = f'change_pwd_{data.phone}'
+    cache_value = await sync_to_async(cache.get)(key)
+    if cache_value:
+        if int(cache_value) == data.otp:
+            user = await User.objects.aget(phone=data.phone)
+            if check_password(data.password, user.password):
+                return 400, {"message": "New password can't be same as old password"}
+            user.set_password(data.password)
+            await user.asave()
+            return 200, {"message": "Password changed successfully"}
+        return 403, {"message": "Invalid OTP"}
+    return 401, {"message": "OTP expired"}

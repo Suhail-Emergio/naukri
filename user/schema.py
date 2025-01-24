@@ -30,6 +30,7 @@ class ForgotPassword(Schema):
 
 class ResetPassword(Schema):
     phone : str
+    otp : int
     password: str
 
 class UserCreation(Schema):
