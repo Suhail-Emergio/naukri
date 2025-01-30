@@ -162,7 +162,7 @@ async def update_user(request, data: PatchDict[UserCreation]):
     ## Verify Phone
     if 'phone' in data:
         otp = random.randint(1111,9999)
-        key = f'otp_{data['phone']}'
+        key = f"otp_{data['phone']}"
         cache_value = await sync_to_async(cache.get)(key)
         if cache_value:
             await sync_to_async(cache.delete)(key)
