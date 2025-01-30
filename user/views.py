@@ -153,7 +153,7 @@ async def get_user(request):
     user = request.auth
     return 200, user
 
-@user_api.patch("/", response={200: Message, 204: Message, 400: Message, 405: Message, 409: Message}, description="Update user information")
+@user_api.patch("/", response={200: Message, 202: Message, 400: Message, 405: Message, 409: Message}, description="Update user information")
 async def update_user(request, data: PatchDict[UserCreation]):
     user = request.auth
     for attr, value in data.items():
@@ -170,7 +170,7 @@ async def update_user(request, data: PatchDict[UserCreation]):
             await sync_to_async(cache.delete)(key)
         await sync_to_async(cache.set)(key, f"{otp:04d}", timeout=60)
         await whatsapp_message(otp, data['phone'])
-        return 204, {"message": "OTP send Successfully"}
+        return 202, {"message": "OTP send Successfully"}
 
     ## Hashing password
     if 'password' in data:
