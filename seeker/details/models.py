@@ -51,9 +51,9 @@ class Qualification(models.Model):
 
 class Preference(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE)
-    job_type = models.CharField(max_length=150)
-    employment_type = models.CharField(max_length=150)
-    job_shift = models.CharField(max_length=150)
+    job_type = models.JSONField()
+    employment_type = models.JSONField()
+    job_shift = models.JSONField()
     job_role = models.JSONField()
     pref_salary = models.IntegerField()
     job_location = models.JSONField()

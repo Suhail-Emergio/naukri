@@ -51,6 +51,7 @@ async def applied_jobs(request):
 #################################  A P P L I C A T I O N S  #################################
 @job_actions_api.get("/job_applications", response={200: List[ApplyCandidatesData], 404: Message, 409: Message}, description="Retrieve all job applications for a company for a job post")
 async def job_applications(request, job_id: Optional[int] = None):
+    user = request.auth
     query = ()
     if job_id:
         if await JobPosts.objects.filter(id=job_id).aexists():
@@ -58,7 +59,6 @@ async def job_applications(request, job_id: Optional[int] = None):
         else:
             return 404, {"message": "Job not found"}
     else:
-        user = request.auth
         query = Q(job__company__user=user)
     applications = []
     async for i in ApplyJobs.objects.filter(query).order_by('-created_on'):
@@ -79,9 +79,13 @@ async def job_applications(request, job_id: Optional[int] = None):
         viewed = await sync_to_async(lambda: i.viewed)()
         status = await sync_to_async(lambda: i.status)()
         custom_qns = await sync_to_async(lambda: i.custom_qns)()
+        applied_jobs = []
+        async for i in ApplyJobs.objects.filter(user=candidate, job__company__user=user):
+            applied_jobs.append(await sync_to_async(lambda: i.job)())
         applications.append({
             "id": id,
             'job': job,
+            'applied_jobs': applied_jobs,
             "candidate": {"personal": {"personal": personal, "user": candidate}, "employment": employment, "qualification": qualification},
             "custom_qns": custom_qns,
             "status": status,
