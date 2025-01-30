@@ -180,7 +180,7 @@ async def update_user(request, data: PatchDict[UserCreation]):
     await user.asave()
     return 200, {"message": "Account Updated Successfully"}
 
-@user_api.patch("/change_phone", response={200: Message, 400: Message, 409: Message}, description="Update phone information using otp")
+@user_api.patch("/change_phone", response={200: Message, 401: Message, 409: Message}, description="Update phone information using otp")
 async def change_phone(request, data: MobileOtpVerify):
     user = request.auth
     key = f'change_phone_{data.phone}'
