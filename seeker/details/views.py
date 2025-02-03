@@ -228,7 +228,7 @@ async def projects_data(request):
         if project:
             projects_list = [ProjectData(**lang) for lang in project.values()]
             return 200, projects_list
-        return 200, {}
+        return 200, []
     return 404, {"message": "Personal data not found"}
 
 @details_api.patch("/update_project", response={201: Message, 404: Message, 403: Message, 409: Message}, description="User project data update")
