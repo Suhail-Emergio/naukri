@@ -45,7 +45,7 @@ async def jobs(request):
     job = [i async for i in JobPosts.objects.filter(company__user=request.auth)]
     return 200, job
 
-@jobs_api.delete("/delete_job", response={200: List[JobData], 409: Message}, description="Job data passing of logged user")
+@jobs_api.delete("/delete_job", response={200: List[JobData], 404: Message, 409: Message}, description="Job data passing of logged user")
 async def delete_job(request, id: str):
     if await JobPosts.objects.filter(id=id).aexists():
         job = await JobPosts.objects.aget(id=id)
