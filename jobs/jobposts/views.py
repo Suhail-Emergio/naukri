@@ -48,7 +48,7 @@ async def jobs(request):
 @jobs_api.delete("/delete_job", response={200: List[JobData], 409: Message}, description="Job data passing of logged user")
 async def delete_job(request, id: str):
     if await JobPosts.objects.filter(id=id).aexists():
-        job = await JobPosts.objects.get(id=id)
+        job = await JobPosts.objects.aget(id=id)
         await job.adelete()
     return 404, {"message": "Job data not found"}
 
