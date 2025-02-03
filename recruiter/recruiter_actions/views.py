@@ -243,24 +243,26 @@ async def template_deletion(request, id: int):
 #################################  C O U N T S  #################################
 @recruiter_actions_api.get("/recruiter_counts", description="showing perc of profile completion, counts, remaining datas to enter in profile ")
 async def recruiter_counts(request):
-    profile_completion_percentage, empty_models, models_with_empty_fields = await completion_data(request.auth)
-    interview_scheduled_count = await InterviewSchedule.objects.filter(user=request.auth).acount()
-    application_count = await ApplyJobs.objects.filter(job__company__user=request.auth).acount()
-    active_jobs_count = await JobPosts.objects.filter(company__user=request.auth, active=True).acount()
-    inactive_jobs_count = await JobPosts.objects.filter(company__user=request.auth, active=False).acount()
-    subscription = await Subscription.objects.aget(user=request.auth)
-    plan = await sync_to_async(lambda: subscription.plan)()
-    posts = await sync_to_async(lambda: plan.posts)()
-    remaining_jobs_count = posts - await JobPosts.objects.filter(company__user=request.auth).acount()
-    used_jobs_count = await JobPosts.objects.filter(company__user=request.auth).acount()
-    return 200, {
-        "profile_completion_percentage": profile_completion_percentage,
-        "empty_models": empty_models,
-        "models_with_empty_fields": models_with_empty_fields,
-        "remaining_jobs_count": remaining_jobs_count,
-        "used_jobs_count": used_jobs_count,
-        "interview_scheduled_count": interview_scheduled_count,
-        "application_count": application_count,
-        "active_jobs_count": active_jobs_count,
-        "inactive_jobs_count": inactive_jobs_count
-    }
+    if await Subscription.objects.filter(user=request.auth).aexists():
+        profile_completion_percentage, empty_models, models_with_empty_fields = await completion_data(request.auth)
+        interview_scheduled_count = await InterviewSchedule.objects.filter(user=request.auth).acount()
+        application_count = await ApplyJobs.objects.filter(job__company__user=request.auth).acount()
+        active_jobs_count = await JobPosts.objects.filter(company__user=request.auth, active=True).acount()
+        inactive_jobs_count = await JobPosts.objects.filter(company__user=request.auth, active=False).acount()
+        subscription = await Subscription.objects.aget(user=request.auth)
+        plan = await sync_to_async(lambda: subscription.plan)()
+        posts = await sync_to_async(lambda: plan.posts)()
+        remaining_jobs_count = posts - await JobPosts.objects.filter(company__user=request.auth).acount()
+        used_jobs_count = await JobPosts.objects.filter(company__user=request.auth).acount()
+        return 200, {
+            "profile_completion_percentage": profile_completion_percentage,
+            "empty_models": empty_models,
+            "models_with_empty_fields": models_with_empty_fields,
+            "remaining_jobs_count": remaining_jobs_count,
+            "used_jobs_count": used_jobs_count,
+            "interview_scheduled_count": interview_scheduled_count,
+            "application_count": application_count,
+            "active_jobs_count": active_jobs_count,
+            "inactive_jobs_count": inactive_jobs_count
+        }
+    return 404, {"message": "Subscription not found"}
