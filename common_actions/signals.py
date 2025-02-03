@@ -11,10 +11,9 @@ from jobs.job_actions.models import ApplyJobs
 
 @receiver([post_save], sender=Notification)
 @receiver([post_save], sender=InviteCandidate)
-# @receiver([post_save], sender=ApplyJobs)
 def update_counts(sender, instance, **kwargs):
     user = instance.candidate.user if sender == InviteCandidate else instance.user
-    notification_count = Notification.objects.filter(user=user, read_by=False).count()
+    notification_count = user.notifications.exclude(read_by=user).count()
     if user.role == "seeker":
         invitation_count = InviteCandidate.objects.filter(candidate__user=user, read=False).count()
         message = {
