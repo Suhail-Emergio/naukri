@@ -17,15 +17,17 @@ def update_counts(sender, instance, **kwargs):
     else:  # Notification
         # Since user is M2M, get all related users
         users = instance.user.all()
-    notification_count = Notification.objects.filter(user=users).exclude(read_by=user).count()
-    if user.role == "seeker":
-        invitation_count = InviteCandidate.objects.filter(candidate__user=user, read=False).count()
-        message = {
-            "type": "counts_update",
-            "data": {
-                "notification_count": notification_count,
-                "invitation_count": invitation_count,
-            },
-        }
-        print(message, user.id)
-        async_to_sync(manager.broadcast_to_user)(message=message, user_id=user.id)
+    if users:
+        for i in users:
+            notification_count = Notification.objects.filter(user=i).exclude(read_by=i).count()
+            if user.role == "seeker":
+                invitation_count = InviteCandidate.objects.filter(candidate__user=i, read=False).count()
+                message = {
+                    "type": "counts_update",
+                    "data": {
+                        "notification_count": notification_count,
+                        "invitation_count": invitation_count,
+                    },
+                }
+                print(message, user.id)
+                async_to_sync(manager.broadcast_to_user)(message=message, user_id=i.id)
