@@ -17,7 +17,7 @@ def update_counts(sender, instance, **kwargs):
     else:  # Notification
         # Since user is M2M, get all related users
         users = instance.user.all()
-    notification_count = Notification.objects.filter(user=user).exclude(read_by=user).count()
+    notification_count = Notification.objects.filter(user=users).exclude(read_by=user).count()
     if user.role == "seeker":
         invitation_count = InviteCandidate.objects.filter(candidate__user=user, read=False).count()
         message = {
