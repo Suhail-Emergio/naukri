@@ -175,6 +175,7 @@ async def certificates_data(request):
         if certificate:
             certificates_list = [CertificateData(**lang) for lang in certificate.values()]
             return 200, certificates_list
+        return 200, []
     return 404, {"message": "Personal data not found"}
 
 @details_api.patch("/update_certificate", response={201: Message, 404: Message, 403: Message, 409: Message}, description="User certificate data update")
