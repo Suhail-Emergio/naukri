@@ -285,7 +285,7 @@ async def update_notification_preference(request, data: PatchDict[NotificationPr
         for attr, value in data.items():
             setattr(preference, attr, value)
         await preference.asave()
-        return 201, preference
+        return 201, {"message": "Successfully updated"}
     return 404, {"message": "Preference data not found"}
 
 @details_api.get("/notification_preference", response={200: NotifactionPreferenceData, 404: Message, 409: Message}, description="User preference data")
