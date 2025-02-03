@@ -28,7 +28,7 @@ async def all_plans(request):
     return 200, plans
 
 #################################  B A N N E R S  #################################
-@common_api.post("/banners", response={200: List[BannerData], 404: Message, 409:Message}, description="All plans")
+@common_api.get("/banners", response={200: List[BannerData], 404: Message, 409:Message}, description="All plans")
 async def banners(request):
     user = request.auth
     banner = [i async for i in Banner.objects.all()]
