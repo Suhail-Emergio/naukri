@@ -15,7 +15,7 @@ class SubscriptionCreation(Schema):
 
 class SubscriptionData(Schema):
     id: int
-    plan_id: PlanData
+    plan: PlanData
     remaining_posts: int
     transaction_id: str
     subscribed_on: datetime

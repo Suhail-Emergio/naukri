@@ -60,7 +60,13 @@ async def subscriptions(request):
     user = request.auth
     if await Subscription.objects.filter(user=user).aexists():
         subscription = await Subscription.objects.aget(user=user)
-        return 200, subscription
+        return 200, {
+            "id": await sync_to_async(lambda: subscription.id)(),
+            "plan": await sync_to_async(lambda: subscription.plan)(),
+            "remaining_posts": await sync_to_async(lambda: subscription.remaining_posts)(),
+            "transaction_id": await sync_to_async(lambda: subscription.transaction_id)(),
+            "subscribed_on": await sync_to_async(lambda: subscription.subscribed_on)(),
+        }
     return 404, {"message" : "Subscription doesnot exists"}
 
 @common_api.delete("/delete_subscription", response={200: Message, 404: Message, 409:Message}, description="delete subscription taken by a user")
