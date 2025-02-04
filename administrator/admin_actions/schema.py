@@ -10,6 +10,7 @@ class PlanCreation(Schema):
     posts: int
     duration: timedelta
     audience: str
+    resdex: bool = False
     rate: int
     feature: bool = False
 
