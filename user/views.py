@@ -232,7 +232,8 @@ async def change_pwd(request, data: ResetPassword):
     if cache_value:
         if int(cache_value) == data.otp:
             user = await User.objects.aget(phone=data.phone)
-            if check_password(data.password, user.password):
+            password = await sync_to_async(lambda: user.password)()
+            if check_password(data.password, password):
                 return 400, {"message": "New password can't be same as old password"}
             user.set_password(data.password)
             await user.asave()
