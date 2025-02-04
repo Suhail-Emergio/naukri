@@ -165,9 +165,12 @@ async def search_jobs(request,
             queries &= Q(salary_max__lte=salary_max) if salary_max is not None else Q()
             queries &= Q(experience_min__gte=experience_min) if experience_min is not None else Q()
             queries &= Q(experience_max__lte=experience_max) if experience_max is not None else Q()
-            queries &= Q(created_on__gte=freshness) if freshness is not None else Q()
+        
+        order = "created_on"
+        if freshness:
+            order = "-created_on"
 
-        jobs = [i async for i in JobPosts.objects.filter(queries).exclude(active=False).order_by('-created_on')]
+        jobs = [i async for i in JobPosts.objects.filter(queries).exclude(active=False).order_by(order)]
         job_company_data = []
         for job in jobs:
             company_details = await CompanyDetails.objects.aget(id=job.company_id)
