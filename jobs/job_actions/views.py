@@ -10,6 +10,7 @@ from recruiter.company.models import CompanyDetails
 from recruiter.recruiter_actions.models import InviteCandidate
 from asgiref.sync import sync_to_async
 from seeker.details.models import *
+from datetime import datetime, timedelta
 
 User = get_user_model()
 job_actions_api = Router(tags=['job-actions'])
