@@ -36,7 +36,7 @@ async def all_seekers(request):
     return 200, candidates
 
 #################################  F I L T E R  C A N D I D A T E S  B A S E D  #################################
-@recruiter_actions_api.get("/resdex", response={200: List[SeekerData], 404: Message, 409: Message}, description="Retrieve all candidates based on filters")
+@recruiter_actions_api.get("/resdex", response={200: List[SeekerData], 403: Message, 404: Message, 409: Message}, description="Retrieve all candidates based on filters")
 async def resdex(request,
         keywords: List[str] = Query(None, description="List of keywords"), 
         experience_year: int = None, 
@@ -48,34 +48,36 @@ async def resdex(request,
         gender: str = None,
         additional: str = None,
     ):
-    queries = Q()
-    if keywords:
-        queries &= Q(skills__in=keywords)
-    if experience_year and experience_month:
-        queries &= Q(total_experience_years__gte=experience_year) & Q(total_experience_months__gte=experience_month)
-    if current_loc:
-        queries &= Q(city__icontains=current_loc) | Q(state__icontains=current_loc)
-    if nationality:
-        queries &= Q(nationality__icontains=nationality)
-    if salary_min and salary_max:
-        queries &= Q(prefered_salary_pa__gte=salary_min) & Q(prefered_salary_pa__lte=salary_max)
+    if await Subscription.objects.filter(user=request.auth, plan__resdex=True).aexists():
+        queries = Q()
+        if keywords:
+            queries &= Q(skills__in=keywords)
+        if experience_year and experience_month:
+            queries &= Q(total_experience_years__gte=experience_year) & Q(total_experience_months__gte=experience_month)
+        if current_loc:
+            queries &= Q(city__icontains=current_loc) | Q(state__icontains=current_loc)
+        if nationality:
+            queries &= Q(nationality__icontains=nationality)
+        if salary_min and salary_max:
+            queries &= Q(prefered_salary_pa__gte=salary_min) & Q(prefered_salary_pa__lte=salary_max)
 
-    candidates = []
-    if queries:
-        candidate = [i async for i in Personal.objects.filter(queries).exclude(user__is_active=False).order_by('-user__subscribed', '-id')]
-        for i in candidate:
-            user = await sync_to_async(lambda: i.user)()
-            # search_apps = await SearchApps.objects.filter(user=user).alatest('date')
-            # search_apps.count += 1
-            # await search_apps.asave()
-            employment = None
-            if await Employment.objects.filter(user=user).aexists():
-                employment = [i async for i in Employment.objects.filter(user=user).order_by('-id')]
-            qualification = None
-            if await Qualification.objects.filter(user=user).aexists():
-                qualification = [i async for i in Qualification.objects.filter(user=user).order_by('-id')]
-            candidates.append({"personal": {"personal": i, "user": user}, "employment": employment, "qualification": qualification})
-    return 200, candidates
+        candidates = []
+        if queries:
+            candidate = [i async for i in Personal.objects.filter(queries).exclude(user__is_active=False).order_by('-user__subscribed', '-id')]
+            for i in candidate:
+                user = await sync_to_async(lambda: i.user)()
+                # search_apps = await SearchApps.objects.filter(user=user).alatest('date')
+                # search_apps.count += 1
+                # await search_apps.asave()
+                employment = None
+                if await Employment.objects.filter(user=user).aexists():
+                    employment = [i async for i in Employment.objects.filter(user=user).order_by('-id')]
+                qualification = None
+                if await Qualification.objects.filter(user=user).aexists():
+                    qualification = [i async for i in Qualification.objects.filter(user=user).order_by('-id')]
+                candidates.append({"personal": {"personal": i, "user": user}, "employment": employment, "qualification": qualification})
+        return 200, candidates
+    return 403, {"message": "Subscription not found"}
 
 #################################  S A V E  C A N D I D A T E S  #################################
 @recruiter_actions_api.post("/save_candidates", response={200: Message, 404: Message, 409: Message}, description="Retrieve all candidates based on filters")
