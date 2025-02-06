@@ -17,8 +17,8 @@ details_api = Router(tags=['details'])
 async def personal(request, data: PersonalCreation):
     if await Personal.objects.filter(user=request.auth).aexists():
         return 409, {"message": "Personal data already exists"}
-    cv_file = request.FILES.get('cv')
-    personal = await Personal.objects.acreate(**data.dict(), user=request.auth)
+    cv = request.FILES.get('cv')
+    personal = await Personal.objects.acreate(**data.dict(), user=request.auth, cv=cv)
     return 201, personal
 
 @details_api.patch("/personal", response={201: Message, 404: Message, 409: Message}, description="User personal data update")
