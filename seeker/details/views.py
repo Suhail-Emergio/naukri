@@ -21,7 +21,7 @@ async def personal(request, data: PersonalCreation, cv: File[UploadedFile]):
     return 201, personal
 
 @details_api.patch("/personal", response={201: Message, 404: Message, 409: Message}, description="User personal data update")
-async def update_personal_data(request, data: PatchDict[PersonalCreation], cv: Optional[File[UploadedFile]]):
+async def update_personal_data(request, data: PatchDict[PersonalCreation], cv: Optional[UploadedFile]):
     if await Personal.objects.filter(user=request.auth).aexists():
         personal = await Personal.objects.aget(user=request.auth)
         if cv: 
