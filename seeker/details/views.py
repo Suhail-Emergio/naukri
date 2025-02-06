@@ -25,7 +25,8 @@ async def update_personal_data(request, data: PatchDict[PersonalCreation], cv: O
     if await Personal.objects.filter(user=request.auth).aexists():
         personal = await Personal.objects.aget(user=request.auth)
         if cv: 
-            personal.cv = await cv.read()
+            with cv.open() as f:  # Ensure the file is properly read
+                personal.cv = f.read()
         for attr, value in data.items():
             setattr(personal, attr, value)
         await personal.asave()
