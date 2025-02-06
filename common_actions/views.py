@@ -28,7 +28,7 @@ async def all_plans(request):
     return 200, plans
 
 @common_api.get("/recruiter_plans", auth=None,  response={200: List[PlanData], 404: Message, 409:Message}, description="Fetch recruiter plans")
-async def all_plans(request):
+async def recruiter_plans(request):
     plans = [i async for i in Plans.objects.filter(audience="recruiter")]
     return 200, plans
 
