@@ -17,6 +17,7 @@ details_api = Router(tags=['details'])
 async def personal(request, data: PersonalCreation):
     if await Personal.objects.filter(user=request.auth).aexists():
         return 409, {"message": "Personal data already exists"}
+    cv_file = request.FILES.get('cv')
     personal = await Personal.objects.acreate(**data.dict(), user=request.auth)
     return 201, personal
 
