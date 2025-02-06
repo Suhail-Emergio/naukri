@@ -13,13 +13,13 @@ User = get_user_model()
 details_api = Router(tags=['details'])
 
 #################################  P E R S O N A L  D A T A  #################################
-@details_api.post("/personal", response={201: PersonalData, 409: Message}, description="User personal data creation")
+@details_api.post("/personal", response={201: Message, 409: Message}, description="User personal data creation")
 async def personal(request, data: PersonalCreation, cv: UploadedFile = File(...)):
     if await Personal.objects.filter(user=request.auth).aexists():
         return 409, {"message": "Personal data already exists"}
     personal = await Personal.objects.acreate(**data.dict(), user=request.auth)
     personal.cv.save(cv.name, cv)
-    return 201, personal
+    return 201, {"message": "Personal data created"}
 
 @details_api.patch("/personal", response={201: Message, 404: Message, 409: Message}, description="User personal data update")
 async def update_personal_data(request, data: PatchDict[PersonalCreation]):
