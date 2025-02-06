@@ -14,11 +14,12 @@ details_api = Router(tags=['details'])
 
 #################################  P E R S O N A L  D A T A  #################################
 @details_api.post("/personal", response={201: Message, 409: Message}, description="User personal data creation")
-async def personal(request, data: PersonalCreation, cv: UploadedFile = File(...)):
+async def personal(request, data: PersonalCreation, cv: UploadedFile = File(...), profile_image: UploadedFile = File(...)):
     if await Personal.objects.filter(user=request.auth).aexists():
         return 409, {"message": "Personal data already exists"}
     personal = await Personal.objects.acreate(**data.dict(), user=request.auth)
-    personal.cv.save(cv.name, cv)
+    await personal.cv.asave(cv.name, cv)
+    await personal.profile_image.asave(profile_image.name, profile_image)
     return 201, {"message": "Personal data created"}
 
 @details_api.patch("/personal", response={201: Message, 404: Message, 409: Message}, description="User personal data update")
@@ -43,6 +44,15 @@ async def update_cv(request, cv: UploadedFile = File(...)):
         personal.cv = cv
         await personal.asave()
         return 201, {"message": "CV updated successfully"}
+    return 404, {"message": "Personal data not found"}
+
+@details_api.post("/personal/profile_image", response={201: Message, 404: Message}, description="Upload or update user image")
+async def update_profile_image(request, profile_image: UploadedFile = File(...)):
+    if await Personal.objects.filter(user=request.auth).aexists():
+        personal = await Personal.objects.aget(user=request.auth)
+        personal.profile_image = profile_image
+        await personal.asave()
+        return 201, {"message": "Image updated successfully"}
     return 404, {"message": "Personal data not found"}
 
 #################################  E M P L O Y M E N T  D A T A  #################################
