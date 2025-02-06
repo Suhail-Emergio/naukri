@@ -11,7 +11,6 @@ class PersonalCreation(Schema):
     city : str
     state : str
     employed : bool
-    cv : Optional[str] = None
     skills : Union[List[str], Dict[str, Any]]
     prefered_salary_pa : int
     prefered_work_loc : Union[List[str], Dict[str, Any]]
