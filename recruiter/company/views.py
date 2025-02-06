@@ -18,7 +18,7 @@ async def company_creation(request, data: CompanyCreation, logo: UploadedFile = 
         return 201, company
     return 401, {"message": "Not Authorised"}
 
-@details_api.post("/company/logo", response={201: Message, 404: Message}, description="Upload or update company logo")
+@company_api.post("/company/logo", response={201: Message, 404: Message}, description="Upload or update company logo")
 async def update_logo(request, logo: UploadedFile = File(...)):
     if await Personal.objects.filter(user=request.auth).aexists():
         personal = await Personal.objects.aget(user=request.auth)
