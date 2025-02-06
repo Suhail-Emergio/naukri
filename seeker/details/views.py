@@ -1,4 +1,4 @@
-from ninja import Router, PatchDict, UploadedFile
+from ninja import Router, PatchDict, UploadedFile, File
 from django.contrib.auth import get_user_model
 from .schema import *
 from typing import *
@@ -21,11 +21,9 @@ async def personal(request, data: PersonalCreation, cv: UploadedFile):
     return 201, personal
 
 @details_api.patch("/personal", response={201: Message, 404: Message, 409: Message}, description="User personal data update")
-async def update_personal_data(request, data: PatchDict[PersonalCreation], cv: Optional[UploadedFile]):
+async def update_personal_data(request, data: PatchDict[PersonalCreation]):
     if await Personal.objects.filter(user=request.auth).aexists():
         personal = await Personal.objects.aget(user=request.auth)
-        if cv:
-            personal.cv = cv
         for attr, value in data.items():
             setattr(personal, attr, value)
         await personal.asave()
@@ -36,6 +34,15 @@ async def update_personal_data(request, data: PatchDict[PersonalCreation], cv: O
 async def personal_data(request):
     personal = await Personal.objects.aget(user=request.auth)
     return 200, {"personal": personal, "user": request.auth}
+
+@details_api.patch("/personal/cv", response={201: Message, 404: Message}, description="Upload or update user CV")
+async def update_cv(request, cv: UploadedFile = File(...)):
+    if await Personal.objects.filter(user=request.auth).aexists():
+        personal = await Personal.objects.aget(user=request.auth)
+        personal.cv = cv
+        await personal.asave()
+        return 201, {"message": "CV updated successfully"}
+    return 404, {"message": "Personal data not found"}
 
 #################################  E M P L O Y M E N T  D A T A  #################################
 @details_api.post("/employment", response={201: EmploymentData, 409: Message}, description="User employment data creation")
