@@ -54,7 +54,6 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
-    "ninja_put_patch_file_upload_middleware.middlewares.process_put_patch"
 ]
 
 CORS_ALLOW_ALL_ORIGINS = True
