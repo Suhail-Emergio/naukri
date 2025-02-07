@@ -32,10 +32,12 @@ async def update_personal_data(request, data: PatchDict[PersonalCreation]):
         return 201, {"message": "Succesfully updated"}
     return 404, {"message": "Personal data not found"}
 
-@details_api.get("/personal", response={200: PersonalSchema, 409: Message}, description="User personal data")
+@details_api.get("/personal", response={200: PersonalSchema, 404: Message, 409: Message}, description="User personal data")
 async def personal_data(request):
-    personal = await Personal.objects.aget(user=request.auth)
-    return 200, {"personal": personal, "user": request.auth}
+    if await Personal.objects.filter(user=request.auth).aexists():
+        personal = await Personal.objects.aget(user=request.auth)
+        return 200, {"personal": personal, "user": request.auth}
+    return 404, {"message": "Personal data not found"}
 
 @details_api.post("/personal/cv", response={201: Message, 404: Message}, description="Upload or update user CV")
 async def update_cv(request, cv: UploadedFile = File(...)):
