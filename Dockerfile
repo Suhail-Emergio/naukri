@@ -27,5 +27,5 @@ COPY . .
 EXPOSE 8000  
 
 # Run the application
-#CMD ["gunicorn", "--bind", "0.0.0.0:8000", "naukry.asgi:application"]
+CMD ["gunicorn", "naukry.asgi:application", "--bind", "0.0.0.0:8000", "--workers", "4", "--worker-class", "uvicorn.workers.UvicornWorker"]
 CMD ["uvicorn", "naukry.asgi:application"]
