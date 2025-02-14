@@ -40,6 +40,7 @@ class Command(BaseCommand):
     def search_apps_creation(self):
         for i in User.objects.filter(role="seeker"):
             SearchApps.objects.create(user=i)
+            print(f"search apps for {i} is created")
 
     def post_completion(self, user):
         profile_completion_percentage, empty_models, models_with_empty_fields = await sync_to_async(completion_data(user))
