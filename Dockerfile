@@ -23,9 +23,18 @@ RUN --mount=type=cache,target=/root/.cache/pip \
 # Copy the source code into the container
 COPY . .
 
+COPY cron_jobs /etc/cron.d/naukri_cron
+
+# Give execution rights to the cron job file
+RUN chmod 0644 /etc/cron.d/naukri_cron
+
+# Apply the cron job
+RUN crontab /etc/cron.d/naukri_cron
+
 # Expose the port the application listens on
 EXPOSE 8000  
 
 # Run the application
-CMD ["gunicorn", "naukry.asgi:application", "--bind", "0.0.0.0:8000", "--workers", "4", "--worker-class", "uvicorn.workers.UvicornWorker"]
+CMD service cron start && gunicorn naukry.asgi:application --bind 0.0.0.0:8000 --workers 4 --worker-class uvicorn.workers.UvicornWorker
+# CMD ["gunicorn", "naukry.asgi:application", "--bind", "0.0.0.0:8000", "--workers", "4", "--worker-class", "uvicorn.workers.UvicornWorker"]
 # CMD ["uvicorn", "naukry.asgi:application"]
