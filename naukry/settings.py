@@ -62,6 +62,7 @@ CORS_ALLOW_METHODS = ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS']
 CORS_ALLOW_HEADERS = ['accept', 'accept-encoding', 'authorization', 'content-type', 'origin', 'user-agent']
 ROOT_URLCONF = 'naukry.urls'
 AUTH_USER_MODEL = 'user.UserProfile'
+NINJA_PAGINATION_PER_PAGE = 20
 
 TEMPLATES = [
     {

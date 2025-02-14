@@ -5,9 +5,26 @@ from .schema import *
 from typing import *
 from .models import *
 from user.schema import *
+from jobs.jobposts.schema import JobCompanyData
+from ninja.pagination import paginate
+from jobs.jobposts.models import JobPosts
 
 User = get_user_model()
 admin_api = Router(tags=['admin'])
+
+#################################  J O B S  #################################
+@admin_api.get("/all_jobs", response={201: List[JobCompanyData], 409:Message}, description="Plan creations")
+@paginate
+async def all_jobs(request, order: str = 'active'):
+    user = request.auth
+    if user.is_superuser:
+        jobs = [i async for i in JobPosts.objects.all().order_by(f'-{order}')]
+        job_company_data = []
+        for job in jobs:
+            company_details = await CompanyDetails.objects.aget(id=job.company_id)
+            job_company_data.append({"job_posts": job, "company_data": company_details})
+        return 200, job_company_data
+    return 409, {"message" : "You are not authorized to create plans"}
 
 #################################  P L A N S  #################################
 @admin_api.post("/create_plans", response={201: Message, 409:Message}, description="Plan creations")
@@ -81,6 +98,7 @@ async def update_banner(request, data: PatchDict[PlanCreation]):
             await banner.asave()
             return 201, {"message" : "banner updated successfuly"}
         return 409, {"message" : "banner doesnot exists"}
+    return 409, {"message" : "You are not authorized to delete banners"}
 
 @admin_api.get("/delete_banners", response={201: Message, 404: Message, 409:Message}, description="banner details")
 async def delete_banners(request, id: int):
