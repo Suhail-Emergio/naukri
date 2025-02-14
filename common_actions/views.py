@@ -104,8 +104,8 @@ def notifications(request):
 def read_notifications(request):
     user = request.auth
     for i in user.notifications.all().order_by('-id'):
-        notification.read_by.add(user)
-        notification.save()
+        i.read_by.add(user)
+        i.save()
     return 200, {"message": "Notifications marked as read"}
 
 @common_api.delete("/delete_notification", response={200: Message, 404: Message, 409:Message}, description="Delete notfications")
