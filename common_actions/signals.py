@@ -20,7 +20,7 @@ def update_counts(sender, instance, **kwargs):
     if users:
         for i in users:
             notification_count = Notification.objects.filter(user=i).exclude(read_by=i).count()
-            if user.role == "seeker":
+            if i.role == "seeker":
                 invitation_count = InviteCandidate.objects.filter(candidate__user=i, read=False).count()
                 message = {
                     "type": "counts_update",
@@ -29,5 +29,5 @@ def update_counts(sender, instance, **kwargs):
                         "invitation_count": invitation_count,
                     },
                 }
-                print(message, user.id)
+                print(message, i.id)
                 async_to_sync(manager.broadcast_to_user)(message=message, user_id=i.id)

@@ -72,6 +72,18 @@ async def websocket_endpoint(websocket: WebSocket):
             try:
                 while True:
                     await websocket.receive_text()
+                    notification_count = Notification.objects.filter(user=user).exclude(read_by=user).count()
+                    if user.role == "seeker":
+                        invitation_count = InviteCandidate.objects.filter(candidate__user=user, read=False).count()
+                        message = {
+                            "type": "counts_update",
+                            "data": {
+                                "notification_count": notification_count,
+                                "invitation_count": invitation_count,
+                            },
+                        }
+                        print(message, user.id)
+                        manager.broadcast_to_user(message=message, user_id=user.id)
             except WebSocketDisconnect:
                 manager.disconnect(websocket, user.id)
         except Exception as e:

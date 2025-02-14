@@ -8,6 +8,7 @@ from user.schema import *
 from jobs.jobposts.schema import JobCompanyData
 from ninja.pagination import paginate
 from jobs.jobposts.models import JobPosts
+from jobs.job_actions.schema import ApplyJobs, ApplyCandidatesData
 
 User = get_user_model()
 admin_api = Router(tags=['admin'])
@@ -24,7 +25,48 @@ async def all_jobs(request, order: str = 'active'):
             company_details = await CompanyDetails.objects.aget(id=job.company_id)
             job_company_data.append({"job_posts": job, "company_data": company_details})
         return 200, job_company_data
-    return 409, {"message" : "You are not authorized to create plans"}
+    return 409, {"message" : "You are not authorized"}
+
+#################################  J O B S  #################################
+@admin_api.get("/all_applications", response={201: List[JobCompanyData], 409:Message}, description="Plan creations")
+@paginate
+async def all_applications(request, order: str = 'active'):
+    user = request.auth
+    if user.is_superuser:
+        applications = []
+        async for i in ApplyJobs.objects.all().order_by(f'-{order}'):
+            candidate = await sync_to_async(lambda: i.user)()
+            candidates = []
+            if not await Personal.objects.filter(user=candidate).aexists():
+                continue
+            personal = await Personal.objects.aget(user=candidate)
+            employment = None
+            if await Employment.objects.filter(user=candidate).aexists():
+                employment = [i async for i in Employment.objects.filter(user=candidate).order_by('-id')]
+            qualification = None
+            if await Qualification.objects.filter(user=candidate).aexists():
+                qualification = [i async for i in Qualification.objects.filter(user=candidate).order_by('-id')]
+            job = await sync_to_async(lambda: i.job)()
+            id = await sync_to_async(lambda: i.id)()
+            created_on = await sync_to_async(lambda: i.created_on)()
+            viewed = await sync_to_async(lambda: i.viewed)()
+            status = await sync_to_async(lambda: i.status)()
+            custom_qns = await sync_to_async(lambda: i.custom_qns)()
+            applied_jobs = []
+            async for i in ApplyJobs.objects.filter(user=candidate, job__company__user=user):
+                applied_jobs.append(await sync_to_async(lambda: i.job)())
+            applications.append({
+                "id": id,
+                'job': job,
+                'applied_jobs': applied_jobs,
+                "candidate": {"personal": {"personal": personal, "user": candidate}, "employment": employment, "qualification": qualification},
+                "custom_qns": custom_qns,
+                "status": status,
+                "viewed": viewed,
+                "created_on": created_on,
+            })
+        return 200, applications
+    return 409, {"message" : "You are not authorized"}
 
 #################################  P L A N S  #################################
 @admin_api.post("/create_plans", response={201: Message, 409:Message}, description="Plan creations")
