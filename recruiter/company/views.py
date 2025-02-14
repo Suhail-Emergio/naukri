@@ -20,8 +20,8 @@ async def company_creation(request, data: CompanyCreation, logo: UploadedFile = 
 
 @company_api.post("/company/logo", response={201: Message, 404: Message}, description="Upload or update company logo")
 async def update_logo(request, logo: UploadedFile = File(...)):
-    if await Personal.objects.filter(user=request.auth).aexists():
-        personal = await Personal.objects.aget(user=request.auth)
+    if await CompanyDetails.objects.filter(user=request.auth).aexists():
+        personal = await CompanyDetails.objects.aget(user=request.auth)
         personal.logo = logo
         await personal.asave()
         return 201, {"message": "logo updated successfully"}
