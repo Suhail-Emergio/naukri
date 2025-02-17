@@ -3,6 +3,7 @@ from typing import *
 from ninja.orm import create_schema
 from .models import *
 from datetime import timedelta
+from jobs.job_actions.schema import ApplyCandidatesData
 
 class PlanCreation(Schema):
     title: str
@@ -20,3 +21,10 @@ class BannerCreation(Schema):
     image: str
 
 BannerData = create_schema(Banner)
+
+class ApplicationStats(Schema):
+    applications: List[ApplyCandidatesData]
+    views: int
+    candidates: int
+    shortlisted: int
+    rejected: int

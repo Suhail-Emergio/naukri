@@ -26,7 +26,7 @@ async def all_jobs(request, order: str = 'active'):
         return 200, job_company_data
     return 409, {"message" : "You are not authorized"}
 
-@admin_api.get("/job_application", response={201: {"applications": List[ApplyCandidatesData], "views": int, "candidates": int, "shortlisted": int, "rejected": int}, 409:Message}, description="Fetch all applications for a job")
+@admin_api.get("/job_application", response={201: ApplicationStats, 409:Message}, description="Fetch all applications for a job")
 @paginate
 async def all_jobs(request,  job_id: int, order: str = 'active'):
     user = request.auth
