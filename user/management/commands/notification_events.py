@@ -11,6 +11,7 @@ from seeker.details.models import Personal, Preference
 from django.db.models import Q
 from common_actions.models import Notification
 from django.utils.timezone import now
+from django.utils import timezone
 from seeker.details.models import SearchApps
 from seeker.details.models import NotificationPreference as Np
 from django.template.loader import render_to_string
