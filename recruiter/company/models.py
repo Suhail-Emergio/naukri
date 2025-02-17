@@ -6,7 +6,7 @@ User = get_user_model()
 class CompanyDetails(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     name = models.CharField(max_length = 250, default="")
-    logo = models.ImageField(upload_to="images/company/logo")
+    logo = models.FileField(upload_to="images/company/logo")
     about = models.TextField()
     website = models.URLField(max_length = 200)
     functional_area = models.CharField(max_length=250)
