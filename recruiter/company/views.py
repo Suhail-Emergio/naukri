@@ -11,12 +11,12 @@ User = get_user_model()
 company_api = Router(tags=['company'])
 
 #################################  C O M P A N Y  D A T A S  #################################
-@company_api.post("/", response={201: CompanyData, 401: Message, 409:Message}, description="Company data creation")
+@company_api.post("/", response={201: Message, 401: Message, 409:Message}, description="Company data creation")
 async def company_creation(request, data: CompanyCreation, logo: UploadedFile = File(...)):
     if request.auth.role == "recruiter" and not await CompanyDetails.objects.filter(user=request.auth).aexists():
         company = await CompanyDetails.objects.acreate(**data.dict(), user=request.auth)
         sync_to_async(company.logo.save)(logo.name, logo)
-        return 201, company
+        return 201, {"message": "Created successfully"}
     return 401, {"message": "Not Authorised"}
 
 @company_api.post("/company/logo", response={201: Message, 404: Message}, description="Upload or update company logo")
