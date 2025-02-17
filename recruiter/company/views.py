@@ -15,7 +15,7 @@ company_api = Router(tags=['company'])
 async def company_creation(request, data: CompanyCreation, logo: UploadedFile = File(...)):
     if request.auth.role == "recruiter" and not await CompanyDetails.objects.filter(user=request.auth).aexists():
         company = await CompanyDetails.objects.acreate(**data.dict(), user=request.auth)
-        sync_to_async(company.logo.save)(logo.name, logo)
+        await sync_to_async(company.logo.save)(logo.name, logo)
         return 201, {"message": "Created successfully"}
     return 401, {"message": "Not Authorised"}
 
