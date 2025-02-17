@@ -28,7 +28,7 @@ async def all_jobs(request, order: str = 'active'):
 
 @admin_api.get("/job_application", response={200: ApplicationStats, 409:Message}, description="Fetch all applications for a job")
 @paginate
-async def all_jobs(request,  job_id: int, order: str = 'active'):
+async def job_application(request,  job_id: int, order: str = 'active'):
     user = request.auth
     if user.is_superuser:
         applications = []
