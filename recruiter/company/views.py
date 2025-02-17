@@ -5,7 +5,7 @@ from typing import *
 from .models import *
 from user.schema import *
 from django.db.models import Q
-from asgiref.sync import async_to_sync
+from asgiref.sync import sync_to_async
 
 User = get_user_model()
 company_api = Router(tags=['company'])
@@ -15,7 +15,7 @@ company_api = Router(tags=['company'])
 async def company_creation(request, data: CompanyCreation, logo: UploadedFile = File(...)):
     if request.auth.role == "recruiter" and not await CompanyDetails.objects.filter(user=request.auth).aexists():
         company = await CompanyDetails.objects.acreate(**data.dict(), user=request.auth)
-        async_to_sync(company.logo.save)(logo.name, logo)
+        sync_to_async(company.logo.save)(logo.name, logo)
         return 201, company
     return 401, {"message": "Not Authorised"}
 
