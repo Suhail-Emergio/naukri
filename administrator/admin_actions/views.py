@@ -146,7 +146,7 @@ async def plans(request):
     if user.is_superuser:
         plan = [i async for i in Plans.objects.all()]
         return 201, plan
-    return 409, {"message" : "You are not authorized to create plans"}
+    return 409, {"message" : "You are not authorized to access plans"}
 
 
 @admin_api.get("/update_plans", response={201: Message, 409:Message}, description="Plan details")
@@ -160,6 +160,7 @@ async def update_plans(request, data: PatchDict[PlanCreation]):
             await plan.asave()
             return 201, {"message" : "Plan updated successfuly"}
         return 409, {"message" : "Plan doesnot exists"}
+    return 409, {"message" : "You are not authorized to access plans"}
 
 @admin_api.get("/delete_plans", response={201: Message, 404: Message, 409:Message}, description="Plan details")
 async def delete_plans(request, id: int):
@@ -188,8 +189,7 @@ async def banners(request):
     if user.is_superuser:
         banner = [i async for i in Banner.objects.all()]
         return 201, banner
-    return 409, {"message" : "You are not authorized to create banners"}
-
+    return 409, {"message" : "You are not authorized to access banners"}
 
 @admin_api.get("/update_banner", response={201: Message, 409:Message}, description="Banner updations")
 async def update_banner(request, data: PatchDict[PlanCreation]):
