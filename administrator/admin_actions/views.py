@@ -14,8 +14,7 @@ User = get_user_model()
 admin_api = Router(tags=['admin'])
 
 #################################  J O B S  #################################
-@admin_api.get("/all_jobs", response={201: List[JobCompanyData], 409:Message}, description="Plan creations")
-@paginate
+@admin_api.get("/all_jobs", response={201: List[JobCompanyData], 409:Message}, description="Fetch all jobs")
 async def all_jobs(request, order: str = 'active'):
     user = request.auth
     if user.is_superuser:
@@ -27,8 +26,64 @@ async def all_jobs(request, order: str = 'active'):
         return 200, job_company_data
     return 409, {"message" : "You are not authorized"}
 
+@admin_api.get("/job_application", response={201: {"applications": List[ApplyCandidatesData], "views": int, "candidates": int, "shortlisted": int, "rejected": int}, 409:Message}, description="Fetch all applications for a job")
+@paginate
+async def all_jobs(request,  job_id: int, order: str = 'active'):
+    user = request.auth
+    if user.is_superuser:
+        applications = []
+        views = 0
+        candidates = 0
+        shortlisted = 0
+        rejected = 0
+        async for i in ApplyJobs.objects.filter(job__id=job_id).order_by(f'-{order}'):
+            candidate = await sync_to_async(lambda: i.user)()
+            candidates = []
+            if not await Personal.objects.filter(user=candidate).aexists():
+                continue
+            personal = await Personal.objects.aget(user=candidate)
+            employment = None
+            if await Employment.objects.filter(user=candidate).aexists():
+                employment = [i async for i in Employment.objects.filter(user=candidate).order_by('-id')]
+            qualification = None
+            if await Qualification.objects.filter(user=candidate).aexists():
+                qualification = [i async for i in Qualification.objects.filter(user=candidate).order_by('-id')]
+            job = await sync_to_async(lambda: i.job)()
+            id = await sync_to_async(lambda: i.id)()
+            created_on = await sync_to_async(lambda: i.created_on)()
+            viewed = await sync_to_async(lambda: i.viewed)()
+            status = await sync_to_async(lambda: i.status)()
+            custom_qns = await sync_to_async(lambda: i.custom_qns)()
+            applied_jobs = []
+            async for i in ApplyJobs.objects.filter(user=candidate, job__company__user=user):
+                applied_jobs.append(await sync_to_async(lambda: i.job)())
+            applications.append({
+                "id": id,
+                'job': job,
+                'applied_jobs': applied_jobs,
+                "candidate": {"personal": {"personal": personal, "user": candidate}, "employment": employment, "qualification": qualification},
+                "custom_qns": custom_qns,
+                "status": status,
+                "viewed": viewed,
+                "created_on": created_on,
+            })
+            if i.status == "shortlisted":
+                shortlisted += 1 
+            elif i.status == "rejected":
+                rejected += 1 
+            else:
+                candidates += 1
+        return 200, {
+            "applications": applications,
+            "views": 0,
+            "candidates": candidates,
+            "shortlisted": shortlisted,
+            "rejected": rejected
+        }
+    return 409, {"message" : "You are not authorized"}
+
 #################################  J O B S  #################################
-@admin_api.get("/all_applications", response={201: List[JobCompanyData], 409:Message}, description="Plan creations")
+@admin_api.get("/all_applications", response={201: List[ApplyCandidatesData], 409:Message}, description="Fetch all job applications")
 @paginate
 async def all_applications(request, order: str = 'active'):
     user = request.auth

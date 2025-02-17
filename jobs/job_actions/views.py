@@ -15,6 +15,15 @@ from datetime import datetime, timedelta
 User = get_user_model()
 job_actions_api = Router(tags=['job-actions'])
 
+#################################  V I E W  J O B S  #################################
+@job_actions_api.get("/view_jobs", response={201: Message, 404: Message, 409: Message}, description="Updation on viewing a job post")
+async def view_jobs(request, job_id: int):
+    if await JobPosts.objects.filter(id = job_id).aexists():
+        job = await JobPosts.objects.aget(id=job_id)
+        job.views += 1
+        return 201, {"message": "Updated succesfully"}
+    return 404, {"message": "Job not found"}
+
 #################################  A P P L Y  J O B S  #################################
 @job_actions_api.post("/apply", response={201: Message, 404: Message, 405: Message, 409: Message}, description="Apply for a job post")
 async def apply_jobs(request, data: ApplyJobsCreation):
