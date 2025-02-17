@@ -28,7 +28,7 @@ async def all_jobs(request, order: str = 'active'):
     return 409, {"message" : "You are not authorized"}
 
 @admin_api.get("/job_post_application", response={200: ApplicationStats, 409:Message}, description="Fetch all applications for a job")
-@paginate
+# @paginate
 def job_post_application(request, job_id: int, order: str = 'active'):
     user = request.auth
     if user.is_superuser:
