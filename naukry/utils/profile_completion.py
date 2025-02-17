@@ -16,7 +16,7 @@ async def completion_data(user):
     for model_name, model_class in models_to_check.items():
         if model_class == Personal or model_class == CompanyDetails:
             if not await model_class.objects.filter(user=user).aexists():
-                return
+                return 0, [], {}
             instance = await model_class.objects.aget(user=user)
             instances = [instance]
         else:
