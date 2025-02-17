@@ -9,6 +9,9 @@ from jobs.jobposts.schema import JobCompanyData
 from ninja.pagination import paginate
 from jobs.jobposts.models import JobPosts
 from jobs.job_actions.schema import ApplyJobs, ApplyCandidatesData
+from recruiter.company.schema import CompanyDetails, CompanyData
+from seeker.details.schema import Personal, Qualification, Employment
+from recruiter.recruiter_actions.schema import SeekerData
 
 User = get_user_model()
 admin_api = Router(tags=['admin'])
@@ -76,7 +79,7 @@ def job_post_application(request, job_id: int, order: str = 'active'):
         }
     return 409, {"message" : "You are not authorized"}
 
-#################################  J O B S  #################################
+#################################  J O B S  A P P L I C A T I O N S  #################################
 @admin_api.get("/all_applications", response={201: List[ApplyCandidatesData], 409:Message}, description="Fetch all job applications")
 @paginate
 def all_applications(request, order: str = 'active'):
@@ -109,6 +112,23 @@ def all_applications(request, order: str = 'active'):
             })
         return 200, applications
     return 409, {"message" : "You are not authorized"}
+
+#################################  C O M P A N Y  #################################
+@company_api.get("/all_company", response={200: List[CompanyData], 409: Message}, description="All company datas")
+def all_company(request):
+    return 200, CompanyDetails.objects.all()
+
+#################################  S E E K E R S  #################################
+@company_api.get("/all_seekers", response={200: List[SeekerData], 409: Message}, description="All company datas")
+def all_seekers(request):
+    seekers = []
+    for profile in User.objects.filter(role="seeker"):
+        if Personal.objects.filter(user=profile).exists():
+            personal = Personal.objects.get(user=profile)
+            employment = Employment.objects.filter(user=profile)
+            qualification = Qualification.objects.filter(user=profile)
+            seekers.append({"personal": {"personal": personal, "user": profile}, "employment": employment, "qualification": qualification})
+    return 200, seekers
 
 #################################  P L A N S  #################################
 @admin_api.post("/create_plans", response={201: Message, 409:Message}, description="Plan creations")
