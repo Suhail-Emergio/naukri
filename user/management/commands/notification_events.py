@@ -3,7 +3,7 @@ from naukry.utils.twilio import send_updates
 from naukry.utils.notification import send_notifications
 from django.contrib.auth import get_user_model
 from naukry.utils.profile_completion import completion_data
-from asgiref.sync import sync_to_async
+from asgiref.sync import sync_to_async, async_to_sync
 from jobs.job_actions.models import SaveJobs
 from common_actions.models import Suggestions
 from jobs.jobposts.models import JobPosts
@@ -44,7 +44,7 @@ class Command(BaseCommand):
             print(f"search apps for {i} is created")
 
     def post_completion(self, user):
-        profile_completion_percentage, empty_models, models_with_empty_fields = sync_to_async(completion_data(user))
+        profile_completion_percentage, empty_models, models_with_empty_fields = async_to_sync(completion_data(user))
         if profile_completion_percentage < 100:
             self.send_noti(onesignal_id=user.onesignal_id, whatsapp_updations=user.whatsapp_updations, phone=user.phone, subject="Complete your profile for better visibility to recruiters.", title="Profile completion")
             notification = Notification.objects.create(
