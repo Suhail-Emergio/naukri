@@ -7,6 +7,8 @@ from naukry.utils.auth import AsyncJWTAuth as auth
 from user.models import *
 import jwt
 from django.conf import settings
+from common_actions.models import Notification
+from recruiter.recruiter_actions.models import InviteCandidate
 
 router = APIRouter()
 
