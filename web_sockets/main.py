@@ -30,7 +30,7 @@ class ConnectionManager:
             },
         }
         print(message, user_id)
-        await manager.broadcast_to_user(message=message, user_id=user.id)
+        await manager.broadcast_to_user(message=message, user_id=user_id)
 
     def disconnect(self, websocket: WebSocket, user_id: int):
         if user_id in self.active_connections:
