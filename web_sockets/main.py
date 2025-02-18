@@ -14,11 +14,21 @@ class ConnectionManager:
     def __init__(self):
         self.active_connections: Dict[int, List[WebSocket]] = {}
 
-    async def connect(self, websocket: WebSocket, user_id: int):
+    async def connect(self, websocket: WebSocket, user_id: int, notification: int, invitation: int, seeker: bool):
         print(f"{user_id} is user id")
         if user_id not in self.active_connections:
             self.active_connections[user_id] = []
         self.active_connections[user_id].append(websocket)
+
+        message = {
+            "type": "counts_update",
+            "data": {
+                "notification_count": notification,
+                "invitation_count": invitation,
+            },
+        }
+        print(message, user_id)
+        await manager.broadcast_to_user(message=message, user_id=user.id)
 
     def disconnect(self, websocket: WebSocket, user_id: int):
         if user_id in self.active_connections:
@@ -68,22 +78,14 @@ async def websocket_endpoint(websocket: WebSocket):
                 print("No user found")
                 await websocket.close(code=4002, reason="Invalid user ID")
                 return
-            await manager.connect(websocket, user.id)
+            notification_count = await Notification.objects.filter(user=user).exclude(read_by=user).acount()
+            seeker = true
+            if user.role == "seeker":
+                invitation_count = await InviteCandidate.objects.filter(candidate__user=user, read=False).count()
+            await manager.connect(websocket, user.id, notification_count, invitation_count, seeker)
             try:
                 while True:
                     await websocket.receive_text()
-                    # notification_count = Notification.objects.filter(user=user).exclude(read_by=user).count()
-                    # if user.role == "seeker":
-                    #     invitation_count = InviteCandidate.objects.filter(candidate__user=user, read=False).count()
-                    #     message = {
-                    #         "type": "counts_update",
-                    #         "data": {
-                    #             "notification_count": notification_count,
-                    #             "invitation_count": invitation_count,
-                    #         },
-                    #     }
-                    #     print(message, user.id)
-                    #     manager.broadcast_to_user(message=message, user_id=user.id)
             except WebSocketDisconnect:
                 manager.disconnect(websocket, user.id)
         except Exception as e:
