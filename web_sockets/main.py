@@ -16,7 +16,7 @@ class ConnectionManager:
     def __init__(self):
         self.active_connections: Dict[int, List[WebSocket]] = {}
 
-    async def connect(self, websocket: WebSocket, user_id: int, notification: int, seeker: bool, invitation: int = 0):
+    async def connect(self, websocket: WebSocket, user_id: int, notification: int, invitation: int, seeker: bool):
         print(f"{user_id} is user id")
         if user_id not in self.active_connections:
             self.active_connections[user_id] = []
@@ -82,8 +82,7 @@ async def websocket_endpoint(websocket: WebSocket):
                 return
             notification_count = await Notification.objects.filter(user=user).exclude(read_by=user).acount()
             seeker = True
-            if user.role == "seeker":
-                invitation_count = await InviteCandidate.objects.filter(candidate__user=user, read=False).count()
+            invitation_count = await InviteCandidate.objects.filter(candidate__user=user, read=False).acount() if user.role == "seeker" else 0
             await manager.connect(websocket, user.id, notification_count, invitation_count, seeker)
             try:
                 while True:
