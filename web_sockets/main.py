@@ -81,7 +81,7 @@ async def websocket_endpoint(websocket: WebSocket):
                 await websocket.close(code=4002, reason="Invalid user ID")
                 return
             notification_count = await Notification.objects.filter(user=user).exclude(read_by=user).acount()
-            seeker = true
+            seeker = True
             if user.role == "seeker":
                 invitation_count = await InviteCandidate.objects.filter(candidate__user=user, read=False).count()
             await manager.connect(websocket, user.id, notification_count, invitation_count, seeker)
