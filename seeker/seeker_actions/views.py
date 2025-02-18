@@ -9,7 +9,7 @@ from django.utils import timezone
 from django.db.models.functions import ExtractMonth, TruncDate, ExtractDay
 from django.db.models import Case, When, IntegerField, F, Sum
 from .models import BlockedCompanies
-from asgiref.sync import sync_to_async
+from asgiref.sync import sync_to_async, async_to_sync
 from recruiter.recruiter_actions.models import InviteCandidate, SaveCandidate
 from recruiter.company.models import CompanyDetails
 from recruiter.company.schema import CompanyData
@@ -138,7 +138,7 @@ def recruiter_action(request):
 
 @seeker_actions_api.get("/seach_apps", description="Search appearences of a seeker")
 def seach_apps(request, type: str = ""):
-    user = request.auth
+    user = async_to_sync(request.auth)()
     today = timezone.now()
     appearences = []
     appearences = 0
