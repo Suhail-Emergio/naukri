@@ -6,7 +6,7 @@ from typing import *
 from .models import *
 from user.schema import *
 from jobs.jobposts.schema import JobCompanyData
-from ninja.pagination import paginate, LimitOffsetPagination
+from ninja.pagination import paginate
 from jobs.jobposts.models import JobPosts
 from jobs.job_actions.schema import ApplyJobs, ApplyCandidatesData
 from recruiter.company.schema import CompanyDetails, CompanyData
@@ -14,16 +14,13 @@ from seeker.details.schema import Personal, Qualification, Employment
 from recruiter.recruiter_actions.schema import SeekerData
 from common_actions.models import Subscription
 
-class CustomPagination(LimitOffsetPagination):
-    default_limit = 20
-
 User = get_user_model()
 admin_api = Router(tags=['admin'])
 
 #################################  J O B S  #################################
 @admin_api.get("/all_jobs", response={201: List[JobCompanyData], 409:Message}, description="Fetch all jobs")
-@paginate(CustomPagination)
-async def all_jobs(request, order: str = 'active'):
+@paginate
+async def all_jobs(request, order: str = 'active', offset=0):
     user = request.auth
     if user.is_superuser:
         jobs = [i async for i in JobPosts.objects.all().order_by(f'-{order}')]
@@ -35,8 +32,8 @@ async def all_jobs(request, order: str = 'active'):
     return 409, {"message" : "You are not authorized"}
 
 @admin_api.get("/job_post_application", response={200: ApplicationStats, 409:Message}, description="Fetch all applications for a job")
-@paginate(CustomPagination)
-def job_post_application(request, job_id: int, order: str = 'active'):
+# @paginate
+def job_post_application(request, job_id: int, order: str = 'active', offset=0):
     user = request.auth
     if user.is_superuser:
         applications = []
@@ -85,8 +82,8 @@ def job_post_application(request, job_id: int, order: str = 'active'):
 
 #################################  J O B S  A P P L I C A T I O N S  #################################
 @admin_api.get("/all_applications", response={201: List[ApplyCandidatesData], 409:Message}, description="Fetch all job applications")
-@paginate(CustomPagination)
-def all_applications(request, order: str = 'active'):
+@paginate
+def all_applications(request, order: str = 'active', offset=0):
     user = request.auth
     if user.is_superuser:
         applications = []
@@ -119,14 +116,14 @@ def all_applications(request, order: str = 'active'):
 
 #################################  C O M P A N Y  #################################
 @admin_api.get("/all_company", response={200: List[CompanyData], 409: Message}, description="All company datas")
-@paginate(CustomPagination)
-def all_company(request):
+@paginate
+def all_company(request, offset=0):
     return 200, CompanyDetails.objects.all()
 
 #################################  S E E K E R S  #################################
 @admin_api.get("/all_seekers", response={200: List[SeekerData], 409: Message}, description="All company datas")
-@paginate(CustomPagination)
-def all_seekers(request):
+@paginate
+def all_seekers(request, offset=0):
     seekers = []
     for profile in User.objects.filter(role="seeker"):
         if Personal.objects.filter(user=profile).exists():
@@ -138,8 +135,8 @@ def all_seekers(request):
 
 #################################  S U B S C R I P T I O N S  #################################
 @admin_api.get("/all_subs", response={200: List[SeekerData], 405: Message, 409: Message}, description="All company datas")
-@paginate(CustomPagination)
-def all_subs(request, type: str = "all" ):
+@paginate
+def all_subs(request, type: str = "all" , offset=0):
     seekers = []
     if type not in ['seeker', 'recruiter', 'all']:
         return 405, {"message": "Type should be either seeker, recruiter or all"}
