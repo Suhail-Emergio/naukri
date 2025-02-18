@@ -114,12 +114,12 @@ def all_applications(request, order: str = 'active'):
     return 409, {"message" : "You are not authorized"}
 
 #################################  C O M P A N Y  #################################
-@company_api.get("/all_company", response={200: List[CompanyData], 409: Message}, description="All company datas")
+@admin_api.get("/all_company", response={200: List[CompanyData], 409: Message}, description="All company datas")
 def all_company(request):
     return 200, CompanyDetails.objects.all()
 
 #################################  S E E K E R S  #################################
-@company_api.get("/all_seekers", response={200: List[SeekerData], 409: Message}, description="All company datas")
+@admin_api.get("/all_seekers", response={200: List[SeekerData], 409: Message}, description="All company datas")
 def all_seekers(request):
     seekers = []
     for profile in User.objects.filter(role="seeker"):
