@@ -22,6 +22,7 @@ class ConnectionManager:
             self.active_connections[user_id] = []
         self.active_connections[user_id].append(websocket)
 
+        ## Sending data to frontend on connection
         message = {
             "type": "counts_update",
             "data": {

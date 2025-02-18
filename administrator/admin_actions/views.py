@@ -12,6 +12,7 @@ from jobs.job_actions.schema import ApplyJobs, ApplyCandidatesData
 from recruiter.company.schema import CompanyDetails, CompanyData
 from seeker.details.schema import Personal, Qualification, Employment
 from recruiter.recruiter_actions.schema import SeekerData
+from common_actions.models import Subscription
 
 User = get_user_model()
 admin_api = Router(tags=['admin'])
@@ -115,14 +116,32 @@ def all_applications(request, order: str = 'active'):
 
 #################################  C O M P A N Y  #################################
 @admin_api.get("/all_company", response={200: List[CompanyData], 409: Message}, description="All company datas")
+@paginate
 def all_company(request):
     return 200, CompanyDetails.objects.all()
 
 #################################  S E E K E R S  #################################
 @admin_api.get("/all_seekers", response={200: List[SeekerData], 409: Message}, description="All company datas")
+@paginate
 def all_seekers(request):
     seekers = []
     for profile in User.objects.filter(role="seeker"):
+        if Personal.objects.filter(user=profile).exists():
+            personal = Personal.objects.get(user=profile)
+            employment = Employment.objects.filter(user=profile)
+            qualification = Qualification.objects.filter(user=profile)
+            seekers.append({"personal": {"personal": personal, "user": profile}, "employment": employment, "qualification": qualification})
+    return 200, seekers
+
+#################################  S U B S C R I P T I O N S  #################################
+@admin_api.get("/all_subs", response={200: List[SeekerData], 405: Message, 409: Message}, description="All company datas")
+@paginate
+def all_subs(request, type: str = "all"):
+    seekers = []
+    if type not in ['seeker', 'recruiter', 'all']:
+        return 405, {"message": "Type should be either seeker, recruiter or all"}
+    subscriptions = Subscription.objects.filter(user__role=type) if type != "all" else Subscription.objects.all()
+    for subs in subscriptions:
         if Personal.objects.filter(user=profile).exists():
             personal = Personal.objects.get(user=profile)
             employment = Employment.objects.filter(user=profile)
