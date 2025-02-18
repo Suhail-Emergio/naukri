@@ -20,7 +20,7 @@ admin_api = Router(tags=['admin'])
 #################################  J O B S  #################################
 @admin_api.get("/all_jobs", response={201: List[JobCompanyData], 409:Message}, description="Fetch all jobs")
 @paginate
-async def all_jobs(request, order: str = 'active', offset=0):
+async def all_jobs(request, order: str = 'active'):
     user = request.auth
     if user.is_superuser:
         jobs = [i async for i in JobPosts.objects.all().order_by(f'-{order}')]
@@ -33,7 +33,7 @@ async def all_jobs(request, order: str = 'active', offset=0):
 
 @admin_api.get("/job_post_application", response={200: ApplicationStats, 409:Message}, description="Fetch all applications for a job")
 # @paginate
-def job_post_application(request, job_id: int, order: str = 'active', offset=0):
+def job_post_application(request, job_id: int, order: str = 'active'):
     user = request.auth
     if user.is_superuser:
         applications = []
@@ -83,7 +83,7 @@ def job_post_application(request, job_id: int, order: str = 'active', offset=0):
 #################################  J O B S  A P P L I C A T I O N S  #################################
 @admin_api.get("/all_applications", response={201: List[ApplyCandidatesData], 409:Message}, description="Fetch all job applications")
 @paginate
-def all_applications(request, order: str = 'active', offset=0):
+def all_applications(request, order: str = 'active'):
     user = request.auth
     if user.is_superuser:
         applications = []
@@ -117,13 +117,13 @@ def all_applications(request, order: str = 'active', offset=0):
 #################################  C O M P A N Y  #################################
 @admin_api.get("/all_company", response={200: List[CompanyData], 409: Message}, description="All company datas")
 @paginate
-def all_company(request, offset=0):
+def all_company(request):
     return 200, CompanyDetails.objects.all()
 
 #################################  S E E K E R S  #################################
 @admin_api.get("/all_seekers", response={200: List[SeekerData], 409: Message}, description="All company datas")
 @paginate
-def all_seekers(request, offset=0):
+def all_seekers(request):
     seekers = []
     for profile in User.objects.filter(role="seeker"):
         if Personal.objects.filter(user=profile).exists():
@@ -136,7 +136,7 @@ def all_seekers(request, offset=0):
 #################################  S U B S C R I P T I O N S  #################################
 @admin_api.get("/all_subs", response={200: List[SeekerData], 405: Message, 409: Message}, description="All company datas")
 @paginate
-def all_subs(request, type: str = "all" , offset=0):
+def all_subs(request, type: str = "all" ):
     seekers = []
     if type not in ['seeker', 'recruiter', 'all']:
         return 405, {"message": "Type should be either seeker, recruiter or all"}
