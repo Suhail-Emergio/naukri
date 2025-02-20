@@ -18,7 +18,7 @@ User = get_user_model()
 admin_api = Router(tags=['admin'])
 
 #################################  J O B S  #################################
-@admin_api.get("/all_jobs", response={201: List[JobCompanyData], 409:Message}, description="Fetch all jobs")
+@admin_api.get("/all_jobs", response={200: List[JobCompanyData], 409:Message}, description="Fetch all jobs")
 @paginate
 async def all_jobs(request, order: str = 'active'):
     user = request.auth
@@ -81,7 +81,7 @@ def job_post_application(request, job_id: int, order: str = 'active'):
     return 409, {"message" : "You are not authorized"}
 
 #################################  J O B S  A P P L I C A T I O N S  #################################
-@admin_api.get("/all_applications", response={201: List[ApplyCandidatesData], 409:Message}, description="Fetch all job applications")
+@admin_api.get("/all_applications", response={200: List[ApplyCandidatesData], 409:Message}, description="Fetch all job applications")
 @paginate
 def all_applications(request, order: str = 'active'):
     user = request.auth

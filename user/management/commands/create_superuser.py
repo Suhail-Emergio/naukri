@@ -17,6 +17,7 @@ class Command(BaseCommand):
                 username=username,
                 email=email,
                 password=password,
+                email_verified=True
             )
             # token = Token.objects.create(user=user)
             self.stdout.write(self.style.SUCCESS('Superuser created successfully'))
