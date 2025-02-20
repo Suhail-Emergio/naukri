@@ -139,7 +139,7 @@ def recruiter_action(request):
 
 @seeker_actions_api.get("/seach_apps", description="Search appearences of a seeker")
 def seach_apps(request, type: str = ""):
-    user = async_to_sync(request.auth)()
+    user = request.auth
     today = timezone.now()
     appearences = []
     appearences = 0
