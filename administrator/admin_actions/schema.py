@@ -4,6 +4,8 @@ from ninja.orm import create_schema
 from .models import *
 from datetime import timedelta
 from jobs.job_actions.schema import ApplyCandidatesData
+from seeker.details.schema import SeekerData
+from jobs.jobposts.schema import JobCompanyData
 
 class PlanCreation(Schema):
     title: str
@@ -43,3 +45,15 @@ class AdminCompany(Schema):
     designation : str
     logo: str | None
     id: int
+
+class AllSubsData(Schema):
+    id: int
+    seeker: SeekerData
+    plan: PlanData
+    remaining_posts: int
+    transaction_id: str
+    subscribed_on: str
+
+class AllJobsData(Schema):
+    job: JobCompanyData
+    remaining_vacancy: int

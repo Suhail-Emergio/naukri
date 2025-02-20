@@ -5,7 +5,6 @@ from .schema import *
 from typing import *
 from .models import *
 from user.schema import *
-from jobs.jobposts.schema import JobCompanyData
 from ninja.pagination import paginate
 from jobs.jobposts.models import JobPosts
 from jobs.job_actions.schema import ApplyJobs, ApplyCandidatesData
@@ -18,16 +17,19 @@ User = get_user_model()
 admin_api = Router(tags=['admin'])
 
 #################################  J O B S  #################################
-@admin_api.get("/all_jobs", response={200: List[JobCompanyData], 409:Message}, description="Fetch all jobs")
+@admin_api.get("/all_jobs", response={200: List[AllJobsData], 409:Message}, description="Fetch all jobs")
 @paginate
 async def all_jobs(request, order: str = 'active'):
     user = request.auth
     if user.is_superuser:
         jobs = [i async for i in JobPosts.objects.all().order_by(f'-{order}')]
-        job_company_data = []
+        all_job = []
         for job in jobs:
+            job_company_data = []
             company_details = await CompanyDetails.objects.aget(id=job.company_id)
             job_company_data.append({"job_posts": job, "company_data": company_details})
+            remaining_vacancy = job.vacancy - ApplyJobs.objects.filter(job=job).acount()
+            all_job.append({"job": job_company_data, "remaining_vacancy": remaining_vacancy})
         return job_company_data
     return 409, {"message" : "You are not authorized"}
 
@@ -133,21 +135,30 @@ def all_seekers(request):
     return seekers
 
 #################################  S U B S C R I P T I O N S  #################################
-@admin_api.get("/all_subs", response={200: List[SeekerData], 405: Message, 409: Message}, description="All company datas")
+@admin_api.get("/all_subs", response={200: List[AllSubsData], 405: Message, 409: Message}, description="All company datas")
 @paginate
 def all_subs(request, type: str = "all" ):
-    seekers = []
     if type not in ['seeker', 'recruiter', 'all']:
         return 405, {"message": "Type should be either seeker, recruiter or all"}
     subscriptions = Subscription.objects.filter(user__role=type) if type != "all" else Subscription.objects.all()
+    all_sub = []
     for subs in subscriptions:
+        seekers = []
         profile = subs.user
         if Personal.objects.filter(user=profile).exists():
             personal = Personal.objects.get(user=profile)
             employment = Employment.objects.filter(user=profile)
             qualification = Qualification.objects.filter(user=profile)
             seekers.append({"personal": {"personal": personal, "user": profile}, "employment": employment, "qualification": qualification})
-    return seekers
+        all_sub = {
+            "id": subs.id,
+            "seeker": seekers,
+            "plan": subs.plan,
+            "remaining_posts": subs.remaining_posts,
+            "transaction_id": subs.transaction_id,
+            "subscribed_on": subs.subscribed_on
+        }
+    return all_sub
 
 #################################  P L A N S  #################################
 @admin_api.post("/create_plans", response={201: Message, 409:Message}, description="Plan creations")
@@ -168,7 +179,7 @@ async def plans(request):
     return 409, {"message" : "You are not authorized to access plans"}
 
 
-@admin_api.get("/update_plans", response={201: Message, 409:Message}, description="Plan details")
+@admin_api.patch("/update_plans", response={201: Message, 409:Message}, description="Plan details")
 async def update_plans(request, data: PatchDict[PlanCreation]):
     user = request.auth
     if user.is_superuser:
@@ -181,7 +192,7 @@ async def update_plans(request, data: PatchDict[PlanCreation]):
         return 409, {"message" : "Plan doesnot exists"}
     return 409, {"message" : "You are not authorized to access plans"}
 
-@admin_api.get("/delete_plans", response={201: Message, 404: Message, 409:Message}, description="Plan details")
+@admin_api.delete("/delete_plans", response={201: Message, 404: Message, 409:Message}, description="Plan details")
 async def delete_plans(request, id: int):
     user = request.auth
     if user.is_superuser:
@@ -210,7 +221,7 @@ async def banners(request):
         return 201, banner
     return 409, {"message" : "You are not authorized to access banners"}
 
-@admin_api.get("/update_banner", response={201: Message, 409:Message}, description="Banner updations")
+@admin_api.patch("/update_banner", response={201: Message, 409:Message}, description="Banner updations")
 async def update_banner(request, data: PatchDict[PlanCreation]):
     user = request.auth
     if user.is_superuser:
@@ -223,7 +234,7 @@ async def update_banner(request, data: PatchDict[PlanCreation]):
         return 409, {"message" : "banner doesnot exists"}
     return 409, {"message" : "You are not authorized to delete banners"}
 
-@admin_api.get("/delete_banners", response={201: Message, 404: Message, 409:Message}, description="banner details")
+@admin_api.delete("/delete_banners", response={201: Message, 404: Message, 409:Message}, description="banner details")
 async def delete_banners(request, id: int):
     user = request.auth
     if user.is_superuser:
