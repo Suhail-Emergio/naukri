@@ -98,6 +98,7 @@ async def interviews_scheduled(request):
     scheduled = []
     for i in interviews:
         candidate = await sync_to_async(lambda: i.application.user)()
+        job = await sync_to_async(lambda: i.application.job)()
         personal = await Personal.objects.aget(user=candidate)
         employment = None
         if await Employment.objects.filter(user=candidate).aexists():
@@ -105,7 +106,7 @@ async def interviews_scheduled(request):
         qualification = None
         if await Qualification.objects.filter(user=candidate).aexists():
             qualification = [i async for i in Qualification.objects.filter(user=candidate).order_by('-id')]
-        scheduled.append({"candidate": {"personal": {"personal": personal, "user": candidate}, "employment": employment, "qualification": qualification}, "schedule": i.schedule, "created_on": i.created_on})
+        scheduled.append({"id": i.id, "candidate": {"personal": {"personal": personal, "user": candidate}, "employment": employment, "qualification": qualification}, "schedule": i.schedule, "job": job, "created_on": i.created_on})
     return 200, scheduled
 
 #################################  R E C R U I T E R  A C T I O N S  #################################
