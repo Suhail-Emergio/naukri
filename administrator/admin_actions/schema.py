@@ -4,7 +4,7 @@ from ninja.orm import create_schema
 from .models import *
 from datetime import timedelta
 from jobs.job_actions.schema import ApplyCandidatesData
-from seeker.details.schema import SeekerData
+from recruiter.recruiter_actions.schema import SeekerData
 from jobs.jobposts.schema import JobCompanyData
 
 class PlanCreation(Schema):
