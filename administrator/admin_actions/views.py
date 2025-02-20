@@ -32,7 +32,7 @@ async def all_jobs(request, order: str = 'active'):
             count = await ApplyJobs.objects.filter(job=job).acount()
             remaining_vacancy = vacancy - count
             all_job.append({"job": job_company_data, "remaining_vacancy": remaining_vacancy})
-        return job_company_data
+        return all_job
     return 409, {"message" : "You are not authorized"}
 
 @admin_api.get("/job_post_application", response={200: ApplicationStats, 409:Message}, description="Fetch all applications for a job")
