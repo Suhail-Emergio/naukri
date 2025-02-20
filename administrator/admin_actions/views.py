@@ -71,7 +71,7 @@ def job_post_application(request, job_id: int, order: str = 'active'):
                 rejected += 1 
             else:
                 candidates += 1
-        return 200, {
+        return 201, {
             "applications": applications,
             "views": 0,
             "candidates": candidates,
@@ -111,14 +111,14 @@ def all_applications(request, order: str = 'active'):
                 "viewed": i.viewed,
                 "created_on": i.created_on,
             })
-        return 200, applications
+        return applications
     return 409, {"message" : "You are not authorized"}
 
 #################################  C O M P A N Y  #################################
 @admin_api.get("/all_company", response={200: List[CompanyData], 409: Message}, description="All company datas")
 @paginate
 def all_company(request):
-    return 200, CompanyDetails.objects.all()
+    return CompanyDetails.objects.all()
 
 #################################  S E E K E R S  #################################
 @admin_api.get("/all_seekers", response={200: List[SeekerData], 409: Message}, description="All company datas")
@@ -131,7 +131,7 @@ def all_seekers(request):
             employment = Employment.objects.filter(user=profile)
             qualification = Qualification.objects.filter(user=profile)
             seekers.append({"personal": {"personal": personal, "user": profile}, "employment": employment, "qualification": qualification})
-    return 200, seekers
+    return seekers
 
 #################################  S U B S C R I P T I O N S  #################################
 @admin_api.get("/all_subs", response={200: List[SeekerData], 405: Message, 409: Message}, description="All company datas")
@@ -147,7 +147,7 @@ def all_subs(request, type: str = "all" ):
             employment = Employment.objects.filter(user=profile)
             qualification = Qualification.objects.filter(user=profile)
             seekers.append({"personal": {"personal": personal, "user": profile}, "employment": employment, "qualification": qualification})
-    return 200, seekers
+    return seekers
 
 #################################  P L A N S  #################################
 @admin_api.post("/create_plans", response={201: Message, 409:Message}, description="Plan creations")
