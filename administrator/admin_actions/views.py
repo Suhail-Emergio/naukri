@@ -71,7 +71,7 @@ def job_post_application(request, job_id: int):
                 rejected += 1 
             else:
                 candidates += 1
-        return 201, {
+        return 200, {
             "applications": applications,
             "views": 0,
             "candidates": candidates,
@@ -115,7 +115,7 @@ def all_applications(request):
     return 409, {"message" : "You are not authorized"}
 
 #################################  C O M P A N Y  #################################
-@admin_api.get("/all_company", response={200: List[CompanyData], 409: Message}, description="All company datas")
+@admin_api.get("/all_company", response={200: List[AdminCompany], 409: Message}, description="All company datas")
 @paginate
 def all_company(request):
     return CompanyDetails.objects.all()

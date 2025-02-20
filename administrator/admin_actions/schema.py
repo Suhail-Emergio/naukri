@@ -29,7 +29,7 @@ class ApplicationStats(Schema):
     shortlisted: int
     rejected: int
 
-class CompanyCreation(Schema):
+class AdminCompany(Schema):
     about : str
     website : str
     functional_area : str
@@ -41,5 +41,5 @@ class CompanyCreation(Schema):
     contact_land_number : str
     contact_mobile_number : str
     designation : str
-    logo: str
+    logo: str | None
     id: int
