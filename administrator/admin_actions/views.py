@@ -33,7 +33,7 @@ async def all_jobs(request, order: str = 'active'):
 
 @admin_api.get("/job_post_application", response={200: ApplicationStats, 409:Message}, description="Fetch all applications for a job")
 # @paginate
-def job_post_application(request, job_id: int, order: str = 'active'):
+def job_post_application(request, job_id: int):
     user = request.auth
     if user.is_superuser:
         applications = []
@@ -41,7 +41,7 @@ def job_post_application(request, job_id: int, order: str = 'active'):
         candidates = 0
         shortlisted = 0
         rejected = 0
-        for i in ApplyJobs.objects.filter(job__id=job_id).order_by(f'-{order}'):
+        for i in ApplyJobs.objects.filter(job__id=job_id):
             candidates = []
             if not Personal.objects.filter(user=i.user).exists():
                 continue
@@ -83,11 +83,11 @@ def job_post_application(request, job_id: int, order: str = 'active'):
 #################################  J O B S  A P P L I C A T I O N S  #################################
 @admin_api.get("/all_applications", response={200: List[ApplyCandidatesData], 409:Message}, description="Fetch all job applications")
 @paginate
-def all_applications(request, order: str = 'active'):
+def all_applications(request):
     user = request.auth
     if user.is_superuser:
         applications = []
-        for i in ApplyJobs.objects.filter(job__id=job_id).order_by(f'-{order}'):
+        for i in ApplyJobs.objects.all():
             candidates = []
             if not Personal.objects.filter(user=i.user).exists():
                 continue

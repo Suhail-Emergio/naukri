@@ -28,3 +28,18 @@ class ApplicationStats(Schema):
     candidates: int
     shortlisted: int
     rejected: int
+
+class CompanyCreation(Schema):
+    about : str
+    website : str
+    functional_area : str
+    address : Union[List[str], Dict[str, Any]]
+    city : str
+    country : str
+    postal_code : str
+    contact_name : str
+    contact_land_number : str
+    contact_mobile_number : str
+    designation : str
+    logo: str
+    id: int
