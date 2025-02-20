@@ -142,6 +142,7 @@ def all_subs(request, type: str = "all" ):
         return 405, {"message": "Type should be either seeker, recruiter or all"}
     subscriptions = Subscription.objects.filter(user__role=type) if type != "all" else Subscription.objects.all()
     for subs in subscriptions:
+        profile = subs.user
         if Personal.objects.filter(user=profile).exists():
             personal = Personal.objects.get(user=profile)
             employment = Employment.objects.filter(user=profile)
