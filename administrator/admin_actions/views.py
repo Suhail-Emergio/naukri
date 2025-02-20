@@ -25,13 +25,11 @@ async def all_jobs(request, order: str = 'active'):
         jobs = [i async for i in JobPosts.objects.all().order_by(f'-{order}')]
         all_job = []
         for job in jobs:
-            job_company_data = []
             company_details = await CompanyDetails.objects.aget(id=job.company_id)
-            job_company_data.append({"job_posts": job, "company_data": company_details})
             vacancy = await sync_to_async(lambda: job.vacancy)()
             count = await ApplyJobs.objects.filter(job=job).acount()
             remaining_vacancy = vacancy - count
-            all_job.append({"job": job_company_data, "remaining_vacancy": remaining_vacancy})
+            all_job.append({"job": {"job_posts": job, "company_data": company_details}, "remaining_vacancy": remaining_vacancy})
         return all_job
     return 409, {"message" : "You are not authorized"}
 
