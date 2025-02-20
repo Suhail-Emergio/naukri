@@ -18,7 +18,7 @@ async def personal(request, data: PersonalCreation, cv: UploadedFile = File(...)
     if await Personal.objects.filter(user=request.auth).aexists():
         return 409, {"message": "Personal data already exists"}
     personal = await Personal.objects.acreate(**data.dict(), user=request.auth)
-    await personal.cv.asave(cv.name, cv)
+    await sync_to_async(personal.cv.save)(cv.name, cv)
     await personal.profile_image.asave(profile_image.name, profile_image)
     return 201, {"message": "Personal data created"}
 
