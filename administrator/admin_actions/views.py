@@ -28,7 +28,7 @@ async def all_jobs(request, order: str = 'active'):
         for job in jobs:
             company_details = await CompanyDetails.objects.aget(id=job.company_id)
             job_company_data.append({"job_posts": job, "company_data": company_details})
-        return 200, job_company_data
+        return job_company_data
     return 409, {"message" : "You are not authorized"}
 
 @admin_api.get("/job_post_application", response={200: ApplicationStats, 409:Message}, description="Fetch all applications for a job")
