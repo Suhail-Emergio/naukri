@@ -42,7 +42,6 @@ def job_post_application(request, job_id: int):
         shortlisted = 0
         rejected = 0
         for i in ApplyJobs.objects.filter(job__id=job_id):
-            candidates = []
             if not Personal.objects.filter(user=i.user).exists():
                 continue
             personal = Personal.objects.get(user=i.user)
