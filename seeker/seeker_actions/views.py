@@ -158,4 +158,5 @@ def seach_apps(request, type: str = ""):
     else:
         start_date = today - timedelta(days=90)
         appearences = (SearchApps.objects.filter(user=user, date__range=[start_date, today]).annotate(month=ExtractMonth("date")).values("month").annotate(total_count=Sum("count")).values("month", "total_count").order_by('date'))
-    return list(appearences)
+    total_count = sum(item["total_count"] for item in appearences)
+    return {"items": list(appearences), "total_count": total_count}
