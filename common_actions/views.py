@@ -36,7 +36,7 @@ async def recruiter_plans(request):
 @common_api.get("/banners", response={200: List[BannerData], 404: Message, 409:Message}, description="All plans")
 async def banners(request):
     user = request.auth
-    banner = [i async for i in Banner.objects.all()]
+    banner = [i async for i in Banner.objects.filter(audience = user.role)]
     return 200, banner
 
 #################################  S U B S C R I P T I O N S  #################################

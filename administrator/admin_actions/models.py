@@ -17,3 +17,6 @@ class Plans(models.Model):
 
 class Banner(models.Model):
     image = models.ImageField(upload_to="banner")
+    duration = models.DurationField(default=timedelta(days=30))
+    audience = models.CharField(max_length=20, choices=[('seeker','seeker'), ('recruiter','recruiter')], default="seeker")
+    created_on = models.DateField(auto_now=True)

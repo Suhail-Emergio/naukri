@@ -33,7 +33,6 @@ class Command(BaseCommand):
                 self.post_completion(j.user)
                 self.saved_jobs(today, j.user)
                 self.feedback_request(today, j.user)
-        # self.inactive_users()
             rec_day = today.weekday() == 7 if j.recommendations == "weekly" else True if j.alerts == "daily" else None
             if rec_day:
                 self.recommendations()
