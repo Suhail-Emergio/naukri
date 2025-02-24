@@ -57,3 +57,5 @@ class AllSubsData(Schema):
 class AllJobsData(Schema):
     job: JobCompanyData
     remaining_vacancy: int
+    company_name: str
+    company_logo: str | None
