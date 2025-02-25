@@ -11,14 +11,6 @@ class Command(BaseCommand):
 
     def handle(self, *args, **options):
         today = timezone.now().date()
-        subscriptions = Subscription.objects.annotate(
-            expiry_date=ExpressionWrapper(F('subscribed_on') + F('plan__duration'),output_field=DateField())
-        ).filter(expiry_date=today)
-        subscriptions.delete()
-        banners = Banner.objects.annotate(
-            expiry_date=ExpressionWrapper(F('created_on') + F('duration'), output_field=DateField())
-        ).filter(expiry_date=today)
-        banners.delete()
         for j in NotificationPreference.objects.all():
             noti_day = today.weekday() == 5 if j.alerts == "weekly" else True if j.alerts == "daily" else None
             if noti_day:

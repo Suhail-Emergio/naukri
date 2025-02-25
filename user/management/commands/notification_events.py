@@ -26,7 +26,6 @@ class Command(BaseCommand):
 
     def handle(self, *args, **options):
         today = timezone.now().date()
-        self.search_apps_creation()
         for j in Np.objects.all():
             noti_day = today.weekday() == 6 if j.alerts == "weekly" else True if j.alerts == "daily" else None
             if noti_day:
@@ -36,11 +35,6 @@ class Command(BaseCommand):
             rec_day = today.weekday() == 7 if j.recommendations == "weekly" else True if j.alerts == "daily" else None
             if rec_day:
                 self.recommendations()
-
-    def search_apps_creation(self):
-        for i in User.objects.filter(role="seeker"):
-            SearchApps.objects.create(user=i)
-            print(f"search apps for {i} is created")
 
     def post_completion(self, user):
         profile_completion_percentage, empty_models, models_with_empty_fields = async_to_sync(completion_data)(user)
