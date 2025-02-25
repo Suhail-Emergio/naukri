@@ -17,3 +17,4 @@ class ApplyJobs(models.Model):
     viewed = models.BooleanField(default=False)
     invited = models.BooleanField(default=False)
     created_on = models.DateTimeField(auto_now=True)
+    resume_downloaded = models.BooleanField(default=False)

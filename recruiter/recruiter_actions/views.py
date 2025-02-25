@@ -268,3 +268,24 @@ async def recruiter_counts(request):
             "inactive_jobs_count": inactive_jobs_count
         }
     return 404, {"message": "Subscription not found"}
+
+#################################  R E S U M E S  D O W N L O A D E D  #################################
+@recruiter_actions_api.get("/update_resume_count", description="update resume download value")
+async def update_resume_count(request, application_id: int):
+    if await ApplyJobs.objects.filter(id=application_id).aexists():
+        job_applied = await ApplyJobs.objects.aget(id=application_id)
+        job_applied.resume_downloaded = True
+        await job_applied.asave()
+        return 200, {"message": "Resume count updated successfully"}
+    return 404, {"message": "Candidate not found"}
+
+@recruiter_actions_api.get("/resumes_downloaded", description="fetch all resumes downloaded")
+async def resumes_downloaded(request):
+    user = request.auth
+    downloaded = [i async for i in ApplyJobs.objects.filter(job__company__user=user, resume_downloaded=True).order_by('-id')]
+    candidates = []
+    for i in downloaded:
+        personal = await Personal.objects.aget(user=i.user)
+        job = await sync_to_async(lambda: i.job)()
+        candidates.append({"personal": {"personal": personal, "user": i.user}, "job": job})
+    return 200, candidates
