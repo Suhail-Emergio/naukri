@@ -25,6 +25,7 @@ async def all_seekers(request):
     for i in candidate:
         candidate_user = await sync_to_async(lambda: i.user)()
         search_apps = await SearchApps.objects.aget(user=candidate_user, date=timezone.now().date())
+        print(search_apps)
         search_apps.count += 1
         await search_apps.asave()
         employment = None
