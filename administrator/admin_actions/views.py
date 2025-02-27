@@ -12,6 +12,7 @@ from recruiter.company.schema import CompanyDetails, CompanyData
 from seeker.details.schema import Personal, Qualification, Employment
 from recruiter.recruiter_actions.schema import SeekerData
 from common_actions.models import Subscription
+from common_actions.schema import NotificationCreation, Notification
 
 User = get_user_model()
 admin_api = Router(tags=['admin'])
@@ -246,3 +247,50 @@ async def delete_banners(request, id: int):
             return 201, {"message" : "banner deleted successfuly"}
         return 404, {"message" : "banner doesnot exists"}
     return 409, {"message" : "You are not authorized to delete banners"}
+
+#################################  N O T I F I C A T I O N S  #################################
+@admin_api.post("/create_notification", response={201: Message, 404: Message, 409:Message}, description="Create Notifications")
+def create_notification(request, data: NotificationCreation):
+    notification = Notification.objects.create(title=data.title, description=data.description)
+    if data.image:
+        notification.image = data.image
+    if data.url:
+        notification.url = data.url
+    for i in data.user_id:
+        user = User.objects.get(id=i)
+        notification.user.add(user)
+    notification.save()
+    return 201, {"message": "Notification created successfully"}
+
+@admin_api.get("/all_notifications", response={200: List[AllNotifications], 404: Message, 409:Message}, description="All Notifications")
+@paginate
+def all_notifications(request):
+    user = request.auth
+    if user.is_superuser:
+        notifications = [i for i in Notification.objects.all()]
+        return notifications
+    return 409, {"message" : "You are not authorized to access notifications"}
+
+@admin_api.patch("/edit_notifications", response={200: Message, 409:Message}, description="Edit Notifications")
+def edit_notifications(request, data: PatchDict[NotificationCreation]):
+    user = request.auth
+    if user.is_superuser:
+        notification = Notification.objects.get(id=data.id)
+        notification.title = data.title
+        notification.description = data.description
+        if data.image:
+            notification.image = data.image
+        if data.url:
+            notification.url = data.url
+        notification.save()
+        return 200, {"message": "Notification updated successfully"}
+    return 409, {"message" : "You are not authorized to access notifications"}
+
+@admin_api.delete("/delete_notifications", response={200: Message, 404: Message, 409:Message}, description="Delete Notifications")
+def delete_notifications(request, id: int):
+    user = request.auth
+    if user.is_superuser:
+        notification = Notification.objects.get(id=id)
+        notification.delete()
+        return 200, {"message": "Notification deleted successfully"}
+    return 409, {"message" : "You are not authorized to access notifications"}

@@ -21,9 +21,8 @@ class SubscriptionData(Schema):
     subscribed_on: datetime
 
 class NotificationCreation(Schema):
-    user_id: Optional[int]
-    all_users: Optional[bool]
-    audience: Optional[str]
+    user_id: List[int]
+    audience: str
     title: str
     description: str
     image: Optional[str]

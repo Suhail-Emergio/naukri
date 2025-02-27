@@ -59,3 +59,13 @@ class AllJobsData(Schema):
     remaining_vacancy: int
     company_name: str
     company_logo: str | None
+
+class AllNotifications(Schema):
+    id: int
+    title: str
+    description: str
+    image: str | None
+    url: str | None
+    created_on: str
+    user: List[str]
+    read: List[str]

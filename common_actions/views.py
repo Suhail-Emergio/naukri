@@ -83,7 +83,7 @@ async def delete_subscription(request):
         return 200, {"message" : "Subscription deleted successfully"}
     return 404, {"message" : "Subscription doesnot exists"}
 
-#################################  S U B S C R I P T I O N S  #################################
+#################################  N O T I F I C A T I O N S  #################################
 @common_api.get("/notification", response={200: List[NotificationData], 404: Message, 409:Message}, description="Notification based on logged user")
 def notifications(request):
     user = request.auth
@@ -93,7 +93,7 @@ def notifications(request):
         notification.append({'id': i.id, 'noti': i, 'read': read})
     return 200, notification
 
-@common_api.get("/read_notification", response={200: Message, 409:Message}, description="Notification based on logged user")
+@common_api.get("/read_notification", response={200: Message, 409:Message}, description="Read Notifications")
 def read_notifications(request):
     user = request.auth
     for i in user.notifications.all().order_by('-id'):
