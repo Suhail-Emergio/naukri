@@ -26,9 +26,11 @@ async def all_seekers(request):
         candidate_user = await sync_to_async(lambda: i.user)()
         print(timezone.now().date())
         if await SearchApps.objects.filter(user=candidate_user, date=timezone.now().date()).aexists():
-            search_apps = await SearchApps.objects.aget(user=candidate_user, date=timezone.now().date())
-            search_apps.count += 1
-            await search_apps.asave()
+            search = await SearchApps.objects.filter(user=candidate_user, date=timezone.now().date())
+            search.adelete()
+            # search_apps = await SearchApps.objects.aget(user=candidate_user, date=timezone.now().date())
+            # search_apps.count += 1
+            # await search_apps.asave()
         employment = None
         if await Employment.objects.filter(user=candidate_user).aexists():
             employment = [i async for i in Employment.objects.filter(user=candidate_user).order_by('-id')]
