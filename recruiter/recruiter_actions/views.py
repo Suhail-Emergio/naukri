@@ -288,7 +288,8 @@ async def resumes_downloaded(request):
     downloaded = [i async for i in ApplyJobs.objects.filter(job__company__user=user, resume_downloaded=True).order_by('-id')]
     candidates = []
     for i in downloaded:
-        personal = await Personal.objects.aget(user=i.user)
+        candidate_user = await sync_to_async(lambda: i.user)()
+        personal = await Personal.objects.aget(user=candidate_user)
         job = await sync_to_async(lambda: i.job)()
         candidates.append({"personal": {"personal": personal, "user": i.user}, "job": job})
     return 200, candidates
