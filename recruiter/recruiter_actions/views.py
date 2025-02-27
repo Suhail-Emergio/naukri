@@ -12,6 +12,7 @@ from seeker.details.models import SearchApps
 from seeker.details.schema import CountData
 from common_actions.models import Subscription
 from naukry.utils.profile_completion import completion_data
+from datetime import datetime
 
 User = get_user_model()
 recruiter_actions_api = Router(tags=['recruiter_actions'])
