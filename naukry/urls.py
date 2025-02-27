@@ -14,6 +14,7 @@ from seeker.details.views import *
 from seeker.seeker_actions.views import seeker_actions_api
 from common_actions.views import common_api
 from administrator.admin_actions.views import admin_api
+from administrator.dashboard.views import admin_dashboard_api
 
 api = NinjaAPI(auth=AsyncJWTAuth())
 
@@ -38,6 +39,7 @@ api.add_router('common', common_api)
 
 ## Admin API
 api.add_router('admin', admin_api)
+api.add_router('dashboard', admin_dashboard_api)
 
 urlpatterns = [
     path('admin/', admin.site.urls),

@@ -8,10 +8,10 @@ from jobs.job_actions.schema import ApplyJobs, ApplyCandidatesData
 from recruiter.recruiter_actions.models import InterviewSchedule
 
 User = get_user_model()
-admin_api = Router(tags=['admin'])
+admin_dashboard_api = Router(tags=['dashboard'])
 
 #################################  D A S H B O A R D  #################################
-@admin_api.get("/dashboard", description="All users (id, name, and phone number)")
+@admin_dashboard_api.get("/dashboard", description="All users (id, name, and phone number)")
 def dashboard(request): 
     user = request.auth
     if user.is_superuser:
