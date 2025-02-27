@@ -32,6 +32,7 @@ class ApplicationStats(Schema):
     rejected: int
 
 class AdminCompany(Schema):
+    name: str
     about : str
     website : str
     functional_area : str
