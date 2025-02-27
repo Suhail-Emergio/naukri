@@ -5,6 +5,7 @@ from naukry.utils.notification import send_notifications
 from django.db.models import F, ExpressionWrapper, DateField
 from seeker.details.models import NotificationPreference
 from common_actions.models import Banner
+from django.utils import timezone
 
 class Command(BaseCommand):
     help = 'Notify user of expiry of plan and on expiry date delete plans'

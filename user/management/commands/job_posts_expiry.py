@@ -4,6 +4,7 @@ from naukry.utils.twilio import send_updates
 from naukry.utils.notification import send_notifications
 from seeker.details.models import NotificationPreference
 from jobs.job_actions.models import SaveJobs
+from django.utils import timezone
 
 class Command(BaseCommand):
     help = 'Notify user of expiry of job posts and on expiry date delete job posts'
