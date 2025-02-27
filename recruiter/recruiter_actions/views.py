@@ -24,6 +24,7 @@ async def all_seekers(request):
     candidates = []
     for i in candidate:
         candidate_user = await sync_to_async(lambda: i.user)()
+        print(timezone.now().date())
         if await SearchApps.objects.filter(user=candidate_user, date=timezone.now().date()).aexists():
             search_apps = await SearchApps.objects.aget(user=candidate_user, date=timezone.now().date())
             search_apps.count += 1
