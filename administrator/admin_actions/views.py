@@ -294,3 +294,12 @@ def delete_notifications(request, id: int):
         notification.delete()
         return 200, {"message": "Notification deleted successfully"}
     return 409, {"message" : "You are not authorized to access notifications"}
+
+#################################  A L L  U S E R S  #################################
+@admin_api.get("/all_users", response={200: List[AllUsers], 409: Message}, description="All users (id, name, and phone number)")
+async def all_users(request):
+    user = request.auth
+    if user.is_superuser:
+        users = await sync_to_async(lambda: User.objects.all().values('id', 'name', 'phone'))
+        return 200, users
+    return 409, {"message" : "You are not authorized to access users"}

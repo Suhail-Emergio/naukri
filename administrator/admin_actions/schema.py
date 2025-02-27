@@ -69,3 +69,8 @@ class AllNotifications(Schema):
     created_on: str
     user: List[str]
     read: List[str]
+
+class AllUsers(Schema):
+    id: int
+    name: str
+    phone: str
