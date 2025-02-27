@@ -22,8 +22,9 @@ class Command(BaseCommand):
 
     def search_apps_creation(self):
         for i in User.objects.filter(role="seeker", is_superuser=False):
-            SearchApps.objects.create(user=i)
-            print(f"search apps for {i} is created")
+            if not SearchApps.objects.filter(user=i, date=self.today).exists():
+                SearchApps.objects.create(user=i)
+                print(f"search apps for {i} is created")
 
     def banner_deletion(self):
         banners = Banner.objects.annotate(
