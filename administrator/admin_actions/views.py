@@ -181,7 +181,6 @@ async def plans(request):
         return 201, plan
     return 409, {"message" : "You are not authorized to access plans"}
 
-
 @admin_api.patch("/update_plans", response={201: Message, 409:Message}, description="Plan details")
 async def update_plans(request, data: PatchDict[PlanCreation]):
     user = request.auth
