@@ -12,7 +12,7 @@ admin_api = Router(tags=['admin'])
 
 #################################  D A S H B O A R D  #################################
 @admin_api.get("/dashboard", description="All users (id, name, and phone number)")
-def dashboard(request):
+def dashboard(request): 
     user = request.auth
     if user.is_superuser:
         application_count = get_active_jobs() ## Daily applications, and shortlisted count
