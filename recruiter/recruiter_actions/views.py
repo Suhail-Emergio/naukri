@@ -12,7 +12,7 @@ from seeker.details.models import SearchApps
 from seeker.details.schema import CountData
 from common_actions.models import Subscription
 from naukry.utils.profile_completion import completion_data
-from datetime import datetime
+from django.utils import timezone
 
 User = get_user_model()
 recruiter_actions_api = Router(tags=['recruiter_actions'])
@@ -24,7 +24,7 @@ async def all_seekers(request):
     candidates = []
     for i in candidate:
         candidate_user = await sync_to_async(lambda: i.user)()
-        search_apps = await SearchApps.objects.aget(user=candidate_user, date=datetime.now().date())
+        search_apps = await SearchApps.objects.aget(user=candidate_user, date=timezone.now().date())
         search_apps.count += 1
         await search_apps.asave()
         employment = None
