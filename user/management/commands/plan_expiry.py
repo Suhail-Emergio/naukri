@@ -15,7 +15,7 @@ class Command(BaseCommand):
         for j in NotificationPreference.objects.all():
             noti_day = today.weekday() == 5 if j.alerts == "weekly" else True if j.alerts == "daily" else None
             if noti_day:
-                subject="Your Plans validity is gonna expire soon. Contact admin for increasing validity"
+                subject="Attention: Your plan's validity is nearing its expiration. To avoid any interruptions in service, please buy a new plan as soon as possible. Ensure continuous access by renewing your validity on time."
                 subscription = Subscription.objects.annotate(expiry_date=ExpressionWrapper(F('subscribed_on') + F('plan__duration'),output_field=DateField())).filter(expiry_date__lte=today, user=j.user).exists()
                 if subscription:
                     if j.mobile_notifications and j.user.onesignal_id:

@@ -39,30 +39,30 @@ class Command(BaseCommand):
     def post_completion(self, user):
         profile_completion_percentage, empty_models, models_with_empty_fields = async_to_sync(completion_data)(user)
         if profile_completion_percentage < 100:
-            self.send_noti(onesignal_id=user.onesignal_id, whatsapp_updations=user.whatsapp_updations, phone=user.phone, subject="Complete your profile for better visibility to recruiters.", title="Profile completion")
+            self.send_noti(onesignal_id=user.onesignal_id, whatsapp_updations=user.whatsapp_updations, phone=user.phone, subject="Increase your chances of getting noticed by recruiters! Complete your profile with all relevant details to enhance your visibility and stand out to potential employers. Don’t miss out on exciting opportunities — update your profile today!", title="Profile completion")
             notification = Notification.objects.create(
                 title="Profile completion",
-                description="Complete your profile for better visibility to recruiters.",
+                description="Increase your chances of getting noticed by recruiters! Complete your profile with all relevant details to enhance your visibility and stand out to potential employers. Don’t miss out on exciting opportunities — update your profile today!",
                 created_on=now()
             )
             notification.user.add(i)
 
     def saved_jobs(self, today, user):
         if SaveJobs.objects.filter(job__expire_on__lt=today, user=user):
-            self.send_noti(onesignal_id=user.onesignal_id, whatsapp_updations=user.whatsapp_updations, phone=user.phone, subject="Your saved jobs gonna expire soon. Take action before late.", title="Saved jobs updations")
+            self.send_noti(onesignal_id=user.onesignal_id, whatsapp_updations=user.whatsapp_updations, phone=user.phone, subject="Heads up! The jobs you’ve saved are nearing their expiration. Don’t miss out on these opportunities — take action now to apply or update your selections before they’re gone. Secure your next career move today!", title="Saved jobs updations")
             notification = Notification.objects.create(
                 title="Saved jobs updations",
-                description="Your saved jobs gonna expire soon. Take action before late.",
+                description="Heads up! The jobs you’ve saved are nearing their expiration. Don’t miss out on these opportunities — take action now to apply or update your selections before they’re gone. Secure your next career move today!",
                 created_on=now()
             )
             notification.user.add(user)
 
     def feedback_request(self, today, user):
         if not Suggestions.objects.filter(user=user).exists():
-            self.send_noti(onesignal_id=user.onesignal_id, whatsapp_updations=user.whatsapp_updations, phone=user.phone, subject="Give us your feedback & suggestions", title="Feedback & Suggestions")
+            self.send_noti(onesignal_id=user.onesignal_id, whatsapp_updations=user.whatsapp_updations, phone=user.phone, subject="We value your thoughts! Share your feedback and suggestions to help us improve your experience. Your input plays a crucial role in shaping our services — let your voice be heard!", title="Feedback & Suggestions")
             notification = Notification.objects.create(
                 title="Feedback & Suggestions",
-                description="Give us your feedback & suggestions",
+                description="We value your thoughts! Share your feedback and suggestions to help us improve your experience. Your input plays a crucial role in shaping our services — let your voice be heard!",
                 created_on=now()
             )
             notification.user.add(user)
