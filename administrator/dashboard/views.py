@@ -7,6 +7,7 @@ from django.db.models.functions import ExtractMonth, TruncDate, ExtractDay, Trun
 from jobs.job_actions.schema import ApplyJobs, ApplyCandidatesData
 from recruiter.recruiter_actions.models import InterviewSchedule
 from datetime import date, timedelta
+from django.db.models import Count, Case, When
 
 User = get_user_model()
 admin_dashboard_api = Router(tags=['dashboard'])
@@ -15,7 +16,7 @@ admin_dashboard_api = Router(tags=['dashboard'])
 @admin_dashboard_api.get("/dashboard", description="All users (id, name, and phone number)")
 def dashboard(request): 
     user = request.auth
-    if user.is_superuser:
+    if user and user.is_superuser:
         application_count = get_active_jobs() ## Daily applications, and shortlisted count
         top_applications = get_top_applications() ## 4 jobs with top applications 
         total_applications = get_total_applications() ## Total applications, shortlisted, rejected, and pending count
@@ -28,13 +29,13 @@ def dashboard(request):
             "new_applications": new_applications,
             "interviews_scheduled": interviews_scheduled
         }
-    return 409, {"message" : "You are not authorized to access users"}
+    return 403, {"message" : "You are not authorized to access users"}
 
 def get_active_jobs():
     today = date.today()
     start_date = today - timedelta(days=today.weekday())
     count = (
-        ApplyJobs.objects.filter(created_on__range=[start_date, today])
+        ApplyJobs.objects.filter(created_on__gte=start_date, created_on__lte=today)
         .annotate(day=TruncDate("created_on"))
         .values("day")
         .annotate(application_count=Count('id'), shortlisted_count=Count(Case(When(status='shortlisted', then=1))))
