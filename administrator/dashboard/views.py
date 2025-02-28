@@ -7,7 +7,8 @@ from django.db.models.functions import ExtractMonth, TruncDate, ExtractDay, Trun
 from jobs.job_actions.schema import ApplyJobs, ApplyCandidatesData
 from recruiter.recruiter_actions.models import InterviewSchedule
 from datetime import date, timedelta
-from django.db.models import Count, Case, When
+from django.db.models import Count, Case, When, DateField
+from django.db.models.functions import Cast
 
 User = get_user_model()
 admin_dashboard_api = Router(tags=['dashboard'])
@@ -36,7 +37,7 @@ def get_active_jobs():
     start_date = today - timedelta(days=today.weekday())
     count = (
         ApplyJobs.objects.filter(created_on__gte=start_date, created_on__lte=today)
-        .annotate(day=TruncDate("created_on"))
+        .annotate(day=Cast('created_on', DateField()))
         .values("day")
         .annotate(
             application_count=Count('id'),
