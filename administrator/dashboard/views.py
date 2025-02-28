@@ -69,7 +69,7 @@ def get_active_jobs():
 
 def get_top_applications():
     top_applications = (
-        ApplyJobs.objects.values('job__title', 'job__company__name')
+        ApplyJobs.objects.values('job__title', 'job__company__name', 'id')
         .annotate(application_count=Count('id'))
         .order_by('-application_count')[:4]
     )
