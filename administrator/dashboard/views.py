@@ -50,7 +50,7 @@ def get_active_jobs():
         entry['day'].strftime('%d-%m-%y'): {  # Format as dd-mm-yy
             'application_count': entry['application_count'],
             'shortlisted_count': entry['shortlisted_count'],
-            'date': entry['day'].day
+            'date': entry['day'].strftime('%d-%m-%y')
         }
         for entry in count
     }
