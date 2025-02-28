@@ -122,7 +122,11 @@ def all_applications(request):
 @admin_api.get("/all_company", response={200: List[AdminCompany], 409: Message}, description="All company datas")
 @paginate
 def all_company(request):
-    return CompanyDetails.objects.all()
+    companies = []
+    for i in CompanyDetails.objects.all():
+        jobs = [j async for j in JobPosts.objects.filter(company=i)]
+        companies.append({"name": i.name, "about": i.about, "website": i.website, "functional_area": i.functional_area, "address": i.address, "city": i.city, "country": i.country, "postal_code": i.postal_code, "contact_name": i.contact_name, "contact_land_number": i.contact_land_number, "contact_mobile_number": i.contact_mobile_number, "designation": i.designation, "logo": i.logo, "id": i.id, "jobs": jobs})
+    return companies
 
 #################################  S E E K E R S  #################################
 @admin_api.get("/all_seekers", response={200: List[SeekerData], 409: Message}, description="All company datas")

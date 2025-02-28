@@ -53,12 +53,12 @@ def get_top_applications():
 
 def get_total_applications():
     total_applications = ApplyJobs.objects.all()
-    return {
+    return [{
         "applications": total_applications.count(),
         "shortlisted": total_applications.filter(status='shortlisted').count(),
         "rejected": total_applications.filter(status='rejected').count(),
         "pending": total_applications.filter(status='applied').count()
-    }
+    }]
 
 def get_new_applications():
     new_applications = ApplyJobs.objects.all().order_by('-created_on')[:5]

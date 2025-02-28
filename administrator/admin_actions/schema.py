@@ -5,7 +5,7 @@ from .models import *
 from datetime import timedelta
 from jobs.job_actions.schema import ApplyCandidatesData
 from recruiter.recruiter_actions.schema import SeekerData
-from jobs.jobposts.schema import JobCompanyData
+from jobs.jobposts.schema import JobCompanyData, JobData
 
 class PlanCreation(Schema):
     title: str
@@ -46,6 +46,7 @@ class AdminCompany(Schema):
     designation : str
     logo: str | None
     id: int
+    jobs: List[JobData]
 
 class AllSubsData(Schema):
     id: int
