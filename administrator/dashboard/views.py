@@ -3,7 +3,7 @@ from django.contrib.auth import get_user_model
 from asgiref.sync import sync_to_async
 from typing import *
 from user.schema import *
-from django.db.models.functions import ExtractMonth, TruncDate, ExtractDay
+from django.db.models.functions import ExtractMonth, TruncDate, ExtractDay, TruncWeek
 from jobs.job_actions.schema import ApplyJobs, ApplyCandidatesData
 from recruiter.recruiter_actions.models import InterviewSchedule
 
