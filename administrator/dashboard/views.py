@@ -6,6 +6,7 @@ from user.schema import *
 from django.db.models.functions import ExtractMonth, TruncDate, ExtractDay, TruncWeek
 from jobs.job_actions.schema import ApplyJobs, ApplyCandidatesData
 from recruiter.recruiter_actions.models import InterviewSchedule
+from seeker.details.models import Personal
 from datetime import date, timedelta
 from django.db.models import Count, Case, When, DateField
 from django.db.models.functions import Cast
@@ -92,7 +93,12 @@ def get_total_applications():
     }]
 
 def get_new_applications():
-    new_applications = ApplyJobs.objects.all().order_by('-created_on')[:5]
+    new_applications = ApplyJobs.objects.values('user').order_by('-created_on')[:5]
+    for i in new_applications:
+        user = User.objects.get(id=i['user'])
+        personal = Personal.objects.get(user=user)
+        i['name'] = user.name
+        i['image'] = personal.profile_image
     return new_applications
 
 def get_schedule_interviews():
