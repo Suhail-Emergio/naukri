@@ -41,7 +41,13 @@ def get_active_jobs():
         .annotate(application_count=Count('id'), shortlisted_count=Count(Case(When(status='shortlisted', then=1))))
         .order_by("day")
     )
-    return count
+    return {
+        entry['day']: {
+            'application_count': entry['application_count'],
+            'shortlisted_count': entry['shortlisted_count']
+        }
+        for entry in count
+    }
 
 def get_top_applications():
     top_applications = (
