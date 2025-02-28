@@ -55,11 +55,10 @@ def get_active_jobs():
     result = {}
     current_date = start_date
     while current_date <= today:
-        date_key = current_date.strftime('%d-%m-%y')        
+        date_key = current_date.strftime('%d-%m-%y')
         if current_date in data_dict:
             result[date_key] = data_dict[current_date]
         else:
-            # Create default entry with zeros if no data exists
             result[date_key] = {
                 'application_count': 0,
                 'shortlisted_count': 0,
@@ -74,7 +73,14 @@ def get_top_applications():
         .annotate(application_count=Count('id'))
         .order_by('-application_count')[:4]
     )
-    return top_applications
+    return {
+        entry['id']: {
+            'application_count': entry['application_count'],
+            'title': entry['job__title'],
+            'company': entry['job__company__name']
+        }
+        for entry in count
+    }
 
 def get_total_applications():
     total_applications = ApplyJobs.objects.all()
