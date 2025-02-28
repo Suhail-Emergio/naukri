@@ -45,6 +45,13 @@ def get_active_jobs():
         )
         .order_by("day")
     )
+    data_dict = {
+        entry['day']: {
+            'application_count': entry['application_count'],
+            'shortlisted_count': entry['shortlisted_count'],
+            'date': entry['day'].day
+        } for entry in count if entry['day'] is not None
+    }
     result = {}
     current_date = start_date
     while current_date <= today:
