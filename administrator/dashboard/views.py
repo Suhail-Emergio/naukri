@@ -22,7 +22,7 @@ def dashboard(request):
         application_count = list(get_active_jobs().values()) ## Daily applications, and shortlisted count
         top_applications = list(get_top_applications().values()) ## 4 jobs with top applications 
         total_applications = get_total_applications() ## Total applications, shortlisted, rejected, and pending count
-        new_applications = list(get_new_applications().values()) ## New applications
+        new_applications = get_new_applications() ## New applications
         interviews_scheduled = list(get_schedule_interviews().values()) ## Interviews scheduled
         return {
             "application_count": application_count,
