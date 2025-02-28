@@ -19,7 +19,7 @@ def dashboard(request):
     if user and user.is_superuser:
         application_count = list(get_active_jobs().values()) ## Daily applications, and shortlisted count
         top_applications = list(get_top_applications().values()) ## 4 jobs with top applications 
-        total_applications = list(get_total_applications().values()) ## Total applications, shortlisted, rejected, and pending count
+        total_applications = get_total_applications() ## Total applications, shortlisted, rejected, and pending count
         new_applications = list(get_new_applications().values()) ## New applications
         interviews_scheduled = list(get_schedule_interviews().values()) ## Interviews scheduled
         return {
