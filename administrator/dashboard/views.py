@@ -79,7 +79,7 @@ def get_top_applications():
             'title': entry['job__title'],
             'company': entry['job__company__name']
         }
-        for entry in count
+        for entry in top_applications
     }
 
 def get_total_applications():
