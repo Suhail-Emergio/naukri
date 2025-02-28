@@ -42,7 +42,7 @@ def get_active_jobs():
         .order_by("day")
     )
     return {
-        entry['day']: {
+        entry['day'].isoformat():  {
             'application_count': entry['application_count'],
             'shortlisted_count': entry['shortlisted_count'],
             'date': entry['date']
