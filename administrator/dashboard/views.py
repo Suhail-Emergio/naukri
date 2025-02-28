@@ -45,15 +45,21 @@ def get_active_jobs():
         )
         .order_by("day")
     )
-    
-    return {
-        entry['day'].strftime('%d-%m-%y'): {  # Format as dd-mm-yy
-            'application_count': entry['application_count'],
-            'shortlisted_count': entry['shortlisted_count'],
-            'date': entry['day'].strftime('%d-%m-%y')
-        }
-        for entry in count
-    }
+    result = {}
+    current_date = start_date
+    while current_date <= today:
+        date_key = current_date.strftime('%d-%m-%y')        
+        if current_date in data_dict:
+            result[date_key] = data_dict[current_date]
+        else:
+            # Create default entry with zeros if no data exists
+            result[date_key] = {
+                'application_count': 0,
+                'shortlisted_count': 0,
+                'date': current_date.day
+            }
+        current_date += timedelta(days=1)
+    return result
 
 def get_top_applications():
     top_applications = (
