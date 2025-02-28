@@ -30,7 +30,8 @@ def dashboard(request):
     return 409, {"message" : "You are not authorized to access users"}
 
 def get_active_jobs():
-    start_date = TruncWeek(start_date, week_start=1)
+    today = date.today()
+    start_date = today - timedelta(days=today.weekday())
     count = (
         ApplyJobs.objects.filter(date__range=[start_date, today])
         .annotate(day=TruncDate("date"))
