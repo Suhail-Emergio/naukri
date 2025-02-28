@@ -38,14 +38,18 @@ def get_active_jobs():
         ApplyJobs.objects.filter(created_on__gte=start_date, created_on__lte=today)
         .annotate(day=TruncDate("created_on"))
         .values("day")
-        .annotate(application_count=Count('id'), shortlisted_count=Count(Case(When(status='shortlisted', then=1))), date=ExtractDay('created_on'))
+        .annotate(
+            application_count=Count('id'),
+            shortlisted_count=Count(Case(When(status='shortlisted', then=1)))
+        )
         .order_by("day")
     )
+    
     return {
-        entry['day'].isoformat():  {
+        entry['day'].strftime('%d-%m-%y'): {  # Format as dd-mm-yy
             'application_count': entry['application_count'],
             'shortlisted_count': entry['shortlisted_count'],
-            'date': entry['date']
+            'date': entry['day'].day
         }
         for entry in count
     }
