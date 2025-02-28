@@ -6,6 +6,7 @@ from user.schema import *
 from django.db.models.functions import ExtractMonth, TruncDate, ExtractDay, TruncWeek
 from jobs.job_actions.schema import ApplyJobs, ApplyCandidatesData
 from recruiter.recruiter_actions.models import InterviewSchedule
+from datetime import date, timedelta
 
 User = get_user_model()
 admin_dashboard_api = Router(tags=['dashboard'])
