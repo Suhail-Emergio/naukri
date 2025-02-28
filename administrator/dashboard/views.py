@@ -101,7 +101,7 @@ def get_new_applications():
         image = None
         if Personal.objects.filter(user=user).exists():
             personal = Personal.objects.get(user=user)
-            image = personal.profile_image
+            image = personal.profile_image.url
         apps.append({
             "name": name,
             "image": image
