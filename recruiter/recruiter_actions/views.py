@@ -282,7 +282,7 @@ async def update_resume_count(request, application_id: int):
         return 200, {"message": "Resume count updated successfully"}
     return 404, {"message": "Candidate not found"}
 
-@recruiter_actions_api.get("/resumes_downloaded", description="fetch all resumes downloaded")
+@recruiter_actions_api.get("/resumes_downloaded", response={200: List[ResumeDownloadSchema], 404: Message, 409: Message}, description="fetch all resumes downloaded")
 async def resumes_downloaded(request):
     user = request.auth
     downloaded = [i async for i in ApplyJobs.objects.filter(job__company__user=user, resume_downloaded=True).order_by('-id')]

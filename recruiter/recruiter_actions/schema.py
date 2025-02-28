@@ -51,3 +51,7 @@ class InterviewScheduleSchema(Schema):
     candidate_id: int
     job_id: int
     schedule: datetime
+
+class ResumeDownloadSchema(Schema):
+    candidate: PersonalSchema
+    job: JobData
