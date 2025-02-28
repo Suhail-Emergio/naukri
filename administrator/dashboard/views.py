@@ -94,13 +94,19 @@ def get_total_applications():
 
 def get_new_applications():
     new_applications = ApplyJobs.objects.values('user').order_by('-created_on')[:5]
+    apps = []
     for i in new_applications:
         user = User.objects.get(id=i['user'])
-        i['name'] = user.name
+        name = user.name
+        image = None
         if Personal.objects.filter(user=user).exists():
             personal = Personal.objects.get(user=user)
-            i['image'] = personal.profile_image
-    return new_applications
+            image = personal.profile_image
+        apps.append({
+            "name": name,
+            "image": image
+        })
+    return apps
 
 def get_schedule_interviews():
     interviews = InterviewSchedule.objects.all().order_by('-created_on')[:5]
