@@ -34,8 +34,8 @@ def get_active_jobs():
     today = date.today()
     start_date = today - timedelta(days=today.weekday())
     count = (
-        ApplyJobs.objects.filter(date__range=[start_date, today])
-        .annotate(day=TruncDate("date"))
+        ApplyJobs.objects.filter(created_on__range=[start_date, today])
+        .annotate(day=TruncDate("created_on"))
         .values("day")
         .annotate(application_count=Count('id'), shortlisted_count=Count(Case(When(status='shortlisted', then=1))))
         .order_by("day")
