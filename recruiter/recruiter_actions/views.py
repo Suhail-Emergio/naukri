@@ -291,5 +291,5 @@ async def resumes_downloaded(request):
         candidate_user = await sync_to_async(lambda: i.user)()
         personal = await Personal.objects.aget(user=candidate_user)
         job = await sync_to_async(lambda: i.job)()
-        candidates.append({"personal": {"personal": personal, "user": candidate_user}, "job": job})
+        candidates.append({"candidate": {"personal": personal, "user": candidate_user}, "job": job})
     return 200, candidates
