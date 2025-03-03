@@ -15,9 +15,8 @@ User = get_user_model()
 admin_dashboard_api = Router(tags=['dashboard'])
 
 #################################  D A S H B O A R D  #################################
-@admin_dashboard_api.get("/dashboard", response={200: {"application_count": list, "top_applications": list, "total_applications": dict, "new_applications": dict,
-            "interviews_scheduled": list}, 403: {"message": str}}, description="All users (id, name, and phone number)")
-def dashboard(request):
+@admin_dashboard_api.get("/dashboard", description="All users (id, name, and phone number)")
+def dashboard(request): 
     user = request.auth
     if user and user.is_superuser:
         application_count = list(get_active_jobs().values()) ## Daily applications, and shortlisted count
