@@ -16,7 +16,7 @@ class UserProfile(AbstractUser):
     email_verified = models.BooleanField(default=False)
     phone_verified = models.BooleanField(default=False)
     subscribed = models.BooleanField(default=False)
-    onesignal_id = models.CharField(max_length=100, default='')
+    onesignal_id = models.TextField(default='')
 
     groups = models.ManyToManyField(
         'auth.Group',
