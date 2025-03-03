@@ -112,9 +112,9 @@ def get_schedule_interviews():
     interviews = InterviewSchedule.objects.values('application__user', 'schedule').order_by('-created_on')[:5]
     apps = []
     for i in interviews:
-        user = User.objects.get(id=i['application__user'])
         apps.append({
-            "name": user.name,
+            "name": interview.application.user.name,
+            # "name": i['application__user'],
             "schedule": i['schedule']
         })
     return apps
