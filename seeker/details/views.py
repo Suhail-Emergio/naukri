@@ -77,7 +77,7 @@ async def update_employment_data(request, data: PatchDict[EmploymentData]):
 
 @details_api.get("/employment", response={200: List[EmploymentData], 409: Message}, description="User employment data")
 async def employment_data(request):
-    employment = [i async for i in Employment.objects.filter(user=request.auth)]
+    employment = [i async for i in Employment.objects.filter(user=request.auth).order_by('-id')]
     return 200, employment
 
 @details_api.delete("/delete_employment", response={200: Message, 404: Message, 409: Message}, description="User employment data deletion")
@@ -106,7 +106,7 @@ async def update_qualification_data(request, data: PatchDict[QualificationData])
 
 @details_api.get("/qualification", response={200: List[QualificationData], 409: Message}, description="User Qualification data")
 async def qualification_data(request):
-    qualification = [i async for i in Qualification.objects.filter(user=request.auth)]
+    qualification = [i async for i in Qualification.objects.filter(user=request.auth).order_by('-id')]
     return 200, qualification
 
 @details_api.delete("/delete_qualification", response={200: Message, 404: Message, 409: Message}, description="User qualification data deletion")
