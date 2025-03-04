@@ -106,5 +106,5 @@ async def delete_notification(request, id: int):
     if await Notification.objects.filter(id=id).aexists():
         noti = await Notification.objects.aget(id=id)
         await noti.user.aremove(request.auth)
-        return 200, {"messsage": "Notitfication data deleted successfully"}
-    return 404, {"messsage": "Notitfication data not found"}
+        return 200, {"message": "Notitfication data deleted successfully"}
+    return 404, {"message": "Notitfication data not found"}
