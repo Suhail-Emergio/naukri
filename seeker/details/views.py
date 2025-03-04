@@ -80,6 +80,12 @@ async def employment_data(request):
     employment = [i async for i in Employment.objects.filter(user=request.auth)]
     return 200, employment
 
+@details_api.delete("/delete_employment", response={200: Message, 409: Message}, description="User employment data deletion")
+async def delete_employment(request, id: int):
+    employment = await Employment.objects.aget(id=id)
+    await employment.adelete()
+    return 200, {"message": "Employment data deleted successfully"}
+
 #################################  Q U A L I F I C A T I O N  D A T A  #################################
 @details_api.post("/qualification", response={201: QualificationData, 409: Message}, description="User Qualification data creation")
 async def qualification(request, data: QualificationCreation):
@@ -100,6 +106,12 @@ async def update_qualification_data(request, data: PatchDict[QualificationData])
 async def qualification_data(request):
     qualification = [i async for i in Qualification.objects.filter(user=request.auth)]
     return 200, qualification
+
+@details_api.delete("/delete_qualification", response={200: Message, 409: Message}, description="User qualification data deletion")
+async def delete_qualification(request, id: int):
+    qualification = await Qualification.objects.aget(id=id)
+    await qualification.adelete()
+    return 200, {"message": "Qualification data deleted successfully"}
 
 #################################  P R E F E R E N C E  D A T A  #################################
 @details_api.post("/preference", response={201: PreferenceData, 409: Message}, description="User preference data creation")

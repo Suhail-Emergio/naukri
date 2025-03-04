@@ -14,6 +14,7 @@ from naukry.utils.email import send_mails
 from naukry.utils.twilio import whatsapp_message
 import random
 from django.core.cache import cache
+from recruiter.company.models import Company
 
 user_api = Router(tags=['user'])
 User = get_user_model()
