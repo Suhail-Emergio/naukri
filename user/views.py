@@ -19,22 +19,26 @@ user_api = Router(tags=['user'])
 User = get_user_model()
 
 #################################  R E G I S T E R  &  L O G I N  #################################
-@user_api.post("/register", auth=None, response={201: Message, 409: Message}, description="User creation")
+@user_api.post("/register", auth=None, response={201: Message, 409: Message, 405: Message}, description="User creation")
 async def register(request, data: UserCreation):
-    if not await User.objects.filter(Q(username=data.phone) | Q(email=data.email)).aexists():
-        user = await User.objects.acreate(**data.dict(), username=data.phone)
-        user.set_password(data.password)
-        await user.asave()
-        otp = random.randint(1111,9999)
-        key = f'otp_{data.phone}'
-        cache_value = await sync_to_async(cache.get)(key)
-        if cache_value:
-            await sync_to_async(cache.delete)(key)
-        await sync_to_async(cache.set)(key, f"{otp:04d}", timeout=60)
-        await whatsapp_message(otp, data.phone)
-        refresh = RefreshToken.for_user(user)
-        return 201, {"message": "Otp send successfully"}
-    return 409, {"message": "User already exists"}
+    if await User.objects.filter(Q(username=data.phone) | Q(email=data.email)).aexists():
+        existing_user = await User.objects.aget(Q(username=data.phone) | Q(email=data.email))
+        phone_verified = await sync_to_async(lambda: existing_user.phone_verified)()
+        if not phone_verified:
+            return 405, {"message": "Mobile not verified"}
+        return 409, {"message": "User already exists"}
+    user = await User.objects.acreate(**data.dict(), username=data.phone)
+    user.set_password(data.password)
+    await user.asave()
+    otp = random.randint(1111,9999)
+    key = f'otp_{data.phone}'
+    cache_value = await sync_to_async(cache.get)(key)
+    if cache_value:
+        await sync_to_async(cache.delete)(key)
+    await sync_to_async(cache.set)(key, f"{otp:04d}", timeout=60)
+    await whatsapp_message(otp, data.phone)
+    refresh = RefreshToken.for_user(user)
+    return 201, {"message": "Otp send successfully"}
 
 @user_api.post("/mobile_login", auth=None, response={200: Message, 403: Message, 401: Message}, description="Authenticate user with username and password")
 async def mobile_login(request, data: LoginSchema):
