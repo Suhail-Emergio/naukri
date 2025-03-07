@@ -56,6 +56,7 @@ async def authenticate_user(token):
     try:
         payload = jwt.decode(token, settings.SECRET_KEY, algorithms=['HS256'])
         user_id = payload.get('user_id')
+        print(user_id, payload)
         if user_id and await UserProfile.objects.filter(id=user_id).aexists():
             user = await UserProfile.objects.aget(id=user_id)
             return user
