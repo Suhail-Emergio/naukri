@@ -103,7 +103,7 @@ def all_applications(request):
             if Qualification.objects.filter(user=i.user).exists():
                 qualification = Qualification.objects.filter(user=i.user).order_by('-id')
             applied_jobs = []
-            for i in ApplyJobs.objects.filter(user=i.user, job__company__user=user):
+            for i in ApplyJobs.objects.filter(user=i.user):
                 applied_jobs.append(i.job)
             applications.append({
                 "id": i.id,
