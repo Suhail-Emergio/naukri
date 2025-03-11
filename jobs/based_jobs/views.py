@@ -25,12 +25,13 @@ async def prefered_jobs(request):
         if await BlockedCompanies.objects.filter(user=request.auth).aexists():
             excludable_data = [i.company for i in await BlockedCompanies.objects.filter(user=request.auth)]
         jobs = [i async for i in JobPosts.objects.filter(
-            Q(type__in=preferences.job_type) |
+            Q(category__in=preferences.job_type) |
             Q(city__in=preferences.job_location) |
             Q(type__in=preferences.employment_type) |
             Q(type__in=preferences.employment_type) |
             Q(title__icontains=preferences.job_role)
         ).exclude(active=False, company__in=excludable_data)]
+        print(jobs)
         job_company_data = []
         for job in jobs:
             company_details = await CompanyDetails.objects.aget(id=job.company_id)
