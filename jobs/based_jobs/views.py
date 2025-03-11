@@ -32,7 +32,7 @@ async def prefered_jobs(request):
             Q(title__icontains=preferences.job_role)
         ).exclude(active=False, company__in=excludable_data)]
     else:
-        jobs = [i async for i in JobPosts.objects.exclude(active=False, company__in=excludable_data)]
+        jobs = [i async for i in JobPosts.objects.exclude(active=False, company__in=excludable_data).order_by('-id')]
     print(jobs)
     job_company_data = []
     for job in jobs:
@@ -54,12 +54,13 @@ async def profile_based_jobs(request):
             query = Q(title=employment.job_title) | Q(industry=employment.department) | Q(functional_area=employment.job_role)
         query |= Q(city = personal.prefered_work_loc) | Q(country = personal.prefered_work_loc)
         jobs = [i async for i in JobPosts.objects.filter(query).exclude(active=False)]
-        job_company_data = []
-        for job in jobs:
-            company_details = await CompanyDetails.objects.aget(id=job.company_id)
-            job_company_data.append({"job_posts": job, "company_data": company_details})
-        return 200, job_company_data
-    return 404, {"message": "User profile data not found"}
+    else:
+        jobs = [i async for i in JobPosts.objects.exclude(active=False, company__in=excludable_data).order_by('-id')]
+    job_company_data = []
+    for job in jobs:
+        company_details = await CompanyDetails.objects.aget(id=job.company_id)
+        job_company_data.append({"job_posts": job, "company_data": company_details})
+    return 200, job_company_data
 
 @based_jobs_api.get("/category_based", response={200: List[JobCompanyData], 404: Message, 409: Message}, description="Retrieve all job posts based on category")
 async def category_based_jobs(request, category: str = "remote"):
@@ -95,7 +96,9 @@ async def featured_jobs(request):
     excludable_data = []
     if await BlockedCompanies.objects.filter(user=request.auth).aexists():
         excludable_data = [i.company for i in await BlockedCompanies.objects.filter(user=request.auth)]
-    jobs = [i async for i in JobPosts.objects.filter(category=category, company__user__subscribed=True).exclude(active=False, company__in=excludable_data).order_by('-id')]
+    jobs = [i async for i in JobPosts.objects.filter(company__user__subscribed=True).exclude(active=False, company__in=excludable_data).order_by('-id')]
+    if jobs.count() != 0:
+        jobs = [i async for i in JobPosts.objects.exclude(active=False, company__in=excludable_data).order_by('-id')]
     job_company_data = []
     for job in jobs:
         company = await sync_to_async(lambda: job.company)()
