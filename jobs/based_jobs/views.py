@@ -97,7 +97,7 @@ async def featured_jobs(request):
     if await BlockedCompanies.objects.filter(user=request.auth).aexists():
         excludable_data = [i.company for i in await BlockedCompanies.objects.filter(user=request.auth)]
     jobs = [i async for i in JobPosts.objects.filter(company__user__subscribed=True).exclude(active=False, company__in=excludable_data).order_by('-id')]
-    if jobs.count() != 0:
+    if len(jobs) == 0:
         jobs = [i async for i in JobPosts.objects.exclude(active=False, company__in=excludable_data).order_by('-id')]
     job_company_data = []
     for job in jobs:
