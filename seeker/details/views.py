@@ -320,7 +320,7 @@ async def counts(request):
 #################################   N O T I F I C A T  I O N  P R E F E R E N C E  #################################
 @details_api.patch("/update_notification_preference", response={201: Message, 404: Message, 409: Message}, description="User preference data update")
 async def update_notification_preference(request, data: PatchDict[NotificationPreferencePatch]):
-    if await Preference.objects.filter(user=request.auth).aexists():
+    if await NotificationPreference.objects.filter(user=request.auth).aexists():
         preference = await NotificationPreference.objects.aget(user=request.auth)
         for attr, value in data.items():
             setattr(preference, attr, value)
