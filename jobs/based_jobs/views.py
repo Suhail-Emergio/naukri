@@ -19,24 +19,24 @@ based_jobs_api = Router(tags=['based-jobs'])
 @based_jobs_api.get("/prefered_jobs", response={200: List[JobCompanyData], 404: Message, 409: Message}, description="Retrieve all job posts with respective company details based on user preferences")
 async def prefered_jobs(request):
     user = request.auth
-    preferences = await Preference.objects.filter(user=user).afirst()
-    if not preferences:
-        return 404, {"message": "User preferences not found"}
-    excludable_data = []
-    if await BlockedCompanies.objects.filter(user=request.auth).aexists():
-        excludable_data = [i.company for i in await BlockedCompanies.objects.filter(user=request.auth)]
-    jobs = [i async for i in JobPosts.objects.filter(
-        Q(type__in=preferences.job_type) |
-        Q(city__in=preferences.job_location) |
-        Q(type__in=preferences.employment_type) |
-        Q(type__in=preferences.employment_type) |
-        Q(title__icontains=preferences.job_role)
-    ).exclude(active=False, company__in=excludable_data)]
-    job_company_data = []
-    for job in jobs:
-        company_details = await CompanyDetails.objects.aget(id=job.company_id)
-        job_company_data.append({"job_posts": job, "company_data": company_details})
-    return 200, job_company_data
+    if await Preference.objects.filter(user=user).aexists():
+        preferences = await sync_to_async(Preference.objects.get)(user=user)
+        excludable_data = []
+        if await BlockedCompanies.objects.filter(user=request.auth).aexists():
+            excludable_data = [i.company for i in await BlockedCompanies.objects.filter(user=request.auth)]
+        jobs = [i async for i in JobPosts.objects.filter(
+            Q(type__in=preferences.job_type) |
+            Q(city__in=preferences.job_location) |
+            Q(type__in=preferences.employment_type) |
+            Q(type__in=preferences.employment_type) |
+            Q(title__icontains=preferences.job_role)
+        ).exclude(active=False, company__in=excludable_data)]
+        job_company_data = []
+        for job in jobs:
+            company_details = await CompanyDetails.objects.aget(id=job.company_id)
+            job_company_data.append({"job_posts": job, "company_data": company_details})
+        return 200, job_company_data
+    return 404, {"message": "User preferences not found"}
 
 @based_jobs_api.get("/profile_based", response={200: List[JobCompanyData], 404: Message, 409: Message}, description="Retrieve all job posts based on user profile data")
 async def profile_based_jobs(request):
