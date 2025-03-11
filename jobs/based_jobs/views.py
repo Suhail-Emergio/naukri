@@ -36,8 +36,8 @@ async def prefered_jobs(request):
         jobs = [i async for i in JobPosts.objects.exclude(active=False, company__in=excludable_data)]
     job_company_data = []
     for job in jobs:
-        # company_details = await CompanyDetails.objects.aget(id=job.company_id)
-        job_company_data.append({"job_posts": job, "company_data": job.company})
+        company_details = await sync_to_async(lambda: job.company)()
+        job_company_data.append({"job_posts": job, "company_data": company_details})
     return 200, job_company_data
 
 @based_jobs_api.get("/profile_based", response={200: List[JobCompanyData], 404: Message, 409: Message}, description="Retrieve all job posts based on user profile data")
