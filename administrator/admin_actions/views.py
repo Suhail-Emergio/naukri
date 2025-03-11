@@ -143,7 +143,7 @@ def all_seekers(request):
 
 #################################  S U B S C R I P T I O N S  #################################
 @admin_api.get("/all_subs", response={200: List[AllSubsData], 405: Message, 409: Message}, description="All company datas")
-# @paginate
+@paginate
 def all_subs(request, type: str = "all" ):
     if type not in ['seeker', 'recruiter', 'all']:
         return 405, {"message": "Type should be either seeker, recruiter or all"}
