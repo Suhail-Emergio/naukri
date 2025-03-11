@@ -32,7 +32,8 @@ async def prefered_jobs(request):
             Q(title__icontains=preferences.job_role)
         ).exclude(active=False, company__in=excludable_data)]
         print(jobs)
-    jobs = [i async for i in JobPosts.objects.exclude(active=False, company__in=excludable_data)]
+    else:
+        jobs = [i async for i in JobPosts.objects.exclude(active=False, company__in=excludable_data)]
     job_company_data = []
     for job in jobs:
         company_details = await CompanyDetails.objects.aget(id=job.company_id)
