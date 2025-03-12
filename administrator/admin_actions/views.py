@@ -13,6 +13,9 @@ from seeker.details.schema import Personal, Qualification, Employment
 from recruiter.recruiter_actions.schema import SeekerData
 from common_actions.models import Subscription
 from common_actions.schema import NotificationCreation, Notification
+from datetime import date, timedelta
+from django.db.models import Count, Case, When, DateField
+from django.db.models.functions import Cast
 
 User = get_user_model()
 admin_api = Router(tags=['admin'])
@@ -82,6 +85,38 @@ def job_post_application(request, job_id: int):
             "shortlisted": shortlisted,
             "rejected": rejected
         }
+    return 409, {"message" : "You are not authorized"}
+
+@admin_api.get("/job_post_application_leads", description="Fetch all leads for a job post date wisw")
+def job_post_application_leads(request, job_id: int):
+    user = request.auth
+    if user.is_superuser:
+        today = date.today()
+        start_date = today - timedelta(days=today.weekday())
+        count = (
+            ApplyJobs.objects.filter(created_on__gte=start_date, created_on__lte=today, job__id=job_id)
+            .annotate(day=Cast('created_on', DateField())).values("day")
+            .annotate(application_count=Count('id')).order_by("day")
+        )
+        data_dict = {
+            entry['day']: {
+                'application_count': entry['application_count'],
+                'date': entry['day'].day
+            } for entry in count if entry['day'] is not None
+        }
+        result = {}
+        current_date = start_date
+        while current_date <= today:
+            date_key = current_date.strftime('%d-%m-%y')
+            if current_date in data_dict:
+                result[date_key] = data_dict[current_date]
+            else:
+                result[date_key] = {
+                    'application_count': 0,
+                    'date': current_date.day
+                }
+            current_date += timedelta(days=1)
+        return result
     return 409, {"message" : "You are not authorized"}
 
 #################################  J O B S  A P P L I C A T I O N S  #################################
