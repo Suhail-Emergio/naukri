@@ -92,7 +92,7 @@ def job_post_application_leads(request, job_id: int):
     user = request.auth
     if user.is_superuser:
         today = date.today()
-        start_date = today - timedelta(days=today.weekday())
+        start_date = today - timedelta(days=7)
         count = (
             ApplyJobs.objects.filter(created_on__gte=start_date, created_on__lte=today, job__id=job_id)
             .annotate(day=Cast('created_on', DateField())).values("day")
