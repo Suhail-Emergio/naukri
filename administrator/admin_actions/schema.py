@@ -50,7 +50,7 @@ class AdminCompany(Schema):
 
 class AllSubsData(Schema):
     id: int
-    seeker: SeekerData
+    seeker: Optional[List[SeekerData]]
     plan: PlanData
     remaining_posts: int
     transaction_id: str
