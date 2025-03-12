@@ -157,15 +157,15 @@ def all_subs(request, type: str = "all" ):
             employment = Employment.objects.filter(user=profile)
             qualification = Qualification.objects.filter(user=profile)
             seekers.append({"personal": {"personal": personal, "user": profile}, "employment": employment, "qualification": qualification})
-        all_sub = {
+        all_sub.append({
             "id": subs.id,
             "seeker": seekers,
             "plan": subs.plan,
             "remaining_posts": subs.remaining_posts,
             "transaction_id": subs.transaction_id,
             "subscribed_on": subs.subscribed_on
-        }
-    return all_sub
+        })
+    return 200, all_sub
 
 #################################  P L A N S  #################################
 @admin_api.post("/create_plans", response={201: Message, 409:Message}, description="Plan creations")
