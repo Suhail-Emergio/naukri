@@ -17,6 +17,7 @@ class UserProfile(AbstractUser):
     phone_verified = models.BooleanField(default=False)
     subscribed = models.BooleanField(default=False)
     onesignal_id = models.TextField(default='')
+    transaction_id = models.CharField(max_length=100, null=True, blank=True) # For id of transaction in case of subscription
 
     groups = models.ManyToManyField(
         'auth.Group',
