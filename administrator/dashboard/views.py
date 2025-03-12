@@ -115,8 +115,8 @@ def get_schedule_interviews():
     apps = []
     for i in interviews:
         apps.append({
-            "name": i.application.user.name,
-            # "name": i['application__user'],
+            # "name": i.application.user.name,
+            "name": i['application__user'],
             "schedule": i['schedule']
         })
     return apps
