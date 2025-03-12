@@ -109,7 +109,7 @@ def get_new_applications():
     return apps
 
 def get_schedule_interviews():
-    interviews = InterviewSchedule.objects.values('application__user', 'schedule').order_by('-created_on')[:5]
+    interviews = InterviewSchedule.objects.all().order_by('-created_on')[:5]
     print(interviews)
     print(InterviewSchedule.objects.all())
     apps = []
