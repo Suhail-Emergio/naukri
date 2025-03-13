@@ -21,7 +21,7 @@ async def prefered_jobs(request):
     user = request.auth
     excludable_data = []
     if await BlockedCompanies.objects.filter(user=request.auth).aexists():
-        excludable_data = [i.company for i in await BlockedCompanies.objects.filter(user=request.auth)]
+        excludable_data = [i.company async for i in BlockedCompanies.objects.filter(user=request.auth)]
     if await Preference.objects.filter(user=user).aexists():
         preferences = await sync_to_async(Preference.objects.get)(user=user)
         jobs = [i async for i in JobPosts.objects.filter(
@@ -47,7 +47,7 @@ async def profile_based_jobs(request):
     employment = await Employment.objects.filter(user=user).afirst()
     excludable_data = []
     if await BlockedCompanies.objects.filter(user=request.auth).aexists():
-        excludable_data = [i.company for i in await BlockedCompanies.objects.filter(user=request.auth)]
+        excludable_data = [i.company async for i in BlockedCompanies.objects.filter(user=request.auth)]
     if personal:
         query = Q()
         if personal.employed and employment:
@@ -68,7 +68,7 @@ async def category_based_jobs(request, category: str = "remote"):
         return 409, {"message": "Category not provided"}
     excludable_data = []
     if await BlockedCompanies.objects.filter(user=request.auth).aexists():
-        excludable_data = [i.company for i in await BlockedCompanies.objects.filter(user=request.auth)]
+        excludable_data = [i.company async for i in BlockedCompanies.objects.filter(user=request.auth)]
     jobs = [i async for i in JobPosts.objects.filter(category=category, active=False).exclude(company__in=excludable_data)]
     job_company_data = []
     for job in jobs:
@@ -83,7 +83,7 @@ async def similar_jobs(request, job_id: str):
     job = await JobPosts.objects.aget(id=job_id)
     excludable_data = []
     if await BlockedCompanies.objects.filter(user=request.auth).aexists():
-        excludable_data = [i.company for i in await BlockedCompanies.objects.filter(user=request.auth)]
+        excludable_data = [i.company async for i in BlockedCompanies.objects.filter(user=request.auth)]
     jobs = [i async for i in JobPosts.objects.filter(Q(title__icontains=job.title) | Q(type=job.type) | Q(industry=job.industry)).exclude(id=job_id, active=False, company__in=excludable_data)]
     job_company_data = []
     for job in jobs:
@@ -95,7 +95,7 @@ async def similar_jobs(request, job_id: str):
 async def featured_jobs(request):
     excludable_data = []
     if await BlockedCompanies.objects.filter(user=request.auth).aexists():
-        excludable_data = [i.company for i in await BlockedCompanies.objects.filter(user=request.auth)]
+        excludable_data = [i.company async for i in BlockedCompanies.objects.filter(user=request.auth)]
     jobs = [i async for i in JobPosts.objects.filter(company__user__subscribed=True).exclude(active=False, company__in=excludable_data).order_by('-id')]
     if len(jobs) == 0:
         jobs = [i async for i in JobPosts.objects.exclude(active=False, company__in=excludable_data).order_by('-id')]
