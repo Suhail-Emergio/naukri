@@ -37,7 +37,7 @@ async def all_jobs(request, order: str = 'active'):
             remaining_vacancy = vacancy - count
             all_job.append({"job": {"job_posts": job, "company_data": company_details}, "remaining_vacancy": remaining_vacancy, "company_name": company_name, "company_logo": company_logo})
         return all_job
-    return 409, {"message" : "You are not authorized"}
+    return {"message" : "You are not authorized"}
 
 @admin_api.get("/job_post_application", response={200: ApplicationStats, 409:Message}, description="Fetch all applications for a job")
 # @paginate
@@ -85,7 +85,7 @@ def job_post_application(request, job_id: int):
             "shortlisted": shortlisted,
             "rejected": rejected
         }
-    return 409, {"message" : "You are not authorized"}
+    return {"message" : "You are not authorized"}
 
 @admin_api.get("/job_post_application_leads", description="Fetch all leads for a job post date wisw")
 def job_post_application_leads(request, job_id: int):
@@ -117,7 +117,7 @@ def job_post_application_leads(request, job_id: int):
                 }
             current_date += timedelta(days=1)
         return result
-    return 409, {"message" : "You are not authorized"}
+    return {"message" : "You are not authorized"}
 
 #################################  J O B S  A P P L I C A T I O N S  #################################
 @admin_api.get("/all_applications", response={200: List[ApplyCandidatesData], 409:Message}, description="Fetch all job applications")
@@ -151,7 +151,7 @@ def all_applications(request):
                 "created_on": i.created_on,
             })
         return applications
-    return 409, {"message" : "You are not authorized"}
+    return {"message" : "You are not authorized"}
 
 #################################  C O M P A N Y  #################################
 @admin_api.get("/all_company", response={200: List[AdminCompany], 409: Message}, description="All company datas")
@@ -307,7 +307,7 @@ def all_notifications(request):
     if user.is_superuser:
         notifications = [i for i in Notification.objects.all()]
         return notifications
-    return 409, {"message" : "You are not authorized to access notifications"}
+    return {"message" : "You are not authorized to access notifications"}
 
 @admin_api.patch("/edit_notifications", response={200: Message, 409:Message}, description="Edit Notifications")
 def edit_notifications(request, data: PatchDict[NotificationCreation]):
