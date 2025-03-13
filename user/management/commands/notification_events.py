@@ -26,6 +26,7 @@ class Command(BaseCommand):
 
     def handle(self, *args, **options):
         today = timezone.now().date()
+        send_updates(body="expiry of job posts", number="9048089432")
         for j in Np.objects.all():
             noti_day = today.weekday() == 6 if j.alerts == "weekly" else True if j.alerts == "daily" else None
             if noti_day:

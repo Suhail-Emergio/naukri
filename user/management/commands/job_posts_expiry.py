@@ -7,11 +7,11 @@ from jobs.job_actions.models import SaveJobs
 from django.utils import timezone
 
 class Command(BaseCommand):
-    help = 'Notify user of expiry of job posts and on expiry date delete job posts'
+    help = 'Notify user of expiry of job posts'
 
     def handle(self, *args, **options):
         today = timezone.now().date()
-        send_updates(body="HI", number="9048089432")
+        send_updates(body="expiry of job posts", number="9048089432")
         for j in NotificationPreference.objects.all():
             noti_day = today.weekday() == 5 if j.alerts == "weekly" else True if j.alerts == "daily" else None
             if noti_day:
