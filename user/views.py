@@ -16,9 +16,7 @@ import random
 from django.core.cache import cache
 
 user_api = Router(tags=['user'])
-User = get_user_model()
-
-#################################  R E G I S T E R  &  L O G I N  #################################
+User = get_user_model()##  R E G I S T E R  &  L O G I N  #################################
 @user_api.post("/register", auth=None, response={201: Message, 409: Message}, description="User creation")
 async def register(request, data: UserCreation):
     if await User.objects.filter(Q(username=data.phone) | Q(email=data.email)).aexists():
@@ -36,6 +34,7 @@ async def register(request, data: UserCreation):
     if cache_value:
         await sync_to_async(cache.delete)(key)
     await sync_to_async(cache.set)(key, f"{otp:04d}", timeout=60)
+    
     await whatsapp_message(otp, data.phone)
     refresh = RefreshToken.for_user(user)
     return 201, {"message": "Otp send successfully"}
@@ -92,8 +91,6 @@ async def mobile_otp_verify(request, data: MobileOtpVerify):
                 user.phone_verified = True
                 await user.asave()
             refresh = RefreshToken.for_user(user)
-            if not user.subscribed and user.role == "recruiter":
-                return 203, {'message': "Subscribe to continue"}
             return 200, {'access': str(refresh.access_token), 'refresh': str(refresh), 'role': user.role, "name": user.name}
         return 403, {"message": "Invalid OTP"}
     return 401, {"message": "OTP expired"}
