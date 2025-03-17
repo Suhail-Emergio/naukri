@@ -59,7 +59,7 @@ async def applied_jobs(request):
     return 200, jobs
 
 #################################  A P P L I C A T I O N S  #################################
-@job_actions_api.get("/job_applications", response={200: List[ApplyCandidatesData], 404: Message, 409: Message}, description="Retrieve all job applications for a company for a job post")
+@job_actions_api.get("/job_applications", response={200: List[ApplyCandidatesData], 404: Message, 409: Message}, description="Retrieve all job applications for a company for all jobs/ for a job post")
 async def job_applications(request, job_id: Optional[int] = None):
     user = request.auth
     query = ()
@@ -92,6 +92,12 @@ async def job_applications(request, job_id: Optional[int] = None):
         applied_jobs = []
         async for i in ApplyJobs.objects.filter(user=candidate, job__company__user=user):
             applied_jobs.append(await sync_to_async(lambda: i.job)())
+        matching_skills = []
+        job_skills = await sync_to_async(lambda: job.skills)()
+        individual_skills = await sync_to_async(lambda: personal.skills)()
+        for i in individual_skills:
+            if i in job_skills:
+                matching_skills.append(i)
         applications.append({
             "id": id,
             'job': job,
@@ -101,6 +107,7 @@ async def job_applications(request, job_id: Optional[int] = None):
             "status": status,
             "viewed": viewed,
             "created_on": created_on,
+            "matching_skills": matching_skills
         })
         return 200, applications
     return 409, {"message": "No applications found"}

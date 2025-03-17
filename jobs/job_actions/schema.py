@@ -40,6 +40,7 @@ class ApplyCandidatesData(Schema):
     applied_jobs: List[JobData]
     candidate: SeekerData
     custom_qns: Optional[Union[List[str], Dict[str, Any]]]
+    matching_skills = Optional[List[str]]
     status: str
     viewed: bool
     created_on: datetime
