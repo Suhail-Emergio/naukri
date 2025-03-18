@@ -47,13 +47,13 @@ async def read_invitations(request, id:int):
         return 200, {"message": "Invitation read successfully"}
     return 404, {"message": "Invitation not found"}
 
-@seeker_actions_api.delete("/reject_invitation", response={200: Message, 404: Message, 409: Message}, description="Reject an invitation") 
-async def reject_invitation(request, id:int):
+@seeker_actions_api.patch("/update_invitation_status", response={200: Message, 404: Message, 409: Message}, description="Mark an invitation as read") 
+async def update_invitation_status(request, id:int, data: StatusUpdate):
     if await InviteCandidate.objects.filter(job__id=id).aexists():
         invite = await InviteCandidate.objects.aget(job__id=id)
-        invite.interested = False
+        invite.status = data.status
         await invite.asave()
-        return 200, {"message": "Invitation rejected successfully"}
+        return 200, {"message": "Invitation status updated successfully"}
     return 404, {"message": "Invitation not found"}
 
 #################################  B L O C K /  U N B L O C K  C O M P A N I E S  #################################

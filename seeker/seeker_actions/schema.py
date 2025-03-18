@@ -15,3 +15,6 @@ class JobInvitations(Schema):
 class BlockedComp(Schema):
     company: CompanyData
     blocked_on: datetime
+
+class StatusUpdate(Schema):
+    status: str

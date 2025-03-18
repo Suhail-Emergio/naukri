@@ -11,12 +11,17 @@ class SaveCandidate(models.Model):
     candidate = models.ForeignKey(Personal, on_delete=models.CASCADE)
     created_on = models.DateTimeField(auto_now=True)
 
+# class ViewedCandidate(models.Model):
+#     user = models.ForeignKey(User, on_delete=models.CASCADE)
+#     candidate = models.ForeignKey(Personal, on_delete=models.CASCADE)
+#     viewed_on = models.DateTimeField(auto_now=True)
+
 class InviteCandidate(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     candidate = models.ForeignKey(Personal, on_delete=models.CASCADE, null=True, blank=True)
     job = models.ForeignKey(JobPosts, on_delete=models.CASCADE, null=True, blank=True)
     read = models.BooleanField(default=False)
-    interested = models.BooleanField(null=True, blank=True)
+    status = models.CharField(max_length=50, choices=[('applied', 'applied'), ('reviewing', 'reviewing'), ('pending', 'pending'), ('rejected', 'rejected')], default='pending')
     created_on = models.DateTimeField(auto_now=True)
 
 class EmailTemplate(models.Model):

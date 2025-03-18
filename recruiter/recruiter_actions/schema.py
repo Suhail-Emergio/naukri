@@ -55,3 +55,6 @@ class InterviewScheduleSchema(Schema):
 class ResumeDownloadSchema(Schema):
     candidate: PersonalSchema
     job: JobData
+
+class UpdateApplicationStatus(Schema):
+    status : str

@@ -24,6 +24,7 @@ class Personal(models.Model):
     prefered_work_loc = models.JSONField()
     total_experience_years = models.IntegerField(default=0)
     total_experience_months = models.IntegerField(default=0)
+    immediate_joiner = models.BooleanField(default=False)
 
 class Employment(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE)

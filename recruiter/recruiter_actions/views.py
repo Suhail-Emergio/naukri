@@ -207,6 +207,16 @@ async def reject_application(request, id: int):
         return 200, {"message": "Application rejected successfully"}
     return 404, {"message": "Application not found"}
 
+@recruiter_actions_api.delete("/update_application_status", response={200: Message, 404: Message, 409: Message}, description="Invite candidates for job")
+async def update_application_status(request, id: int, data: UpdateApplicationStatus):
+    user = request.auth
+    if await ApplyJobs.objects.filter(id=id).aexists():
+        application = await ApplyJobs.objects.aget(id=id)
+        application.status = data.status
+        await application.asave()
+        return 200, {"message": "Application status updated successfully"}
+    return 404, {"message": "Application not found"}
+
 #################################  E M A I L S  #################################
 @recruiter_actions_api.get("/email_templates", response={200: List[EmailTemplates], 404: Message, 409: Message}, description="Retrieve all email templates created by user")
 async def templates(request):

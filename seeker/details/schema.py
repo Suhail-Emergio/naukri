@@ -40,6 +40,7 @@ class PersonalData(Schema):
     address: Union[List[str], Dict[str, Any]] | None = None
     differently_abled: bool | None = None
     dob: date | None = None
+    immediate_joiner : bool
 
 class PersonalSchema(Schema):
     personal: PersonalData

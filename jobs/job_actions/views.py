@@ -37,7 +37,7 @@ async def apply_jobs(request, data: ApplyJobsCreation):
         if await InviteCandidate.objects.filter(candidate__user=request.auth, job=job).aexists():
             invited = True
             invite = await InviteCandidate.objects.aget(candidate__user=request.auth, job=job)
-            invite.interested = True
+            invite.status = "applied"
             await invite.asave()
         apply_job = await ApplyJobs.objects.acreate(user=request.auth, job=job, custom_qns=custom_qns, invited=invited)
         return 201, {"message": "Successfully added"}
