@@ -54,10 +54,32 @@ async def resdex(request,
         additional: str = None,
     ):
     if await Subscription.objects.filter(user=request.auth, plan__resdex=True).aexists():
+        queries = Q()
+        candidates = []
         if job_id:
-            pass
+            if await JobPosts.objects.filter(id=job_id).aexists():
+                job = await JobPosts.objects.aget(id=job_id)
+                skills = await sync_to_async(lambda: job.skills)()
+                queries &= Q(skills__in=skills)
+                if location:
+                    queries &= Q(city__icontains=location)
+                personal = await Personal.objects.filter(queries).values('user').order_by('-id')
+                title = await sync_to_async(lambda: job.title)()
+                q = Q()
+                q |= Q(job_title__icontains=title)
+                q |= Q(user__in=personal)
+                candidate = [i async for i in Employment.objects.filter(q).order_by('-id')]
+                for i in candidate:
+                    user = await sync_to_async(lambda: i.user)()
+                    search_apps = await SearchApps.objects.filter(user=user).alatest('date')
+                    search_apps.count += 1
+                    await search_apps.asave()
+                    personal_ = await Personal.objects.aget(user=user)
+                    qualification = None
+                    if await Qualification.objects.filter(user=user).aexists():
+                        qualification = [i async for i in Qualification.objects.filter(user=user).order_by('-id')]
+                    candidates.append({"personal": {"personal": personal_, "user": user}, "employment": i, "qualification": qualification})
         else:
-            queries = Q()
             if keywords:
                 queries &= Q(skills__in=keywords)
             if experience_year and experience_month:
@@ -68,9 +90,6 @@ async def resdex(request,
                 queries &= Q(nationality__icontains=nationality)
             if salary_min and salary_max:
                 queries &= Q(prefered_salary_pa__gte=salary_min) & Q(prefered_salary_pa__lte=salary_max)
-
-        candidates = []
-        if queries:
             candidate = [i async for i in Personal.objects.filter(queries).exclude(user__is_active=False).order_by('-user__subscribed', '-id')]
             for i in candidate:
                 user = await sync_to_async(lambda: i.user)()
