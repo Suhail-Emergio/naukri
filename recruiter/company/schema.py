@@ -5,6 +5,7 @@ from .models import *
 
 # Company Details Schema
 class CompanyCreation(Schema):
+    name: str
     about : str
     website : str
     functional_area : str
