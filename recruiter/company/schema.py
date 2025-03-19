@@ -5,7 +5,6 @@ from .models import *
 
 # Company Details Schema
 class CompanyCreation(Schema):
-    name: str
     about : str
     website : str
     functional_area : str
@@ -13,9 +12,6 @@ class CompanyCreation(Schema):
     city : str
     country : str
     postal_code : str
-    contact_name : str
-    contact_land_number : str
-    contact_mobile_number : str
     designation : str
 
 CompanyData = create_schema(CompanyDetails)

@@ -5,7 +5,6 @@ User = get_user_model()
 
 class CompanyDetails(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE)
-    name = models.CharField(max_length = 250, default="")
     logo = models.FileField(upload_to="images/company/logo", null=True, blank=True)
     about = models.TextField()
     website = models.URLField(max_length = 200)
@@ -14,7 +13,4 @@ class CompanyDetails(models.Model):
     city = models.CharField(max_length = 250)
     country = models.CharField(max_length = 250)
     postal_code = models.CharField(max_length=6)
-    contact_name = models.CharField(max_length = 100)
-    contact_land_number = models.CharField(max_length = 10)
-    contact_mobile_number = models.CharField(max_length = 10)
     designation = models.CharField(max_length = 200)
