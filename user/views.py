@@ -24,6 +24,7 @@ async def register(request, data: UserCreation):
         phone_verified = await sync_to_async(lambda: existing_user.phone_verified)()
         if phone_verified:
             return 409, {"message": "User already exists"}
+        user = existing_user
     else:
         user = await User.objects.acreate(**data.dict(), username=data.phone)
         user.set_password(data.password)

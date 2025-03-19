@@ -137,14 +137,7 @@ async def send_mails(email, name, password):
 
     msg = EmailMultiAlternatives(subject, text_content, settings.EMAIL_HOST_USER, [email])
     msg.attach_alternative(html_content, "text/html")
-    # await sync_to_async(msg.send)()
-    from django.core.mail import get_connection
-    connection = get_connection()
-    await sync_to_async(connection.open)()
-    try:
-        await sync_to_async(connection.send_messages)([msg])
-    finally:
-        await sync_to_async(connection.close)()
+    await sync_to_async(msg.send)()
     return {"status": True,"message" :"Email sended successfully"}
 
 def send_interview_schedule(email, from_email, subject, body):
