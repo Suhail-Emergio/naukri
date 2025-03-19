@@ -82,7 +82,7 @@ async def job_applications(request,
         users = []
         async for i in Personal.objects.filter(city=location):
             users.append(await sync_to_async(lambda: i.user.id)())
-        query &= Q(user__in=[users])
+        query &= Q(user__in=users)
         # query &= Q(user__personal__city=location)
     if gender:
         query &= Q(user__personal__gender=gender)
