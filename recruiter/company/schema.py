@@ -11,7 +11,7 @@ class CompanyCreation(Schema):
     functional_area : str
     address : Union[List[str], Dict[str, Any]]
     city : str
-    country : str
+    state : str
     postal_code : str
 
 CompanyData = create_schema(CompanyDetails)
