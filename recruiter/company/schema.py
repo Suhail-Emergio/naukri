@@ -13,6 +13,5 @@ class CompanyCreation(Schema):
     city : str
     country : str
     postal_code : str
-    designation : str
 
 CompanyData = create_schema(CompanyDetails)

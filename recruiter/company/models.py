@@ -14,4 +14,3 @@ class CompanyDetails(models.Model):
     city = models.CharField(max_length = 250)
     country = models.CharField(max_length = 250)
     postal_code = models.CharField(max_length=6)
-    designation = models.CharField(max_length = 200)
