@@ -70,6 +70,7 @@ async def job_applications(request,
     ):
     user = request.auth
     query = ()
+    q = Q()
     if job_id:
         if await JobPosts.objects.filter(id=job_id).aexists():
             query = Q(job__id=job_id)
@@ -78,21 +79,20 @@ async def job_applications(request,
     else:
         query = Q(job__company__user=user)
     if location:
-        # locations = await sync_to_async(Personal.objects.filter)(city=location)
-        users = []
-        async for i in Personal.objects.filter(city=location):
-            users.append(await sync_to_async(lambda: i.user.id)())
-        query &= Q(user__in=users)
-        # query &= Q(user__personal__city=location)
+        q = Q(city=location)
     if gender:
-        query &= Q(user__personal__gender=gender)
+        q &= Q(gender=gender)
     if experiance_range:
         exp_range = experiance_range.split("-")
-        query &= Q(user__personal__total_experience_years__gte=exp_range[0]) & Q(user__personal__total_experience_years__lte=exp_range[1])
+        q &= Q(total_experience_years__gte=exp_range[0]) & Q(total_experience_years__lte=exp_range[1])
     if skills:
-        query &= Q(user__personal__skills__in=skills)
+        q &= Q(skills__in=skills)
     if immediate_joining:
-        query &= Q(user__personal__immediate_joiner=immediate_joining)
+        q &= Q(immediate_joiner=immediate_joining)
+    users = []
+    async for i in Personal.objects.filter(q):
+        users.append(await sync_to_async(lambda: i.user.id)())
+    query &= Q(user__in=users)
     applications = []
     async for i in ApplyJobs.objects.filter(query).order_by('-created_on'):
         candidate = await sync_to_async(lambda: i.user)()
