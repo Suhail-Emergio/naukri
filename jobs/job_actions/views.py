@@ -78,7 +78,9 @@ async def job_applications(request,
     else:
         query = Q(job__company__user=user)
     if location:
-        query &= Q(user__personal__city=location)
+        locations = await Personal.objects.filter(city=location)
+        query &= Q(user__in=[i.user for i in locations])
+        # query &= Q(user__personal__city=location)
     if gender:
         query &= Q(user__personal__gender=gender)
     if experiance_range:
