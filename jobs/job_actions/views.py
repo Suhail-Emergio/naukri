@@ -60,7 +60,14 @@ async def applied_jobs(request):
 
 #################################  A P P L I C A T I O N S  #################################
 @job_actions_api.get("/job_applications", response={200: List[ApplyCandidatesData], 404: Message, 409: Message}, description="Retrieve all job applications for a company for all jobs/ for a job post")
-async def job_applications(request, job_id: Optional[int] = None):
+async def job_applications(request, 
+        job_id: Optional[int] = None,
+        location : Optional[str] = None,
+        gender: Optional[str] = None,
+        experiance_range: Optional[str] = None,
+        skills: Optional[List[str]] = None,
+        immediate_joining: Optional[bool] = None,
+    ):
     user = request.auth
     query = ()
     if job_id:
@@ -70,6 +77,17 @@ async def job_applications(request, job_id: Optional[int] = None):
             return 404, {"message": "Job not found"}
     else:
         query = Q(job__company__user=user)
+    if location:
+        query &= Q(user__personal__city=location)
+    if gender:
+        query &= Q(user__personal__gender=gender)
+    if experiance_range:
+        exp_range = experiance_range.split("-")
+        query &= Q(user__personal__total_experience_years__gte=exp_range[0]) & Q(user__personal__total_experience_years__lte=exp_range[1])
+    if skills:
+        query &= Q(user__personal__skills__in=skills)
+    if immediate_joining:
+        query &= Q(user__personal__immediate_joiner=immediate_joining)
     applications = []
     async for i in ApplyJobs.objects.filter(query).order_by('-created_on'):
         candidate = await sync_to_async(lambda: i.user)()

@@ -29,6 +29,7 @@ async def register(request, data: UserCreation):
         user = await User.objects.acreate(**data.dict(), username=data.phone)
         user.set_password(data.password)
         await user.asave()
+        
     otp = random.randint(1111,9999)
     key = f'otp_{data.phone}'
     cache_value = await sync_to_async(cache.get)(key)
