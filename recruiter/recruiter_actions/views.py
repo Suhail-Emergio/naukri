@@ -41,6 +41,8 @@ async def all_seekers(request):
 #################################  F I L T E R  C A N D I D A T E S  B A S E D  #################################
 @recruiter_actions_api.get("/resdex", response={200: List[SeekerData], 403: Message, 404: Message, 409: Message}, description="Retrieve all candidates based on filters")
 async def resdex(request,
+        job_id: int = None,
+        location: str = None,
         keywords: List[str] = Query(None, description="List of keywords"), 
         experience_year: int = None,
         experience_month: int = None,
@@ -52,17 +54,20 @@ async def resdex(request,
         additional: str = None,
     ):
     if await Subscription.objects.filter(user=request.auth, plan__resdex=True).aexists():
-        queries = Q()
-        if keywords:
-            queries &= Q(skills__in=keywords)
-        if experience_year and experience_month:
-            queries &= Q(total_experience_years__gte=experience_year) & Q(total_experience_months__gte=experience_month)
-        if current_loc:
-            queries &= Q(city__icontains=current_loc) | Q(state__icontains=current_loc)
-        if nationality:
-            queries &= Q(nationality__icontains=nationality)
-        if salary_min and salary_max:
-            queries &= Q(prefered_salary_pa__gte=salary_min) & Q(prefered_salary_pa__lte=salary_max)
+        if job_id:
+            pass
+        else:
+            queries = Q()
+            if keywords:
+                queries &= Q(skills__in=keywords)
+            if experience_year and experience_month:
+                queries &= Q(total_experience_years__gte=experience_year) & Q(total_experience_months__gte=experience_month)
+            if current_loc:
+                queries &= Q(city__icontains=current_loc) | Q(state__icontains=current_loc)
+            if nationality:
+                queries &= Q(nationality__icontains=nationality)
+            if salary_min and salary_max:
+                queries &= Q(prefered_salary_pa__gte=salary_min) & Q(prefered_salary_pa__lte=salary_max)
 
         candidates = []
         if queries:
