@@ -12,5 +12,5 @@ class CompanyDetails(models.Model):
     functional_area = models.CharField(max_length=250)
     address = models.JSONField()
     city = models.CharField(max_length = 250)
-    state = models.CharField(max_length = 250)
+    state = models.CharField(max_length = 250, default='')
     postal_code = models.CharField(max_length=6)
