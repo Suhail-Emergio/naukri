@@ -86,8 +86,7 @@ async def job_applications(request,
         exp_range = experiance_range.split("-")
         q &= Q(total_experience_years__gte=exp_range[0]) & Q(total_experience_years__lte=exp_range[1])
     if skills:
-        print(skills)
-        q &= Q(skills__in=skills)
+        q &= Q(skills__contains=skills)
     if immediate_joining:
         q &= Q(immediate_joiner=immediate_joining)
     users = []
