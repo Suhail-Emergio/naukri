@@ -65,7 +65,7 @@ async def job_applications(request,
         location : Optional[str] = None,
         gender: Optional[str] = None,
         experiance_range: Optional[str] = None,
-        skills: Optional[List[str]] = None,
+        skills: List[str] = Query(None, description="List of skills"),
         immediate_joining: Optional[bool] = None,
     ):
     user = request.auth
