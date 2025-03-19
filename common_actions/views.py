@@ -40,25 +40,23 @@ async def banners(request):
     return 200, banner
 
 #################################  S U B S C R I P T I O N S  #################################
-@common_api.post("/subscribe", auth=None, response={201: Message, 404: Message, 409:Message}, description="Add subscription")
+@common_api.post("/subscribe", response={201: Message, 404: Message, 409:Message}, description="Add subscription")
 async def subscribe(request, data: SubscriptionCreation):
-    if await User.objects.filter(username=data.phone).aexists():
-        user = await User.objects.aget(username=data.phone)
-        role = await sync_to_async(lambda: user.role)()
-        if await Plans.objects.filter(id=data.plan_id).aexists():
-            plan = await Plans.objects.aget(id=data.plan_id)
-            audience = await sync_to_async(lambda: plan.audience)()
-            if role == audience:
-                if await Subscription.objects.filter(user=user).aexists():
-                    already_sub = await Subscription.objects.aget(user=user)
-                    await already_sub.adelete()
-                subscription = await Subscription.objects.acreate(user=user, plan=plan, transaction_id=data.transaction_id)
-                await subscription.asave()
-                user.subscribed = True
-                await user.asave()
-                return 201, {"message" : "Subscription created successfuly"}
-        return 404, {"message" : "Plan doesnot exists"}
-    return 409, {"message" : "User doesnot exists"}
+    user = request.auth
+    role = await sync_to_async(lambda: user.role)()
+    if await Plans.objects.filter(id=data.plan_id).aexists():
+        plan = await Plans.objects.aget(id=data.plan_id)
+        audience = await sync_to_async(lambda: plan.audience)()
+        if role == audience:
+            if await Subscription.objects.filter(user=user).aexists():
+                already_sub = await Subscription.objects.aget(user=user)
+                await already_sub.adelete()
+            subscription = await Subscription.objects.acreate(user=user, plan=plan, transaction_id=data.transaction_id)
+            await subscription.asave()
+            user.subscribed = True
+            await user.asave()
+            return 201, {"message" : "Subscription created successfuly"}
+    return 404, {"message" : "Plan doesnot exists"}
 
 @common_api.get("/subscriptions", response={200: SubscriptionData, 404: Message, 409:Message}, description="subscription taken by a user")
 async def subscriptions(request):
