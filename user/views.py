@@ -35,7 +35,6 @@ async def register(request, data: UserCreation):
     if cache_value:
         await sync_to_async(cache.delete)(key)
     await sync_to_async(cache.set)(key, f"{otp:04d}", timeout=60)
-    
     await whatsapp_message(otp, data.phone)
     refresh = RefreshToken.for_user(user)
     return 201, {"message": "Otp send successfully"}
