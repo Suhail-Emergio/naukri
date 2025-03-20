@@ -20,8 +20,13 @@ User = get_user_model()##  R E G I S T E R  &  L O G I N  ######################
 @user_api.post("/register", auth=None, response={201: Message, 409: Message}, description="User creation")
 async def register(request, data: UserCreation):
     if await User.objects.filter(Q(username=data.phone) | Q(email=data.email)).aexists():
-        existing_user = await User.objects.aget(Q(username=data.phone) | Q(email=data.email))
+        existing_user = await User.objects.aget(Q(username=data.phone) | Q(email=data.email)) 
         phone_verified = await sync_to_async(lambda: existing_user.phone_verified)()
+        phone = await sync_to_async(lambda: existing_user.phone)()
+        if phone != data.phone:
+            existing_user.phone = data.phone
+            existing_user.username = data.phone
+            await existing_user.asave()
         if phone_verified:
             return 409, {"message": "User already exists"}
         user = existing_user
@@ -29,7 +34,6 @@ async def register(request, data: UserCreation):
         user = await User.objects.acreate(**data.dict(), username=data.phone)
         user.set_password(data.password)
         await user.asave()
-        
     otp = random.randint(1111,9999)
     key = f'otp_{data.phone}'
     cache_value = await sync_to_async(cache.get)(key)
