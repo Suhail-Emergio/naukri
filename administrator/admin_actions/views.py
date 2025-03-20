@@ -292,8 +292,8 @@ async def delete_banners(request, id: int):
 def create_notification(request, data: NotificationCreation, image: UploadedFile = File(None)):
     notification = Notification.objects.create(title=data.title, description=data.description)
     if data.audience:
-        user = User.objects.filter(role=data.audience).values_list('id', flat=True)
-        notification.user.add(user)
+        for i in User.objects.filter(role=data.audience):
+            notification.user.add(i.user.id)
     if image:
         notification.image = image
     if data.url:
