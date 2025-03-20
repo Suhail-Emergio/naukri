@@ -44,3 +44,4 @@ class ApplyCandidatesData(Schema):
     status: str
     viewed: bool
     created_on: datetime
+    phone: str | None = None

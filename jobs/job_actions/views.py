@@ -130,7 +130,8 @@ async def job_applications(request,
             "status": status,
             "viewed": viewed,
             "created_on": created_on,
-            "matching_skills": matching_skills
+            "matching_skills": matching_skills,
+            "phone": user.phone
         })
     return 200, applications
 
