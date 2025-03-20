@@ -227,7 +227,7 @@ async def forgot_pwd(request, data: ForgotPassword):
         cache_value = await sync_to_async(cache.get)(key)
         if cache_value:
             await sync_to_async(cache.delete)(key)
-        await sync_to_async(cache.set)(key, f"{otp:04d}", timeout=60)
+        await sync_to_async(cache.set)(key, f"{otp:04d}", timeout=120)
         await whatsapp_message(otp, data.phone)
         return 200, {"message": "OTP sent to mobile"}
     return 401, {"message": "User not found"}
