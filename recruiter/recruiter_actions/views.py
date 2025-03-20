@@ -212,7 +212,7 @@ async def interviews_scheduled(request, job_id: int = None):
         scheduled.append({"id": i.id, "candidate": {"personal": {"personal": personal, "user": candidate}, "employment": employment, "qualification": qualification}, "schedule": i.schedule, "job": job, "created_on": i.created_on})
     return 200, scheduled
 
-@recruiter_actions_api.post("/schedule_interview", response={200: List[ScheduledInterviews], 404: Message, 409: Message}, description="Invite candidates for job")
+@recruiter_actions_api.post("/schedule_interview", response={200: Message, 404: Message, 409: Message}, description="Invite candidates for job")
 async def schedule_interview(request, data: InterviewScheduleSchema):
     user = request.auth
     if await Personal.objects.filter(id=data.candidate_id).aexists():
