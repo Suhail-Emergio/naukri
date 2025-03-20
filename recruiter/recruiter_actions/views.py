@@ -73,7 +73,7 @@ async def resdex(request,
                 q = Q()
                 q |= Q(job_title__icontains=title)
                 q |= Q(user__in=users)
-                candidate = [i async for i in Employment.objects.filter(q).order_by('-id')]
+                candidate = [i async for i in Employment.objects.filter(q).order_by('-id').distinct('user')]
                 for i in candidate:
                     user = await sync_to_async(lambda: i.user)()
                     # search_apps = await SearchApps.objects.filter(user=user).alatest('date')
