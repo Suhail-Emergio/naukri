@@ -291,13 +291,17 @@ async def delete_banners(request, id: int):
 @admin_api.post("/create_notification", response={201: Message, 404: Message, 409:Message}, description="Create Notifications")
 def create_notification(request, data: NotificationCreation):
     notification = Notification.objects.create(title=data.title, description=data.description)
+    if data.audience:
+        user = User.objects.filter(role=data.audience)
+        notification.user.add(user)
     if data.image:
         notification.image = data.image
     if data.url:
         notification.url = data.url
-    for i in data.user_id:
-        user = User.objects.get(id=i)
-        notification.user.add(user)
+    if data.user_id:
+        for i in data.user_id:
+            user = User.objects.get(id=i)
+            notification.user.add(user)
     notification.save()
     return 201, {"message": "Notification created successfully"}
 
@@ -339,6 +343,6 @@ def delete_notifications(request, id: int):
 async def all_users(request):
     user = request.auth
     if user.is_superuser:
-        users = await sync_to_async(lambda: User.objects.all().values('id', 'name', 'phone'))
+        users = [i async for i in  User.objects.all().values('id', 'name', 'phone', 'role')]
         return 200, users
     return 409, {"message" : "You are not authorized to access users"}
