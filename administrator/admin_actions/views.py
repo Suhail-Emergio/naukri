@@ -313,7 +313,7 @@ def all_notifications(request):
         notifications = []
         for i in Notification.objects.all().order_by('-id'):
             users = []
-            for user in:
+            for user in i.user.all():
                 users.append(user.name)
             notifications.append({
                 "id": i.id,
