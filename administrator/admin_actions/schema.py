@@ -71,7 +71,7 @@ class AllNotifications(Schema):
     url: str | None
     created_on: str
     user: List[str]
-    read: List[str]
+    read_by: List[str]
 
 class AllUsers(Schema):
     id: int

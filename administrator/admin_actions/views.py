@@ -320,7 +320,7 @@ def all_notifications(request):
                 "url": i.url,
                 "created_on": i.created_on.strftime("%d-%m-%Y %H:%M:%S"),
                 "user": i.user,
-                "read": i.read
+                "read_by": i.read_by
             })
         return notifications
     return {"message" : "You are not authorized to access notifications"}
