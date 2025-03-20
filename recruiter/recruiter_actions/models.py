@@ -11,10 +11,10 @@ class SaveCandidate(models.Model):
     candidate = models.ForeignKey(Personal, on_delete=models.CASCADE)
     created_on = models.DateTimeField(auto_now=True)
 
-# class ViewedCandidate(models.Model):
-#     user = models.ForeignKey(User, on_delete=models.CASCADE)
-#     candidate = models.ForeignKey(Personal, on_delete=models.CASCADE)
-#     viewed_on = models.DateTimeField(auto_now=True)
+class ViewedCandidate(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    candidate = models.ForeignKey(Personal, on_delete=models.CASCADE)
+    viewed_on = models.DateTimeField(auto_now=True)
 
 class InviteCandidate(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE)

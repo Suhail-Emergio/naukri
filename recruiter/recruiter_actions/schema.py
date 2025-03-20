@@ -60,3 +60,8 @@ class ResumeDownloadSchema(Schema):
 
 class UpdateApplicationStatus(Schema):
     status : str
+
+class ViewedCandidateSchema(Schema):
+    id: int
+    candidate: SeekerData
+    created_on: datetime

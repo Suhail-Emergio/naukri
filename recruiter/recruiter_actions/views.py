@@ -345,3 +345,22 @@ async def resumes_downloaded(request):
         job = await sync_to_async(lambda: i.job)()
         candidates.append({"candidate": {"personal": personal, "user": candidate_user}, "job": job})
     return 200, candidates
+
+#################################  V I E W E D  C A N D I D A T E S  #################################
+@recruiter_actions_api.get("/create_view_candidates", response={200: Message, 404: Message, 409: Message}, description="update resume download value")
+async def create_view_candidates(request, candidate_id: int):
+    if await Personal.objects.filter(id=candidate_id).aexists():
+        personal = await Personal.objects.aget(id=candidate_id)
+        user = request.auth
+        candidate = await sync_to_async(lambda: personal.user)()
+        if await ViewedCandidate.objects.filter(user=user, candidate=personal).aexists():
+            return 409, {"message": "Candidate already viewed"}
+        await ViewedCandidate.objects.acreate(user=user, candidate=personal)
+        return 200, {"message": "Candidate viewed successfully"}
+    return 404, {"message": "Candidate not found"}
+
+@recruiter_actions_api.get("/view_candidates", response={200: List[ViewedCandidateSchema], 404: Message, 409: Message}, description="update resume download value")
+async def view_candidates(request, candidate_id: int):
+    user = request.auth
+    viewed = [i async for i in ViewedCandidate.objects.filter(user=user).order_by('-id')]
+    return 200, viewed
