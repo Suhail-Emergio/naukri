@@ -60,7 +60,10 @@ async def resdex(request,
             if await JobPosts.objects.filter(id=job_id).aexists():
                 job = await JobPosts.objects.aget(id=job_id)
                 skills = await sync_to_async(lambda: job.skills)()
-                queries &= Q(skills__icontains=skills)
+                keyword_query = Q()
+                for keyword in skills:
+                    keyword_query |= Q(skills__contains=keyword)
+                queries &= keyword_query
                 if location:
                     queries &= Q(city__icontains=location)
                 personal = await Personal.objects.filter(queries).values('user').order_by('-id')
@@ -81,7 +84,10 @@ async def resdex(request,
                     candidates.append({"personal": {"personal": personal_, "user": user}, "employment": i, "qualification": qualification})
         else:
             if keywords:
-                queries &= Q(skills__icontains=keywords)
+                keyword_query = Q()
+                for keyword in keywords:
+                    keyword_query |= Q(skills__contains=keyword)
+                queries &= keyword_query
             if experience_year or experience_month:
                 if experience_year and experience_month:
                     queries &= Q(total_experience_years__gte=experience_year) & Q(total_experience_months__gte=experience_month)
