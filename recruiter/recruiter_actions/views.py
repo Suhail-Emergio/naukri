@@ -81,15 +81,20 @@ async def resdex(request,
                     candidates.append({"personal": {"personal": personal_, "user": user}, "employment": i, "qualification": qualification})
         else:
             if keywords:
-                queries &= Q(skills__in=keywords)
-            if experience_year and experience_month:
-                queries &= Q(total_experience_years__gte=experience_year) & Q(total_experience_months__gte=experience_month)
+                queries &= Q(skills__contains=keywords)
+            if experience_year or experience_month:
+                if experience_year and experience_month:
+                    queries &= Q(total_experience_years__gte=experience_year) & Q(total_experience_months__gte=experience_month)
+                else:
+                    queries &= Q(total_experience_years__gte=experience_year) | Q(total_experience_months__gte=experience_month)
             if current_loc:
                 queries &= Q(city__icontains=current_loc) | Q(state__icontains=current_loc)
             if nationality:
                 queries &= Q(nationality__icontains=nationality)
             if salary_min and salary_max:
                 queries &= Q(prefered_salary_pa__gte=salary_min) & Q(prefered_salary_pa__lte=salary_max)
+            if gender:
+                queries &= Q(gender=gender) 
             candidate = [i async for i in Personal.objects.filter(queries).exclude(user__is_active=False).order_by('-user__subscribed', '-id')]
             for i in candidate:
                 user = await sync_to_async(lambda: i.user)()
