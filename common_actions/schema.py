@@ -20,8 +20,8 @@ class SubscriptionData(Schema):
     subscribed_on: datetime
 
 class NotificationCreation(Schema):
-    user_id: List[int]
-    audience: str
+    user_id: Optional[List[int]] = None
+    audience: str | None = None
     title: str
     description: str
     url: Optional[str]
