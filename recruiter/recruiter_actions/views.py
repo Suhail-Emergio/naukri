@@ -60,7 +60,7 @@ async def resdex(request,
             if await JobPosts.objects.filter(id=job_id).aexists():
                 job = await JobPosts.objects.aget(id=job_id)
                 skills = await sync_to_async(lambda: job.skills)()
-                queries &= Q(skills__in=skills)
+                queries &= Q(skills__contains=skills)
                 if location:
                     queries &= Q(city__icontains=location)
                 personal = await Personal.objects.filter(queries).values('user').order_by('-id')
