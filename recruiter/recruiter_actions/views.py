@@ -62,7 +62,7 @@ async def resdex(request,
                 skills = await sync_to_async(lambda: job.skills)()
                 keyword_query = Q()
                 for keyword in skills:
-                    keyword_query |= Q(skills__contains=keyword)
+                    keyword_query |= Q(skills__contains=keyword.upper())
                 queries &= keyword_query
                 if location:
                     queries &= Q(city__icontains=location)
