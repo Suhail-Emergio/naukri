@@ -310,17 +310,19 @@ def create_notification(request, data: NotificationCreation, image: UploadedFile
 def all_notifications(request):
     user = request.auth
     if user.is_superuser:
-        notifications = [i for i in Notification.objects.all().order_by('-id')]
-        return {
-            "id": i.id,
-            "title": i.title,
-            "description": i.description,
-            "image": i.image,
-            "url": i.url,
-            "created_on": i.created_on.strftime("%d-%m-%Y %H:%M:%S"),
-            "user": i.user,
-            "read": i.read
-        }
+        notifications = []
+        for i in Notification.objects.all().order_by('-id'):
+            notifications.append({
+                "id": i.id,
+                "title": i.title,
+                "description": i.description,
+                "image": i.image,
+                "url": i.url,
+                "created_on": i.created_on.strftime("%d-%m-%Y %H:%M:%S"),
+                "user": i.user,
+                "read": i.read
+            })
+        return notifications
     return {"message" : "You are not authorized to access notifications"}
 
 @admin_api.patch("/edit_notifications", response={200: Message, 409:Message}, description="Edit Notifications")
