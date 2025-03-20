@@ -66,7 +66,7 @@ async def resdex(request,
                 queries &= keyword_query
                 if location:
                     queries &= Q(city__icontains=location)
-                personal = await Personal.objects.filter(queries).values('user').order_by('-id')
+                personal = await Personal.objects.filter(queries).avalues('user').order_by('-id')
                 title = await sync_to_async(lambda: job.title)()
                 q = Q()
                 q |= Q(job_title__icontains=title)
