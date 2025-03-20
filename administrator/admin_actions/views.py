@@ -289,13 +289,13 @@ async def delete_banners(request, id: int):
 
 #################################  N O T I F I C A T I O N S  #################################
 @admin_api.post("/create_notification", response={201: Message, 404: Message, 409:Message}, description="Create Notifications")
-def create_notification(request, data: NotificationCreation):
+def create_notification(request, data: NotificationCreation, image: UploadedFile = File(None)):
     notification = Notification.objects.create(title=data.title, description=data.description)
     if data.audience:
         user = User.objects.filter(role=data.audience)
         notification.user.add(user)
-    if data.image:
-        notification.image = data.image
+    if image:
+        notification.image = image
     if data.url:
         notification.url = data.url
     if data.user_id:

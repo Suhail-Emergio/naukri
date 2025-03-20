@@ -24,7 +24,6 @@ class NotificationCreation(Schema):
     audience: str
     title: str
     description: str
-    image: Optional[str]
     url: Optional[str]
 
 class NotificationSchema(Schema):
