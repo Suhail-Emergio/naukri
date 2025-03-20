@@ -47,7 +47,7 @@ class ScheduledInterviews(Schema):
     candidate: SeekerData
     job: JobData
     schedule: datetime
-    created_on: datetime
+    created_on: str
 
 class InterviewScheduleSchema(Schema):
     candidate_id: int
