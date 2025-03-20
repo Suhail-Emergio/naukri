@@ -1,4 +1,4 @@
-from ninja import Router, PatchDict
+from ninja import Router, PatchDict, File, UploadedFile
 from django.contrib.auth import get_user_model
 from asgiref.sync import sync_to_async
 from .schema import *
@@ -246,10 +246,11 @@ async def delete_plans(request, id: int):
 
 #################################  B A N N E R S  #################################
 @admin_api.post("/create_banners", response={201: Message, 409:Message}, description="Banner creations")
-async def banner_creation(request, data: BannerCreation):
+async def banner_creation(request, data: BannerCreation, image: UploadedFile = File(...)):
     user = request.auth
     if user.is_superuser:
         banner = await Banner.objects.acreate(**data.dict())
+        await sync_to_async(banner.image.save)(image.name, image)
         await banner.asave()
         return 201, {"message" : "Banner created successfuly"}
     return 409, {"message" : "You are not authorized to create banners"}

@@ -20,7 +20,8 @@ class PlanCreation(Schema):
 PlanData = create_schema(Plans)
 
 class BannerCreation(Schema):
-    image: str
+    audience: str
+    duration: timedelta
 
 BannerData = create_schema(Banner)
 
