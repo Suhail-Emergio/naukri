@@ -64,4 +64,4 @@ class UpdateApplicationStatus(Schema):
 class ViewedCandidateSchema(Schema):
     id: int
     candidate: SeekerData
-    created_on: datetime
+    created_on: str

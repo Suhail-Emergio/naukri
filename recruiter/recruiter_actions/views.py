@@ -360,8 +360,19 @@ async def create_view_candidates(request, candidate_id: int):
     return 404, {"message": "Candidate not found"}
 
 @recruiter_actions_api.get("/view_candidates", response={200: List[ViewedCandidateSchema], 404: Message, 409: Message}, description="update resume download value")
-async def view_candidates(request, candidate_id: int):
+async def view_candidates(request):
     user = request.auth
     ## plan
-    viewed = [i async for i in ViewedCandidate.objects.filter(user=user).order_by('-id')]
+
+    viewed = []
+    async for i in ViewedCandidate.objects.filter(user=user).order_by('-id'):
+        personal = await sync_to_async(lambda: i.candidate)()
+        user = await sync_to_async(lambda: personal.user)()
+        employment = None
+        if await Employment.objects.filter(user=user).aexists():
+            employment = [i async for i in Employment.objects.filter(user=user).order_by('-id')]
+        qualification = None
+        if await Qualification.objects.filter(user=user).aexists():
+            qualification = [i async for i in Qualification.objects.filter(user=user).order_by('-id')]
+        viewed.append({"candidate": {"personal": personal, "user": user}, "employment": employment, "qualification": qualification, "created_on": i.created_on.strftime('%Y-%m-%d %H:%M:%S %Z'), id: i.id})
     return 200, viewed
