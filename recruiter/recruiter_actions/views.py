@@ -83,7 +83,10 @@ async def resdex(request,
                     qualification = None
                     if await Qualification.objects.filter(user=user).aexists():
                         qualification = [i async for i in Qualification.objects.filter(user=user).order_by('-id')]
-                    candidates.append({"personal": {"personal": personal_, "user": user}, "employment": i, "qualification": qualification})
+                    employment = None
+                    if await Employment.objects.filter(user=user).aexists():
+                        employment = [i async for i in Employment.objects.filter(user=user).order_by('-id')]
+                    candidates.append({"personal": {"personal": personal_, "user": user}, "employment": employment, "qualification": qualification})
         else:
             if keywords:
                 keyword_query = Q()
