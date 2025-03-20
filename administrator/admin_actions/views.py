@@ -312,6 +312,9 @@ def all_notifications(request):
     if user.is_superuser:
         notifications = []
         for i in Notification.objects.all().order_by('-id'):
+            users = []
+            for user in:
+                users.append(user.name)
             notifications.append({
                 "id": i.id,
                 "title": i.title,
@@ -319,7 +322,7 @@ def all_notifications(request):
                 "image": i.image,
                 "url": i.url,
                 "created_on": i.created_on.strftime("%d-%m-%Y %H:%M:%S"),
-                "user": i.user,
+                "user": ,
                 "read_by": i.read_by
             })
         return notifications
