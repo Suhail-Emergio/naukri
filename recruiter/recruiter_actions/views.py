@@ -362,5 +362,6 @@ async def create_view_candidates(request, candidate_id: int):
 @recruiter_actions_api.get("/view_candidates", response={200: List[ViewedCandidateSchema], 404: Message, 409: Message}, description="update resume download value")
 async def view_candidates(request, candidate_id: int):
     user = request.auth
+    ## plan
     viewed = [i async for i in ViewedCandidate.objects.filter(user=user).order_by('-id')]
     return 200, viewed
