@@ -31,6 +31,8 @@ class JobInvites(Schema):
     candidate: SeekerData
     job: JobData
     read: bool
+    created_on: str
+    status: str
 
 EmailTemplates = create_schema(EmailTemplate)
 
