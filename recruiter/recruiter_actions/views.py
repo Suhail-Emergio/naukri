@@ -374,5 +374,5 @@ async def view_candidates(request):
         qualification = None
         if await Qualification.objects.filter(user=user).aexists():
             qualification = [i async for i in Qualification.objects.filter(user=user).order_by('-id')]
-        viewed.append({"candidate": {"personal": personal, "user": user}, "employment": employment, "qualification": qualification, "viewed_on": i.viewed_on.strftime('%Y-%m-%d %H:%M:%S %Z'), id: i.id})
+        viewed.append({"candidate": {"personal": {"personal": personal, "user": user}, "employment": employment, "qualification": qualification}, "viewed_on": i.viewed_on.strftime('%Y-%m-%d %H:%M:%S %Z'), id: i.id})
     return 200, viewed
