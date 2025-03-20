@@ -322,7 +322,7 @@ def all_notifications(request):
                 "image": i.image,
                 "url": i.url,
                 "created_on": i.created_on.strftime("%d-%m-%Y %H:%M:%S"),
-                "user": ,
+                "user": users,
                 "read_by": i.read_by
             })
         return notifications
