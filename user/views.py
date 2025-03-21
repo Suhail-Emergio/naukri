@@ -202,7 +202,6 @@ async def change_phone(request, data: MobileOtpVerify):
             return 200, {'message': "Phone number changed successfully"}
         return 403, {"message": "Invalid OTP"}
     return 401, {"message": "OTP expired"}
-            
 
 @user_api.patch("/onesignal", response={200: Message, 400: Message, 409: Message}, description="Update user information")
 async def update_onesignal(request, onesignal_id: str):

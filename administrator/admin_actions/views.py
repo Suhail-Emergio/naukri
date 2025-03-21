@@ -293,7 +293,7 @@ def create_notification(request, data: NotificationCreation, image: UploadedFile
     notification = Notification.objects.create(title=data.title, description=data.description)
     if data.audience:
         for i in User.objects.filter(role=data.audience):
-            notification.user.add(i.user.id)
+            notification.user.add(i.id)
     if image:
         notification.image = image
     if data.url:
