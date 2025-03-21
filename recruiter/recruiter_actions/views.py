@@ -70,26 +70,25 @@ async def resdex(request,
                 async for i in Personal.objects.filter(queries).order_by('-id'):
                     users.append(await sync_to_async(lambda: i.user.id)())
                 title = await sync_to_async(lambda: job.title)()
-                if users:
-                    q = Q()
-                    q |= Q(job_title__icontains=title)
-                    q |= Q(user__in=users)
-                    seen_users = set()
-                    async for i in Employment.objects.filter(q).order_by('-id'):
-                        user = await sync_to_async(lambda: i.user)()
-                        if user.id not in seen_users:
-                            seen_users.add(user.id)
-                            # search_apps = await SearchApps.objects.filter(user=user).alatest('date')
-                            # search_apps.count += 1
-                            # await search_apps.asave()
-                            personal_ = await Personal.objects.aget(user=user)
-                            qualification = None
-                            if await Qualification.objects.filter(user=user).aexists():
-                                qualification = [i async for i in Qualification.objects.filter(user=user).order_by('-id')]
-                            employment = None
-                            if await Employment.objects.filter(user=user).aexists():
-                                employment = [i async for i in Employment.objects.filter(user=user).order_by('-id')]
-                            candidates.append({"personal": {"personal": personal_, "user": user}, "employment": employment, "qualification": qualification})
+                q = Q()
+                q &= Q(job_title__icontains=title)
+                q &= Q(user__in=users)
+                seen_users = set()
+                async for i in Employment.objects.filter(q).order_by('-id'):
+                    user = await sync_to_async(lambda: i.user)()
+                    if user.id not in seen_users:
+                        seen_users.add(user.id)
+                        # search_apps = await SearchApps.objects.filter(user=user).alatest('date')
+                        # search_apps.count += 1
+                        # await search_apps.asave()
+                        personal_ = await Personal.objects.aget(user=user)
+                        qualification = None
+                        if await Qualification.objects.filter(user=user).aexists():
+                            qualification = [i async for i in Qualification.objects.filter(user=user).order_by('-id')]
+                        employment = None
+                        if await Employment.objects.filter(user=user).aexists():
+                            employment = [i async for i in Employment.objects.filter(user=user).order_by('-id')]
+                        candidates.append({"personal": {"personal": personal_, "user": user}, "employment": employment, "qualification": qualification})
         else:
             if keywords:
                 keyword_query = Q()
