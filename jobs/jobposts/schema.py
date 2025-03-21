@@ -32,7 +32,7 @@ class JobCreation(Schema):
     commute : Optional[bool] = None
     relocate : Optional[bool] = None
     date_availablity : Optional[bool] = None
-    gender : Optional[str] = Nonesaved
+    gender : Optional[str] = None
 
 JobData = create_schema(JobPosts)
 
