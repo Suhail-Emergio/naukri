@@ -129,7 +129,7 @@ async def send_email_otp(request, data: EmailOtpVerify):
         return 200, {"message": "OTP sent to email"}
     return 401, {"message": "User not registered"}
 
-@user_api.post("/email_verify", auth=None, response={200: TokenSchema, 401: Message, 403: Message, 406: Message}, description="Verify OTP using email")
+@user_api.post("/email_verify", auth=None, response={200: TokenSchema, 401: Message, 403: Message, 406: TokenSchema}, description="Verify OTP using email")
 async def email_verify(request, data: EmailOtpVerify):
     if await User.objects.filter(email=data.email).aexists():
         user = await User.objects.aget(email=data.email)
@@ -141,7 +141,7 @@ async def email_verify(request, data: EmailOtpVerify):
                 await user.asave()
                 refresh = RefreshToken.for_user(user)
                 if user.role == "recruiter" and not user.subscribed:
-                    return 406, {'access': str(refresh.access_token)}
+                    return 406, {'access': str(refresh.access_token), 'refresh': str(refresh), 'role': user.role, "name": user.name}
                 return 200, {'access': str(refresh.access_token), 'refresh': str(refresh), 'role': user.role, "name": user.name}
             return 403, {"message": "Invalid OTP"}
         return 401, {"message": "OTP expired"}
