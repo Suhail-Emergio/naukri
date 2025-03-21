@@ -70,9 +70,9 @@ async def email_login(request, data: LoginSchema):
         if data.password:
             if user.email_verified:
                 if check_password(data.password, user.password):
-                    return 200, {'access': str(refresh.access_token), 'refresh': str(refresh), 'role': user.role, "name": user.name}
                     if user.role == "recruiter" and user.subscribed == False:
                         return 406, {'access': str(refresh.access_token)}
+                    return 200, {'access': str(refresh.access_token), 'refresh': str(refresh), 'role': user.role, "name": user.name}
                 return 401, {"message": "Invalid credentials"}
             return 403, {"message": "Email not verified for login"}
 
