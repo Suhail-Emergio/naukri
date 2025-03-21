@@ -10,10 +10,10 @@ class JobCreation(Schema):
     description : str
     country : str
     city : str
-    location_type : str
-    address : Optional[str] = None
-    type : str
-    schedule : str
+    location_type : List[str]
+    address : Optional[List[str]] = None
+    type : List[str]
+    schedule : List[str]
     start_date : Optional[date] = None
     vacancy : int
     timeline : str
@@ -33,6 +33,7 @@ class JobCreation(Schema):
     relocate : Optional[bool] = None
     date_availablity : Optional[bool] = None
     gender : Optional[str] = None
+    end_date : Optional[date] = None
 
 JobData = create_schema(JobPosts)
 

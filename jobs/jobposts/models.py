@@ -42,10 +42,10 @@ class JobPosts(models.Model):
     description = models.TextField(default="")
     city = models.CharField(max_length=250, default='')
     country = models.CharField(max_length=250)
-    location_type = models.CharField(max_length=250, choices=[('in person', 'in person'), ('remote', 'remote'), ('on road', 'on road')])
+    location_type = models.JSONField(null=True, blank=True) # `Remote, Onsite, Hybrid`
     address = models.TextField(null=True, blank=True)
-    type = models.CharField(max_length=250, choices=[('full time', 'full time'), ('permanent', 'permanent'), ('fresher', 'fresher'), ('internship', 'internship'), ('part time', 'part time'), ('temporary', 'temporary'), ('freelancer', 'freelancer')])
-    schedule = models.CharField(max_length=250, choices=[('day', 'day'), ('morning', 'morning'), ('rotational', 'rotational'), ('night', 'night'), ('monday to friday', 'monday to friday'), ('evening', 'evening'),])
+    type = models.JSONField(null=True, blank=True) # `Full-time, Part-time, Contract, Internship`
+    schedule = models.JSONField(null=True, blank=True) # `Day, Night, Evening, Rotational`
     start_date = models.DateField(null=True, blank=True)
     vacancy = models.IntegerField()
     timeline = models.CharField(max_length=200)
@@ -56,6 +56,7 @@ class JobPosts(models.Model):
     supplimental_pay = models.JSONField(null=True, blank=True)
     application_updations_email = models.JSONField(null=True, blank=True)
     resume_required = models.BooleanField(default=True)
+    end_date = models.DateField(null=True, blank=True)
     skills = models.JSONField(null=True, blank=True)
     experience = models.IntegerField(null=True, blank=True)
     education = models.CharField(max_length=50, null=True, blank=True)
