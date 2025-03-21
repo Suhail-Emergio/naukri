@@ -8,27 +8,31 @@ from recruiter.company.schema import CompanyCreation
 class JobCreation(Schema):
     title : str
     description : str
-    requirements : str
-    roles : str
-    benefits : str
-    type : str
-    category : str
-    city : str
     country : str
+    city : str
+    location_type : str
+    address : Optional[str] = None
+    type : str
+    schedule : str
+    start_date : Optional[date] = None
     vacancy : int
-    industry : str
-    functional_area : str
-    gender : Optional[str] = None
-    nationality : Optional[str] = None
-    experience_min : Optional[int] = None
-    experience_max : Optional[int] = None
-    candidate_location : Optional[Union[List[str], Dict[str, Any]]] = None
-    education : Optional[str] = None
+    timeline : str
     salary_min : Optional[int] = None
     salary_max : Optional[int] = None
-    currency : Optional[str] = None
+    salary_period : Optional[str] = None
+    benefits : Optional[Union[List[str], Dict[str, Any]]] = None
+    supplimental_pay : Optional[Union[List[str], Dict[str, Any]]] = None
+    application_updations_email : Optional[Union[List[str], Dict[str, Any]]] = None
+    resume_required : Optional[bool] = None
     skills : Optional[Union[List[str], Dict[str, Any]]] = None
+    experience : Optional[int] = None
+    education : Optional[str] = None
     custom_qns : Optional[Union[List[str], Dict[str, Any]]] = None
+    languages : Optional[Union[List[str], Dict[str, Any]]] = None
+    commute : Optional[bool] = None
+    relocate : Optional[bool] = None
+    date_availablity : Optional[bool] = None
+    gender : Optional[str] = Nonesaved
 
 JobData = create_schema(JobPosts)
 

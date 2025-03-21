@@ -65,3 +65,8 @@ class ViewedCandidateSchema(Schema):
     id: int
     candidate: SeekerData
     viewed_on: str
+
+class SavedCandidateSchema(Schema):
+    id: int
+    candidate: SeekerData
+    created_on: str
