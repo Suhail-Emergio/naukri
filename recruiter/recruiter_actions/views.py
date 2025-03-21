@@ -65,7 +65,7 @@ async def resdex(request,
                     keyword_query |= Q(skills__contains=keyword.upper())
                 queries &= keyword_query
                 if location:
-                    queries &= Q(city__icontains=location)
+                    queries &= Q(city__contains=location)
                 users = []
                 async for i in Personal.objects.filter(queries).order_by('-id'):
                     users.append(await sync_to_async(lambda: i.user.id)())
