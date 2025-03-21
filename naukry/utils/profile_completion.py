@@ -46,4 +46,4 @@ async def completion_data(user):
             if empty_fields:
                 models_with_empty_fields[model_name] = list(empty_fields)
     profile_completion_percentage += ((total_fields - empty_fields_count) / total_fields) * 100 if total_fields > 0 else 0
-    return profile_completion_percentage, models_with_empty_fields, empty_models 
+    return profile_completion_percentage, empty_models, models_with_empty_fields
