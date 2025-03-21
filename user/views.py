@@ -70,7 +70,7 @@ async def email_login(request, data: LoginSchema):
         if data.password:
             if user.email_verified:
                 if check_password(data.password, user.password):
-                    if user.role == "recruiter" and user.subscribed == False:
+                    if user.role == "recruiter" and not user.subscribed:
                         return 406, {'access': str(refresh.access_token)}
                     return 200, {'access': str(refresh.access_token), 'refresh': str(refresh), 'role': user.role, "name": user.name}
                 return 401, {"message": "Invalid credentials"}
@@ -140,6 +140,8 @@ async def email_verify(request, data: EmailOtpVerify):
                 user.email_verified = True
                 await user.asave()
                 refresh = RefreshToken.for_user(user)
+                if user.role == "recruiter" and not user.subscribed:
+                    return 406, {'access': str(refresh.access_token)}
                 return 200, {'access': str(refresh.access_token), 'refresh': str(refresh), 'role': user.role, "name": user.name}
             return 403, {"message": "Invalid OTP"}
         return 401, {"message": "OTP expired"}
