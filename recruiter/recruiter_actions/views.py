@@ -108,19 +108,20 @@ async def resdex(request,
                 queries &= Q(prefered_salary_pa__gte=salary_min) & Q(prefered_salary_pa__lte=salary_max)
             if gender:
                 queries &= Q(gender=gender) 
-            candidate = [i async for i in Personal.objects.filter(queries).exclude(user__is_active=False).order_by('-user__subscribed', '-id')]
-            for i in candidate:
-                user = await sync_to_async(lambda: i.user)()
-                # search_apps = await SearchApps.objects.filter(user=user).alatest('date')
-                # search_apps.count += 1
-                # await search_apps.asave()
-                employment = None
-                if await Employment.objects.filter(user=user).aexists():
-                    employment = [i async for i in Employment.objects.filter(user=user).order_by('-id')]
-                qualification = None
-                if await Qualification.objects.filter(user=user).aexists():
-                    qualification = [i async for i in Qualification.objects.filter(user=user).order_by('-id')]
-                candidates.append({"personal": {"personal": i, "user": user}, "employment": employment, "qualification": qualification})
+            if queries:
+                candidate = [i async for i in Personal.objects.filter(queries).exclude(user__is_active=False).order_by('-user__subscribed', '-id')]
+                for i in candidate:
+                    user = await sync_to_async(lambda: i.user)()
+                    # search_apps = await SearchApps.objects.filter(user=user).alatest('date')
+                    # search_apps.count += 1
+                    # await search_apps.asave()
+                    employment = None
+                    if await Employment.objects.filter(user=user).aexists():
+                        employment = [i async for i in Employment.objects.filter(user=user).order_by('-id')]
+                    qualification = None
+                    if await Qualification.objects.filter(user=user).aexists():
+                        qualification = [i async for i in Qualification.objects.filter(user=user).order_by('-id')]
+                    candidates.append({"personal": {"personal": i, "user": user}, "employment": employment, "qualification": qualification})
         return 200, candidates
     return 403, {"message": "Subscription not found"}
 
