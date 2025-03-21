@@ -62,17 +62,17 @@ async def mobile_login(request, data: LoginSchema):
         return 403, {"message": "Mobile not verified"}
     return 401, {"message": "Invalid credentials"}
 
-@user_api.post("/email_login", auth=None, response={200: TokenSchema, 403: Message, 401: Message}, description="Authenticate user with email and password/ Social login using email only")
+@user_api.post("/email_login", auth=None, response={200: TokenSchema, 403: Message, 406: Message, 401: Message}, description="Authenticate user with email and password/ Social login using email only")
 async def email_login(request, data: LoginSchema):
     if await User.objects.filter(email=data.username).aexists():
         user = await User.objects.aget(email=data.username)
-        if user.role == "recruiter" and user.subscribed == False:
-            return 403, {"message": "Please subscribe to a plan"}
         refresh = RefreshToken.for_user(user)
         if data.password:
             if user.email_verified:
                 if check_password(data.password, user.password):
                     return 200, {'access': str(refresh.access_token), 'refresh': str(refresh), 'role': user.role, "name": user.name}
+                    if user.role == "recruiter" and user.subscribed == False:
+                        return 406, {'access': str(refresh.access_token)}
                 return 401, {"message": "Invalid credentials"}
             return 403, {"message": "Email not verified for login"}
 
