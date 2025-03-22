@@ -140,7 +140,7 @@ async def save_candidate(request, id:int):
         return 200, {"message": message}
     return 404, {"message": "Candidate not found"}
 
-@recruiter_actions_api.get("/saved_candidates", response={200: List[SeekerData], 404: Message, 409: Message}, description="Retrieve all saved candidates")
+@recruiter_actions_api.get("/saved_candidates", response={200: List[SavedCandidateSchema], 404: Message, 409: Message}, description="Retrieve all saved candidates")
 async def saved_candidates(request):
     user = request.auth
     saved = [i async for i in SaveCandidate.objects.filter(user=user).order_by('-id')]
