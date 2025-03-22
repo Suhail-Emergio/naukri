@@ -47,8 +47,8 @@ class JobPosts(models.Model):
     type = models.JSONField(null=True, blank=True) # `Full-time, Part-time, Contract, Internship`
     schedule = models.JSONField(null=True, blank=True) # `Day, Night, Evening, Rotational`
     start_date = models.DateField(null=True, blank=True)
-    vacancy = models.IntegerField()
-    timeline = models.CharField(max_length=200)
+    vacancy = models.IntegerField(default=0)
+    timeline = models.CharField(max_length=200, null=True, blank=True)
     salary_min = models.IntegerField(null=True, blank=True)
     salary_max = models.IntegerField(null=True, blank=True)
     salary_period = models.CharField(max_length=50, default="per year")
