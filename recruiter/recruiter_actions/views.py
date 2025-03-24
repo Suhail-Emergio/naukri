@@ -199,7 +199,7 @@ async def delete_invitation(request, id: int):
         invites = await InviteCandidate.objects.aget(id=id)
         await invites.adelete()
         return 200, {"message": "Candidates invited deleted successfully"}
-    return 404, {"message": "Job not found"}
+    return 404, {"message": "Candidate not found"}
 
 #################################  I N T E R V I E W S  #################################
 @recruiter_actions_api.get("/interviews_scheduled", response={200: List[ScheduledInterviews], 404: Message, 409: Message}, description="Invite candidates for job")
