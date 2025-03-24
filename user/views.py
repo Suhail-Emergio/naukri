@@ -14,6 +14,7 @@ from naukry.utils.email import send_mails
 from naukry.utils.twilio import whatsapp_message
 import random
 from django.core.cache import cache
+from recruiter.company.models import CompanyDetails
 
 user_api = Router(tags=['user'])
 User = get_user_model()##  R E G I S T E R  &  L O G I N  #################################
@@ -49,8 +50,6 @@ async def mobile_login(request, data: LoginSchema):
     if await User.objects.filter(username=data.username).aexists():
         user = await User.objects.aget(username=data.username)
         if user.phone_verified:
-            if user.role == "recruiter" and user.subscribed == False:
-                return 403, {"message": "Please subscribe to a plan"}
             otp = random.randint(1111,9999)
             key = f'otp_{user.username}'
             cache_value = await sync_to_async(cache.get)(key)
@@ -62,7 +61,7 @@ async def mobile_login(request, data: LoginSchema):
         return 403, {"message": "Mobile not verified"}
     return 401, {"message": "Invalid credentials"}
 
-@user_api.post("/email_login", auth=None, response={200: TokenSchema, 403: Message, 406: TokenSchema, 401: Message}, description="Authenticate user with email and password/ Social login using email only")
+@user_api.post("/email_login", auth=None, response={200: TokenSchema, 403: Message, 406: TokenSchema, 206: TokenSchema, 401: Message}, description="Authenticate user with email and password/ Social login using email only")
 async def email_login(request, data: LoginSchema):
     if await User.objects.filter(email=data.username).aexists():
         user = await User.objects.aget(email=data.username)
@@ -72,6 +71,8 @@ async def email_login(request, data: LoginSchema):
                 if check_password(data.password, user.password):
                     if user.role == "recruiter" and not user.subscribed:
                         return 406, {'access': str(refresh.access_token), 'refresh': str(refresh), 'role': user.role, "name": user.name}
+                    if user.role == "recruiter" and not CompanyDetails.objects.filter(user=user).aexists():
+                        return 206, {'access': str(refresh.access_token), 'refresh': str(refresh), 'role': user.role, "name": user.name}
                     return 200, {'access': str(refresh.access_token), 'refresh': str(refresh), 'role': user.role, "name": user.name}
                 return 401, {"message": "Invalid credentials"}
             return 403, {"message": "Email not verified for login"}
@@ -85,7 +86,7 @@ async def email_login(request, data: LoginSchema):
     return 401, {"message": "Invalid credentials"}
 
 #################################  V E R I F I C A T I O N S  #################################
-@user_api.post("/mobile_otp_verify", auth=None, response={200: TokenSchema, 203: Message, 401: Message, 403: Message}, description="Verify OTP using mobile number")
+@user_api.post("/mobile_otp_verify", auth=None, response={200: TokenSchema, 203: Message, 406: TokenSchema, 206: TokenSchema, 401: Message, 403: Message}, description="Verify OTP using mobile number")
 async def mobile_otp_verify(request, data: MobileOtpVerify):
     key = f'otp_{data.phone}'
     cache_value = await sync_to_async(cache.get)(key)
@@ -96,6 +97,10 @@ async def mobile_otp_verify(request, data: MobileOtpVerify):
                 user.phone_verified = True
                 await user.asave()
             refresh = RefreshToken.for_user(user)
+            if user.role == "recruiter" and not user.subscribed:
+                return 406, {"message": "Please subscribe to a plan"}
+            if user.role == "recruiter" and not CompanyDetails.objects.filter(user=user).aexists():
+                return 206, {'access': str(refresh.access_token), 'refresh': str(refresh), 'role': user.role, "name": user.name}
             return 200, {'access': str(refresh.access_token), 'refresh': str(refresh), 'role': user.role, "name": user.name}
         return 403, {"message": "Invalid OTP"}
     return 401, {"message": "OTP expired"}
