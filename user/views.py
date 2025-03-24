@@ -17,7 +17,9 @@ from django.core.cache import cache
 from recruiter.company.models import CompanyDetails
 
 user_api = Router(tags=['user'])
-User = get_user_model()##  R E G I S T E R  &  L O G I N  #################################
+User = get_user_model()
+
+##  R E G I S T E R  &  L O G I N  #################################
 @user_api.post("/register", auth=None, response={201: Message, 409: Message}, description="User creation")
 async def register(request, data: UserCreation):
     if await User.objects.filter(Q(username=data.phone) | Q(email=data.email)).aexists():
