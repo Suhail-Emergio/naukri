@@ -233,8 +233,8 @@ async def schedule_interview(request, data: InterviewScheduleSchema):
             if await ApplyJobs.objects.filter(user=candidate, job=job).aexists():
                 application = await ApplyJobs.objects.aget(user=candidate, job=job)
                 await InterviewSchedule.objects.acreate(user=user, application=application, schedule=data.schedule)
-                application.status = "shortlisted"
-                await application.asave()
+                # application.status = "shortlisted"
+                # await application.asave()
                 return 200, {"message": "Interview scheduled successfully"}
             return 404, {"message": "Applied job not found"}
         return 404, {"message": "Job not found"}
