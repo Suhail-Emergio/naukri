@@ -59,7 +59,7 @@ class JobPosts(models.Model):
     end_date = models.DateField(null=True, blank=True)
     skills = models.JSONField(null=True, blank=True)
     pro_experience = models.FloatField(null=True, blank=True)
-    experience = models.IntegerField(null=True, blank=True)
+    experience = models.FloatField(null=True, blank=True)
     education = models.CharField(max_length=50, null=True, blank=True)
     custom_qns = models.JSONField(null=True, blank=True)
     languages = models.JSONField(null=True, blank=True)
