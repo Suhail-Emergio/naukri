@@ -240,7 +240,7 @@ async def schedule_interview(request, data: InterviewScheduleSchema):
         return 404, {"message": "Job not found"}
     return 404, {"message": "Candidate not found"}
 
-@recruiter_actions_api.delete("/reject_application", response={200: Message, 404: Message, 409: Message}, description="Invite candidates for job")
+@recruiter_actions_api.patch("/reject_application", response={200: Message, 404: Message, 409: Message}, description="Invite candidates for job")
 async def reject_application(request, id: int):
     user = request.auth
     if await ApplyJobs.objects.filter(id=id).aexists():
@@ -250,7 +250,7 @@ async def reject_application(request, id: int):
         return 200, {"message": "Application rejected successfully"}
     return 404, {"message": "Application not found"}
 
-@recruiter_actions_api.delete("/update_application_status", response={200: Message, 404: Message, 409: Message}, description="Invite candidates for job")
+@recruiter_actions_api.patch("/update_application_status", response={200: Message, 404: Message, 409: Message}, description="Invite candidates for job")
 async def update_application_status(request, id: int, data: UpdateApplicationStatus):
     user = request.auth
     if await ApplyJobs.objects.filter(id=id).aexists():
