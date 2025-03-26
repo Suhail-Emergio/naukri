@@ -11,7 +11,7 @@ class JobCreation(Schema):
     country : str
     city : str
     location_type : List[str]
-    address : Optional[List[str]] = None
+    address : List[str] | None = None
     type : List[str]
     schedule : List[str]
     start_date : Optional[date] = None
