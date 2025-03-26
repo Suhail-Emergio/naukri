@@ -58,7 +58,7 @@ class JobPosts(models.Model):
     resume_required = models.BooleanField(default=True)
     end_date = models.DateField(null=True, blank=True)
     skills = models.JSONField(null=True, blank=True)
-    professional_experience = models.FloatField(null=True, blank=True, default=0.0)
+    # professional_experience = models.FloatField(null=True, blank=True, default=0.0)
     experience = models.FloatField(null=True, blank=True, default=0.0)
     education = models.CharField(max_length=50, null=True, blank=True)
     custom_qns = models.JSONField(null=True, blank=True)
