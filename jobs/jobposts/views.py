@@ -13,7 +13,7 @@ User = get_user_model()
 jobs_api = Router(tags=['jobs'])
 
 #################################  J O B  P O S T S  #################################
-@jobs_api.post("/", response={201: JobData, 400: Message, 401: Message, 409:Message}, description="Job data creation")
+@jobs_api.post("/", response={201: Message, 400: Message, 401: Message, 409:Message}, description="Job data creation")
 async def job(request, data: JobCreation):
     if request.auth.subscribed:
         if request.auth.role == "recruiter":
@@ -21,7 +21,7 @@ async def job(request, data: JobCreation):
                 return 400, {"message": "Create company details first"}
             company = await CompanyDetails.objects.aget(user=request.auth)
             job = await JobPosts.objects.acreate(company=company, **data.dict())
-            return 201, job
+            return 201, {"message": "Job post created successfully"}
         return 409, {"message": "Not Authorised"}
     return 401, {"message": "No subscriptions taken"}
 
