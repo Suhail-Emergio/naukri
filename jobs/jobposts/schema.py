@@ -25,7 +25,7 @@ class JobCreation(Schema):
     application_updations_email : Optional[Union[List[str], Dict[str, Any]]] = None
     resume_required : Optional[bool] = None
     skills : Optional[Union[List[str], Dict[str, Any]]] = None
-    experience : Optional[float] = None
+    # experience : Optional[float] = None
     education : Optional[str] = None
     custom_qns : Optional[Union[List[str], Dict[str, Any]]] = None
     languages : Optional[Union[List[str], Dict[str, Any]]] = None
