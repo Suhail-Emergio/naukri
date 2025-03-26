@@ -16,11 +16,6 @@ jobs_api = Router(tags=['jobs'])
 @jobs_api.post("/", response={201: JobData, 400: Message, 401: Message, 409:Message}, description="Job data creation")
 async def job(request, data: JobCreation):
     if request.auth.subscribed:
-        # Data validation
-        if data.experience_min and data.experience_max and data.experience_min > data.experience_max:
-            return 400, {"message": "Minimum experience cannot be greater than maximum"}
-        if data.salary_min and data.salary_max and data.salary_min > data.salary_max:
-            return 400, {"message": "Minimum salary cannot be greater than maximum"}
         if request.auth.role == "recruiter":
             if not await CompanyDetails.objects.filter(user=request.auth).aexists():
                 return 400, {"message": "Create company details first"}
