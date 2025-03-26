@@ -63,7 +63,7 @@ class JobPosts(models.Model):
     education = models.CharField(max_length=50, null=True, blank=True)
     custom_qns = models.JSONField(null=True, blank=True)
     languages = models.JSONField(null=True, blank=True)
-    prefered_work_loc = models.JSONField()
+    prefered_work_loc = models.JSONField(null=True, blank=True)
     commute = models.BooleanField(default=False)
     relocate = models.BooleanField(default=False)
     date_availablity = models.BooleanField(default=True)
