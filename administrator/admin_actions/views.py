@@ -315,7 +315,7 @@ def all_notifications(request):
             users = []
             for user in i.user.all():
                 users.append(user.name)
-            read []
+            read = []
             for user in i.read_by.all():
                 users.append(user.name)
             notifications.append({
