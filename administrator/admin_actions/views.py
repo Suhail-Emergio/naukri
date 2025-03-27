@@ -315,6 +315,9 @@ def all_notifications(request):
             users = []
             for user in i.user.all():
                 users.append(user.name)
+            read []
+            for user in i.read_by.all():
+                users.append(user.name)
             notifications.append({
                 "id": i.id,
                 "title": i.title,
@@ -323,7 +326,7 @@ def all_notifications(request):
                 "url": i.url,
                 "created_on": i.created_on.strftime("%d-%m-%Y %H:%M:%S"),
                 "user": users,
-                "read_by": i.read_by
+                "read_by": read
             })
         return notifications
     return {"message" : "You are not authorized to access notifications"}
