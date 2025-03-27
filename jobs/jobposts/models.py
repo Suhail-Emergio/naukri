@@ -70,6 +70,6 @@ class JobPosts(models.Model):
     date_availablity = models.BooleanField(default=True)
     gender = models.CharField(max_length=50, choices=[('male', 'male'), ('female', 'female')], null=True, blank=True)
     created_on = models.DateTimeField(auto_now=True)
-    expire_on = models.DateField(null=True, blank=True, default=date.today)
+    # expire_on = models.DateField(null=True, blank=True, default=date.today)
     active = models.BooleanField(default=True)
     views = models.IntegerField(default=0)
