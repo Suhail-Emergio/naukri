@@ -40,5 +40,5 @@ class Command(BaseCommand):
         subscriptions.delete()
 
     def job_deletion(self):
-        JobPosts.objects.filter(expire_on=self.today).update(active=False)
-        SaveJobs.objects.filter(job__expire_on=self.today).delete()
+        JobPosts.objects.filter(end_date=self.today).update(active=False)
+        SaveJobs.objects.filter(job__end_date=self.today).delete()
