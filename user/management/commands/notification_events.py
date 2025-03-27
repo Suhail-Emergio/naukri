@@ -49,7 +49,7 @@ class Command(BaseCommand):
             notification.user.add(i)
 
     def saved_jobs(self, today, user):
-        if SaveJobs.objects.filter(job__expire_on__lt=today, user=user):
+        if SaveJobs.objects.filter(job__end_date__lt=today, user=user):
             self.send_noti(onesignal_id=user.onesignal_id, whatsapp_updations=user.whatsapp_updations, phone=user.phone, subject="Heads up! The jobs you’ve saved are nearing their expiration. Don’t miss out on these opportunities — take action now to apply or update your selections before they’re gone. Secure your next career move today!", title="Saved jobs updations")
             notification = Notification.objects.create(
                 title="Saved jobs updations",
