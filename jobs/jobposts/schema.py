@@ -33,9 +33,9 @@ class JobCreation(Schema):
     custom_qns : Optional[Union[List[str], Dict[str, Any]]] = None
     languages : Optional[Union[List[str], Dict[str, Any]]] = None
     work_location: Optional[Union[List[str], Dict[str, Any]]] = None
-    commute : Optional[bool] = None
-    relocate : Optional[bool] = None
-    date_availablity : Optional[bool] = None
+    commute : Optional[bool] = False
+    relocate : Optional[bool] = False
+    date_availablity : Optional[bool] = True
     gender : Optional[str] = None
 
 JobData = create_schema(JobPosts)
