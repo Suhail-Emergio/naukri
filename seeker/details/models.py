@@ -25,6 +25,7 @@ class Personal(models.Model):
     total_experience_years = models.IntegerField(default=0)
     total_experience_months = models.IntegerField(default=0)
     immediate_joiner = models.BooleanField(default=False)
+    work_availability = models.BooleanField(default=True)
 
 class Employment(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE)
