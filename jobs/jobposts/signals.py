@@ -10,8 +10,9 @@ def log_model_save(sender, instance, created, **kwargs):
         user = instance.company.user
         if Subscription.objects.filter(user = user).exists():
             subscribe = Subscription.objects.get(user = user)
-            subscribe.remaining_posts -= 1
 
+            if subscribe.remaining_posts != 0:
+                subscribe.remaining_posts -= 1
             if subscribe.remaining_posts == 0:
                 user.subcribed = False
                 user.save()

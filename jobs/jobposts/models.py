@@ -67,7 +67,7 @@ class JobPosts(models.Model):
     languages = models.JSONField(null=True, blank=True)
     work_location = models.JSONField(null=True, blank=True)
     commute = models.BooleanField(default=False)
-    relocate = models.BooleanField(default=False)
+
     date_availablity = models.BooleanField(default=True)
     gender = models.CharField(max_length=50, choices=[('male', 'male'), ('female', 'female')], null=True, blank=True)
     created_on = models.DateTimeField(auto_now=True)
