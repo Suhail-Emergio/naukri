@@ -61,6 +61,9 @@ class ResumeDownloadSchema(Schema):
 class UpdateApplicationStatus(Schema):
     status : str
 
+class UpdateInterviewRound(Schema):
+    round : str
+
 class ViewedCandidateSchema(Schema):
     id: int
     candidate: SeekerData

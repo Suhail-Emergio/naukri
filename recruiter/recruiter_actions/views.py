@@ -240,7 +240,7 @@ async def schedule_interview(request, data: InterviewScheduleSchema):
         return 404, {"message": "Job not found"}
     return 404, {"message": "Candidate not found"}
 
-@recruiter_actions_api.patch("/reject_application", response={200: Message, 404: Message, 409: Message}, description="Invite candidates for job")
+@recruiter_actions_api.patch("/reject_application", response={200: Message, 404: Message, 409: Message}, description="Reject application")
 async def reject_application(request, id: int):
     user = request.auth
     if await ApplyJobs.objects.filter(id=id).aexists():
@@ -250,7 +250,7 @@ async def reject_application(request, id: int):
         return 200, {"message": "Application rejected successfully"}
     return 404, {"message": "Application not found"}
 
-@recruiter_actions_api.patch("/update_application_status", response={200: Message, 404: Message, 409: Message}, description="Invite candidates for job")
+@recruiter_actions_api.patch("/update_application_status", response={200: Message, 404: Message, 409: Message}, description="Update application status")
 async def update_application_status(request, id: int, data: UpdateApplicationStatus):
     user = request.auth
     if await ApplyJobs.objects.filter(id=id).aexists():
@@ -258,6 +258,16 @@ async def update_application_status(request, id: int, data: UpdateApplicationSta
         application.status = data.status
         await application.asave()
         return 200, {"message": "Application status updated successfully"}
+    return 404, {"message": "Application not found"}
+
+@recruiter_actions_api.patch("/update_interview_round", response={200: Message, 404: Message, 409: Message}, description="Update interview round")
+async def update_application_status(request, scheduled_id: int, data: UpdateInterviewRound):
+    user = request.auth
+    if await InterviewSchedule.objects.filter(id=scheduled_id).aexists():
+        application = await InterviewSchedule.objects.aget(id=scheduled_id)
+        application.interview_round = data.round
+        await application.asave()
+        return 200, {"message": "Interview rounds updated successfully"}
     return 404, {"message": "Application not found"}
 
 #################################  E M A I L S  #################################
