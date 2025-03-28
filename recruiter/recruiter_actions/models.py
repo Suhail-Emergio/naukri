@@ -37,4 +37,5 @@ class InterviewSchedule(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     application = models.ForeignKey(ApplyJobs, on_delete=models.CASCADE)
     schedule = models.DateTimeField()
+    interview_round = models.CharField(max_length=50, default="")
     created_on = models.DateTimeField(auto_now=True)
