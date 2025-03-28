@@ -17,6 +17,7 @@ class JobCreation(Schema):
     start_date : Optional[date] = None
     vacancy : int
     timeline : str
+    industry : str
     salary_min : Optional[int] = None
     salary_max : Optional[int] = None
     salary_period : Optional[str] = None
