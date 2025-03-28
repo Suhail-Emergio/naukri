@@ -21,6 +21,7 @@ class PersonalCreation(Schema):
     address: Union[List[str], Dict[str, Any]]
     differently_abled: bool
     dob: date
+    work_availability: bool | None = True
 
 class PersonalData(Schema):
     id: int
