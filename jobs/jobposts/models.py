@@ -51,7 +51,7 @@ class JobPosts(models.Model):
     timeline = models.CharField(max_length=200, null=True, blank=True)
     salary_min = models.IntegerField(null=True, blank=True)
     salary_max = models.IntegerField(null=True, blank=True)
-    industry = models.CharField(max_length=250)
+    industry = models.CharField(max_length=250, null=True, blank=True)
     salary_period = models.CharField(max_length=50, default="per year")
     benefits = models.JSONField(null=True, blank=True)
     supplimental_pay = models.JSONField(null=True, blank=True)
