@@ -23,8 +23,8 @@ User = get_user_model()
 #################################  R E G I S T E R  &  L O G I N  #################################
 @user_api.post("/register", auth=None, response={201: Message, 409: Message}, description="User creation")
 async def register(request, data: UserCreation):
-    if await User.objects.filter(Q(username=data.phone) | Q(email=data.email)).aexists():
-        existing_user = await User.objects.aget(Q(username=data.phone) | Q(email=data.email)) 
+    if await User.objects.filter(Q(phone=data.phone) | Q(email=data.email)).aexists():
+        existing_user = await User.objects.aget(Q(phone=data.phone) | Q(email=data.email)) 
         phone_verified = await sync_to_async(lambda: existing_user.phone_verified)()
         phone = await sync_to_async(lambda: existing_user.phone)()
         if phone != data.phone:
@@ -50,8 +50,8 @@ async def register(request, data: UserCreation):
 
 @user_api.post("/mobile_login", auth=None, response={200: Message, 403: Message, 401: Message}, description="Authenticate user with username and password")
 async def mobile_login(request, data: LoginSchema):
-    if await User.objects.filter(username=data.username).aexists():
-        user = await User.objects.aget(username=data.username)
+    if await User.objects.filter(phone=data.username).aexists():
+        user = await User.objects.aget(phone=data.username)
         role = await sync_to_async(lambda: user.role)()
         if role != data.role:
             return 401, {"message": "Invalid credentials"}
@@ -190,7 +190,7 @@ async def update_user(request, data: PatchDict[UserCreation]):
 
     ## Verify Phone
     if 'phone' in data:
-        if await User.objects.filter(username=data['phone']).aexists():
+        if await User.objects.filter(phone=data['phone']).aexists():
             return 405, {"message": "User with same phone number already exists"}
         otp = random.randint(1111,9999)
         key = f"change_phone_{data['phone']}"
