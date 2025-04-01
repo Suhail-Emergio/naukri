@@ -51,6 +51,9 @@ async def register(request, data: UserCreation):
 async def mobile_login(request, data: LoginSchema):
     if await User.objects.filter(username=data.username).aexists():
         user = await User.objects.aget(username=data.username)
+        role = await sync_to_async(lambda: user.role)()
+        if role != data.role:
+            return 401, {"message": "Invalid credentials"}
         if user.phone_verified:
             otp = random.randint(1111,9999)
             key = f'otp_{user.username}'
@@ -68,6 +71,9 @@ async def email_login(request, data: LoginSchema):
     if await User.objects.filter(email=data.username).aexists():
         user = await User.objects.aget(email=data.username)
         refresh = RefreshToken.for_user(user)
+        role = await sync_to_async(lambda: user.role)()
+        if role != data.role:
+            return 401, {"message": "Invalid credentials"}
         if data.password:
             if user.email_verified:
                 if check_password(data.password, user.password):

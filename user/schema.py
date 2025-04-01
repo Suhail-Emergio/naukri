@@ -16,6 +16,7 @@ class Message(Schema):
 class LoginSchema(Schema):
     username: str
     password: str | None = None
+    role: str
 
 class MobileOtpVerify(Schema):
     phone: str
