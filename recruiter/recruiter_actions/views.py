@@ -256,8 +256,8 @@ async def reschedule_interview(request, id: int, data: PatchDict[UpdateInterview
     if await InterviewSchedule.objects.filter(id=id).aexists():
         interview = await InterviewSchedule.objects.aget(id=id)
         for attr, value in data.items():
-            setattr(personal, attr, value)
-        await personal.asave()
+            setattr(interview, attr, value)
+        await interview.asave()
         return 201, {"message": "Interview updated successfully"}
     return 404, {"message": "Interview not found"}
 
