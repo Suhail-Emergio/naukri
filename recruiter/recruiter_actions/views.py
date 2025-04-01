@@ -407,6 +407,6 @@ async def add_candidates(request, data: AddCandidateSchema, csv: Optional[Upload
             else:
                 if data.emails:
                     for email in data.emails:
-                        candidate_creation(email, job)
+                        await candidate_creation(email, job)
                     return 200, {"message": "Candidates added successfully"}
         return 404, {"message": "Job not found"}

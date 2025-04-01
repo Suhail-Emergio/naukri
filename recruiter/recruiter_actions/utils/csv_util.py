@@ -11,5 +11,5 @@ async def get_csv_data(file, job):
     for row in reader:
         email_index = header.index("email")
         email = row[email_index]
-        candidate_creation(email, job)
+        await candidate_creation(email, job)
     return True, {"message": "CSV data processed successfully"}
