@@ -1,4 +1,4 @@
-from ninja import Router, Query, PatchDict
+from ninja import Router, Query, PatchDict, File, UploadedFile
 from django.contrib.auth import get_user_model
 from typing import *
 from user.schema import *
