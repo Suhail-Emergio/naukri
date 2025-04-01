@@ -26,7 +26,7 @@ def log_model_save(sender, instance, created, **kwargs):
             if instance.user.whatsapp_updations:
                 send_updates(subject, instance.application.user.phone)
             if instance.user.onesignal_id and NotificationPreference.objects.get(user=instance.application.user).mobile_notifications:
-                send_notifications(subject=subject, title=f"Interview {"Scheduled" if action == "creation" else "rescheduled"} - Next Steps Await!", onesignal_id=instance.user.onesignal_id)
+                send_notifications(subject=subject, title=f"Interview {'Scheduled' if action == 'cration' else 'rescheduled'} - Next Steps Await!", onesignal_id=instance.user.onesignal_id)
 
 @receiver(post_save, sender=InviteCandidate)
 def log_model_save(sender, instance, created, **kwargs):
