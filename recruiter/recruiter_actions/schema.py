@@ -65,7 +65,6 @@ class UpdateApplicationStatus(Schema):
 class UpdateInterviewRound(Schema):
     round : str
     schedule : datetime
-    stat
 
 class ViewedCandidateSchema(Schema):
     id: int
