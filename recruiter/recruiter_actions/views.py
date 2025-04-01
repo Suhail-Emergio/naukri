@@ -255,6 +255,8 @@ async def update_interview(request, interview_id: int, data: PatchDict[UpdateInt
     user = request.auth
     if await InterviewSchedule.objects.filter(id=interview_id).aexists():
         interview = await InterviewSchedule.objects.aget(id=interview_id)
+        if data.get("round") != interview.interview_round:
+            interview.interview_status = "pending"
         for attr, value in data.items():
             setattr(interview, attr, value)
         await interview.asave()
