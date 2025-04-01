@@ -271,16 +271,6 @@ async def update_application_status(request, id: int, data: UpdateApplicationSta
         return 200, {"message": "Application status updated successfully"}
     return 404, {"message": "Application not found"}
 
-@recruiter_actions_api.patch("/update_interview_round", response={200: Message, 404: Message, 409: Message}, description="Update interview round")
-async def update_application_status(request, scheduled_id: int, data: PatchDict[UpdateInterviewRound]):
-    user = request.auth
-    if await InterviewSchedule.objects.filter(id=scheduled_id).aexists():
-        application = await InterviewSchedule.objects.aget(id=scheduled_id)
-        application.interview_round = data.round
-        await application.asave()
-        return 200, {"message": "Interview rounds updated successfully"}
-    return 404, {"message": "Application not found"}
-
 #################################  E M A I L S  #################################
 @recruiter_actions_api.get("/email_templates", response={200: List[EmailTemplates], 404: Message, 409: Message}, description="Retrieve all email templates created by user")
 async def templates(request):
