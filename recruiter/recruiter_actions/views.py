@@ -250,6 +250,17 @@ async def reject_application(request, id: int):
         return 200, {"message": "Application rejected successfully"}
     return 404, {"message": "Application not found"}
 
+@recruiter_actions_api.patch("/reschedule_interview", response={201: Message, 404: Message, 409: Message}, description="Interview update")
+async def reschedule_interview(request, id: int, data: PatchDict[UpdateInterviewRound]):
+    user = request.auth
+    if await InterviewSchedule.objects.filter(id=id).aexists():
+        interview = await InterviewSchedule.objects.aget(id=id)
+        for attr, value in data.items():
+            setattr(personal, attr, value)
+        await personal.asave()
+        return 201, {"message": "Interview updated successfully"}
+    return 404, {"message": "Interview not found"}
+
 @recruiter_actions_api.patch("/update_application_status", response={200: Message, 404: Message, 409: Message}, description="Update application status")
 async def update_application_status(request, id: int, data: UpdateApplicationStatus):
     user = request.auth
@@ -261,7 +272,7 @@ async def update_application_status(request, id: int, data: UpdateApplicationSta
     return 404, {"message": "Application not found"}
 
 @recruiter_actions_api.patch("/update_interview_round", response={200: Message, 404: Message, 409: Message}, description="Update interview round")
-async def update_application_status(request, scheduled_id: int, data: UpdateInterviewRound):
+async def update_application_status(request, scheduled_id: int, data: PatchDict[UpdateInterviewRound]):
     user = request.auth
     if await InterviewSchedule.objects.filter(id=scheduled_id).aexists():
         application = await InterviewSchedule.objects.aget(id=scheduled_id)
