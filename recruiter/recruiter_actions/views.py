@@ -14,6 +14,7 @@ from common_actions.models import Subscription
 from naukry.utils.profile_completion import completion_data
 from django.utils import timezone
 from .utils.csv_util import get_csv_data
+from .utils.candidate_gen import candidate_creation
 
 User = get_user_model()
 recruiter_actions_api = Router(tags=['recruiter_actions'])
