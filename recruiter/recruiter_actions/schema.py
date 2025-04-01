@@ -79,5 +79,4 @@ class SavedCandidateSchema(Schema):
     created_on: str
 
 class AddCandidateSchema(Schema):
-    job_id: int
     emails: Union[List[str], None] = []

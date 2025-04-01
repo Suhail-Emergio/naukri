@@ -395,7 +395,7 @@ async def view_candidates(request):
 
 #################################  V I E W E D  C A N D I D A T E S  #################################
 @recruiter_actions_api.post("/add_candidates", response={200: Message, 404: Message, 405: Message, 409: Message}, description="Add candidates for job applications. If a CSV file is provided, it should contain a column named 'email' with candidate email addresses.")
-async def add_candidates(request, data: AddCandidateSchema, csv: Optional[UploadedFile] = None):
+async def add_candidates(request, job_id: int, data: AddCandidateSchema, csv: Optional[UploadedFile] = None):
     if data.job_id:
         if await JobPosts.objects.filter(id=data.job_id).aexists():
             job = await JobPosts.objects.aget(id=data.job_id)
