@@ -394,4 +394,3 @@ async def view_candidates(request):
 #################################  V I E W E D  C A N D I D A T E S  #################################
 # @recruiter_actions_api.post("/add_candidates", response={200: Message, 404: Message, 409: Message}, description="Add candidates for job applications")
 # async def add_candidates(request, ):
-    
