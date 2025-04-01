@@ -51,7 +51,7 @@ async def profile_based_jobs(request):
     if personal:
         query = Q()
         if personal.employed and employment:
-            query = Q(title=employment.job_title) | Q(industry=employment.department) | Q(functional_area=employment.job_role)
+            query = Q(title=employment.job_title) | Q(industry=employment.department) | Q(location_type=employment.job_role)
         query |= Q(city = personal.prefered_work_loc) | Q(country = personal.prefered_work_loc)
         jobs = [i async for i in JobPosts.objects.filter(query).exclude(active=False)]
     else:
@@ -69,7 +69,7 @@ async def category_based_jobs(request, category: str = "remote"):
     excludable_data = []
     if await BlockedCompanies.objects.filter(user=request.auth).aexists():
         excludable_data = [i.company async for i in BlockedCompanies.objects.filter(user=request.auth)]
-    jobs = [i async for i in JobPosts.objects.filter(category=category, active=False).exclude(company__in=excludable_data)]
+    jobs = [i async for i in JobPosts.objects.filter(location_type=category, active=False).exclude(company__in=excludable_data)]
     job_company_data = []
     for job in jobs:
         company_details = await CompanyDetails.objects.aget(id=job.company_id)
