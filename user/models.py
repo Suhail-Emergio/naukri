@@ -5,7 +5,7 @@ class UserProfile(AbstractUser):
     ROLE_CHOICES = [('seeker', 'seeker'), ('recruiter', 'recruiter')]
 
     name = models.CharField(max_length=50)
-    phone = models.CharField(max_length=10, unique=True)
+    phone = models.CharField(max_length=10, unique=True, null=True, blank=True)
     role = models.CharField(max_length=10, choices=ROLE_CHOICES, default="seeker")
     total_hr_spend = models.FloatField(default=0.0)
     active_from = models.DateTimeField(null=True, blank=True)

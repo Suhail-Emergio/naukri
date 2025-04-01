@@ -217,7 +217,7 @@ async def interviews_scheduled(request, job_id: int = None):
         qualification = None
         if await Qualification.objects.filter(user=candidate).aexists():
             qualification = [i async for i in Qualification.objects.filter(user=candidate).order_by('-id')]
-        scheduled.append({"id": i.id, "candidate": {"personal": {"personal": personal, "user": candidate}, "employment": employment, "qualification": qualification}, "schedule": i.schedule, "job": job, "created_on": i.created_on.strftime('%Y-%m-%d %H:%M:%S %Z'), "interview_round": i.interview_round})
+        scheduled.append({"id": i.id, "candidate": {"personal": {"personal": personal, "user": candidate}, "employment": employment, "qualification": qualification}, "schedule": i.schedule, "job": job, "created_on": i.created_on.strftime('%Y-%m-%d %H:%M:%S %Z'), "interview_round": i.interview_round, "interview_status": i.interview_status})
     return 200, scheduled
 
 @recruiter_actions_api.post("/schedule_interview", response={200: Message, 404: Message, 409: Message}, description="Invite candidates for job")
@@ -390,3 +390,8 @@ async def view_candidates(request):
             qualification = [i async for i in Qualification.objects.filter(user=user).order_by('-id')]
         viewed.append({"candidate": {"personal": {"personal": personal, "user": user}, "employment": employment, "qualification": qualification}, "viewed_on": i.viewed_on.strftime('%Y-%m-%d %H:%M:%S %Z'), "id": i.id})
     return 200, viewed
+
+#################################  V I E W E D  C A N D I D A T E S  #################################
+# @recruiter_actions_api.post("/add_candidates", response={200: Message, 404: Message, 409: Message}, description="Add candidates for job applications")
+# async def add_candidates(request, ):
+    

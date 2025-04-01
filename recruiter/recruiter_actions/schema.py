@@ -47,6 +47,7 @@ class ScheduledInterviews(Schema):
     candidate: SeekerData
     job: JobData
     interview_round: Optional[str] = None
+    interview_status: Optional[str] = None
     schedule: datetime
     created_on: str
 
@@ -76,3 +77,7 @@ class SavedCandidateSchema(Schema):
     id: int
     candidate: SeekerData
     created_on: str
+
+class AddCandidateSchema(Schema):
+    job_id: int
+    emails: Union[List[str], None] = []
