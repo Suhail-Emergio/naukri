@@ -2,7 +2,7 @@ from ninja import Schema
 from typing import *
 from ninja.orm import create_schema
 from .models import *
-from recruiter.company.schema import CompanyCreation
+from recruiter.company.schema import CompanyData
 
 # Job Post Schema
 class JobCreation(Schema):
@@ -43,4 +43,4 @@ JobData = create_schema(JobPosts)
 
 class JobCompanyData(Schema):
     job_posts : JobData
-    company_data : CompanyCreation
+    company_data : CompanyData
