@@ -5,6 +5,7 @@ from recruiter.recruiter_actions.utils.random_pass import random_password_genera
 User = get_user_model()
 
 async def candidate_creation(email, job):
+    candidates = []
     if await User.objects.filter(email=email).aexists():
         user = await User.objects.aget(email=email)
         candidates.append(user)

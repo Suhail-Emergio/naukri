@@ -5,7 +5,6 @@ from .candidate_gen import candidate_creation
 async def get_csv_data(file, job):
     text_file = io.TextIOWrapper(file, encoding='utf-8')
     reader = csv.reader(text_file.read().splitlines())
-    candidates = []
     header = [col.lower() for col in next(reader, None)]
     if "email" not in header:
         return False, {"message": "Email column not found in CSV"}
