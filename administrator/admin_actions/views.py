@@ -149,6 +149,7 @@ def all_applications(request):
                 "status": i.status,
                 "viewed": i.viewed,
                 "created_on": i.created_on,
+                "matching_skills": None
             })
         return applications
     return {"message" : "You are not authorized"}
