@@ -13,9 +13,9 @@ def log_model_save(sender, instance, created, **kwargs):
 
             if subscribe.remaining_posts != 0:
                 subscribe.remaining_posts -= 1
+            subscribe.save()
+
             if subscribe.remaining_posts == 0:
                 user.subcribed = False
                 user.save()
                 subscribe.delete()
-
-            subscribe.save()
