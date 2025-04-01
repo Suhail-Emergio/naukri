@@ -13,6 +13,7 @@ from seeker.details.schema import CountData
 from common_actions.models import Subscription
 from naukry.utils.profile_completion import completion_data
 from django.utils import timezone
+from .utils.csv_util import get_csv_data
 
 User = get_user_model()
 recruiter_actions_api = Router(tags=['recruiter_actions'])
@@ -392,5 +393,19 @@ async def view_candidates(request):
     return 200, viewed
 
 #################################  V I E W E D  C A N D I D A T E S  #################################
-# @recruiter_actions_api.post("/add_candidates", response={200: Message, 404: Message, 409: Message}, description="Add candidates for job applications")
-# async def add_candidates(request, ):
+@recruiter_actions_api.post("/add_candidates", response={200: Message, 404: Message, 405: Message, 409: Message}, description="Add candidates for job applications. If a CSV file is provided, it should contain a column named 'email' with candidate email addresses.")
+async def add_candidates(request, data: AddCandidateSchema, csv: Optional[UploadedFile] = None):
+    if data.job_id:
+        if await JobPosts.objects.filter(id=data.job_id).aexists():
+            job = await JobPosts.objects.aget(id=data.job_id)
+            if csv:
+                status, message = await get_csv_data(csv, job)
+                if not status:
+                    return 405, message
+                return 200, {"message": "Candidates added successfully"}
+            else:
+                if data.emails:
+                    for email in data.emails:
+                        candidate_creation(email, job)
+                    return 200, {"message": "Candidates added successfully"}
+        return 404, {"message": "Job not found"}
