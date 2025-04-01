@@ -63,7 +63,7 @@ class UpdateApplicationStatus(Schema):
     status : str
 
 class UpdateInterviewRound(Schema):
-    round : str
+    interview_round : str
     schedule : datetime
 
 class ViewedCandidateSchema(Schema):
