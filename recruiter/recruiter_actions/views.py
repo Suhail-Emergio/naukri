@@ -399,14 +399,14 @@ async def add_candidates(request, job_id: int, csv: UploadedFile = File(None), d
     if job_id:
         if await JobPosts.objects.filter(id=job_id).aexists():
             job = await JobPosts.objects.aget(id=job_id)
-            if csv:
-                status, message = await get_csv_data(csv, job)
-                if not status:
-                    return 405, message
-                return 200, {"message": "Candidates added successfully"}
-            else:
+            if data:
                 if data.emails:
                     for email in data.emails:
                         await candidate_creation(email, job)
                     return 200, {"message": "Candidates added successfully"}
+            else:
+                status, message = await get_csv_data(csv, job)
+                if not status:
+                    return 405, message
+                return 200, {"message": "Candidates added successfully"}
         return 404, {"message": "Job not found"}
