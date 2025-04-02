@@ -16,4 +16,5 @@ async def candidate_creation(email, job):
         await user.asave()
         candidates.append(user)
     for candidate in candidates:
-        await ApplyJobs.objects.acreate(user=candidate, job=job, status="applied")
+        if not await ApplyJobs.objects.filter(user=candidate, job=job).aexists():
+            await ApplyJobs.objects.acreate(user=candidate, job=job, status="applied")
