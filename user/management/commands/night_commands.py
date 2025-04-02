@@ -37,6 +37,9 @@ class Command(BaseCommand):
         subscriptions = Subscription.objects.annotate(
             expiry_date=ExpressionWrapper(F('subscribed_on') + F('plan__duration'),output_field=DateField())
         ).filter(expiry_date=self.today)
+        for subscription in subscriptions:
+            subscription.user.subscribed = False
+            subscription.user.save()
         subscriptions.delete()
 
     def job_deletion(self):

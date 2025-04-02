@@ -80,3 +80,14 @@ class SavedCandidateSchema(Schema):
 
 class AddCandidateSchema(Schema):
     emails: Union[List[str], None] = []
+
+class RecruiterCountsResponse(Schema):
+    profile_completion_percentage: float
+    empty_models: List[str]
+    models_with_empty_fields: Dict[str, List[str]]
+    remaining_jobs_count: int
+    used_jobs_count: int
+    interview_scheduled_count: int
+    application_count: int
+    active_jobs_count: int
+    inactive_jobs_count: int
