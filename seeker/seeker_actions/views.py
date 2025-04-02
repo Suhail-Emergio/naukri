@@ -33,7 +33,7 @@ async def job_invitations(request):
         jobs.append({
             "job": {"job_posts": job, "company_data": company},
             "read": await sync_to_async(lambda: i.read)(),
-            "interested": await sync_to_async(lambda: i.interested)(),
+            "status": await sync_to_async(lambda: i.status)(),
             "created_on": await sync_to_async(lambda: i.created_on)(),
         })
     return 200, jobs

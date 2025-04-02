@@ -2,7 +2,7 @@ from django.db import models
 from django.contrib.auth.models import AbstractUser
 
 class UserProfile(AbstractUser):
-    ROLE_CHOICES = [('seeker', 'seeker'), ('recruiter', 'recruiter')]
+    ROLE_CHOICES = [('seeker', 'seeker'), ('recruiter', 'recruiter'), ('admin', 'admin')]
 
     name = models.CharField(max_length=50)
     phone = models.CharField(max_length=10, unique=True, null=True, blank=True)
