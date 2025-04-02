@@ -10,7 +10,7 @@ from ninja.responses import codes_4xx
 from asgiref.sync import sync_to_async
 from ninja_jwt.tokens import RefreshToken, AccessToken
 from django.contrib.auth.hashers import check_password
-from naukry.utils.email import send_mails
+from naukry.utils.html_contents import verify_mail
 from naukry.utils.twilio import whatsapp_message
 import random
 from django.core.cache import cache
@@ -142,7 +142,7 @@ async def send_email_otp(request, data: EmailOtpVerify):
         cache_value = await sync_to_async(cache.get)(key)
         if cache_value:
             await sync_to_async(cache.delete)(key)
-        await send_mails(data.email, name, f"{otp:04d}")
+        await verify_mail(data.email, name, f"{otp:04d}")
         await sync_to_async(cache.set)(key, f"{otp:04d}", timeout=60)
         return 200, {"message": "OTP sent to email"}
     return 401, {"message": "User not registered"}
