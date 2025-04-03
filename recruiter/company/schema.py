@@ -13,5 +13,8 @@ class CompanyCreation(Schema):
     city : str
     state : str
     postal_code : str
+    pan_no : str
+    gst_no : str
+    mca_no : Optional[str] = None
 
 CompanyData = create_schema(CompanyDetails)

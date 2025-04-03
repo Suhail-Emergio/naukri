@@ -14,3 +14,6 @@ class CompanyDetails(models.Model):
     city = models.CharField(max_length = 250)
     state = models.CharField(max_length = 250, default='')
     postal_code = models.CharField(max_length=6)
+    pan_no = models.CharField(max_length=10, default='')
+    gst_no = models.CharField(max_length=100, default='')
+    mca_no = models.CharField(max_length=100, null=True, blank=True)
