@@ -110,8 +110,8 @@ async def mobile_otp_verify(request, data: MobileOtpVerify):
                 user.phone_verified = True
                 await user.asave()
             refresh = RefreshToken.for_user(user)
-            if user.role == "recruiter" and not user.subscribed:
-                return 406, {"message": "Please subscribe to a plan"}
+            # if user.role == "recruiter" and not user.subscribed:
+            #     return 406, {"message": "Please subscribe to a plan"}
             if (user.role == "recruiter" and not CompanyDetails.objects.filter(user=user).aexists()) or (user.role == "seeker" and not Personal.objects.filter(user=user).aexists()):
                 return 206, {'access': str(refresh.access_token), 'refresh': str(refresh), 'role': user.role, "name": user.name}
             return 200, {'access': str(refresh.access_token), 'refresh': str(refresh), 'role': user.role, "name": user.name}
