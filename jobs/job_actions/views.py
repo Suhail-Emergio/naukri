@@ -34,12 +34,14 @@ async def apply_jobs(request, data: ApplyJobsCreation):
         invited = False
         if await ApplyJobs.objects.filter(user=request.auth, job=job).aexists():
             return 405, {"message": "Already applied"}
+        apply_job = await ApplyJobs.objects.acreate(user=request.auth, job=job, custom_qns=custom_qns)
         if await InviteCandidate.objects.filter(candidate__user=request.auth, job=job).aexists():
             invited = True
             invite = await InviteCandidate.objects.aget(candidate__user=request.auth, job=job)
             invite.status = "applied"
             await invite.asave()
-        apply_job = await ApplyJobs.objects.acreate(user=request.auth, job=job, custom_qns=custom_qns, invited=invited)
+        apply_job.invited = invited
+        await apply_job.asave()
         return 201, {"message": "Successfully added"}
     return 404, {"message": "Job not found"}
 
