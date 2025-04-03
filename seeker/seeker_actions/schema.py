@@ -7,6 +7,7 @@ from jobs.jobposts.schema import JobData, JobCompanyData
 from recruiter.company.schema import CompanyData
 
 class JobInvitations(Schema):
+    id: int
     job: JobCompanyData
     read: bool
     status: str
