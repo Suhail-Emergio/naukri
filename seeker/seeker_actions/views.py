@@ -44,6 +44,7 @@ async def read_invitations(request, invitation_id:int):
     if await InviteCandidate.objects.filter(id=invitation_id).aexists():
         invite = await InviteCandidate.objects.aget(id=invitation_id)
         invite.read = True
+        invite.status = "reviewing"
         await invite.asave()
         return 200, {"message": "Invitation read successfully"}
     return 404, {"message": "Invitation not found"}
@@ -55,6 +56,15 @@ async def update_invitation_status(request, invitation_id:int, data: StatusUpdat
         invite.status = data.status
         await invite.asave()
         return 200, {"message": "Invitation status updated successfully"}
+    return 404, {"message": "Invitation not found"}
+
+@seeker_actions_api.patch("/reject_invitation", response={200: Message, 404: Message, 409: Message}, description="Reject an invitation") 
+async def reject_invitation(request, invitation_id:int):
+    if await InviteCandidate.objects.filter(id=invitation_id).aexists():
+        invite = await InviteCandidate.objects.aget(id=invitation_id)
+        invite.status = 'rejected'
+        await invite.asave()
+        return 200, {"message": "Invitation rejected successfully"}
     return 404, {"message": "Invitation not found"}
 
 #################################  B L O C K /  U N B L O C K  C O M P A N I E S  #################################
