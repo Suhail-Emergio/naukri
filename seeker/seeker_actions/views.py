@@ -39,18 +39,18 @@ async def job_invitations(request):
     return 200, jobs
 
 @seeker_actions_api.patch("/read_invitations", response={200: Message, 404: Message, 409: Message}, description="Mark an invitation as read") 
-async def read_invitations(request, id:int):
-    if await InviteCandidate.objects.filter(job__id=id).aexists():
-        invite = await InviteCandidate.objects.aget(job__id=id)
+async def read_invitations(request, invitation_id:int):
+    if await InviteCandidate.objects.filter(id=invitation_id).aexists():
+        invite = await InviteCandidate.objects.aget(id=invitation_id)
         invite.read = True
         await invite.asave()
         return 200, {"message": "Invitation read successfully"}
     return 404, {"message": "Invitation not found"}
 
 @seeker_actions_api.patch("/update_invitation_status", response={200: Message, 404: Message, 409: Message}, description="Mark an invitation as read") 
-async def update_invitation_status(request, id:int, data: StatusUpdate):
-    if await InviteCandidate.objects.filter(job__id=id).aexists():
-        invite = await InviteCandidate.objects.aget(job__id=id)
+async def update_invitation_status(request, invitation_id:int, data: StatusUpdate):
+    if await InviteCandidate.objects.filter(id=invitation_id).aexists():
+        invite = await InviteCandidate.objects.aget(id=invitation_id)
         invite.status = data.status
         await invite.asave()
         return 200, {"message": "Invitation status updated successfully"}
