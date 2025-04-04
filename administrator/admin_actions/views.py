@@ -144,13 +144,10 @@ def all_applications(request):
                 "id": i.id,
                 'job': i.job,
                 'company': i.job.company.name,
-                'applied_jobs': applied_jobs,
                 "candidate": {"personal": {"personal": personal, "user": i.user}, "employment": employment, "qualification": qualification},
-                "custom_qns": i.custom_qns,
                 "status": i.status,
                 "viewed": i.viewed,
                 "created_on": i.created_on,
-                "matching_skills": None
             })
         return applications
     return {"message" : "You are not authorized"}
