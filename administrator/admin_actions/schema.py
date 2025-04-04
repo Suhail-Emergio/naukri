@@ -76,4 +76,4 @@ class AllNotifications(Schema):
 class AllUsers(Schema):
     id: int
     name: str
-    phone: str
+    username: str

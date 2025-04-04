@@ -361,6 +361,6 @@ def delete_notifications(request, id: int):
 async def all_users(request):
     user = request.auth
     if user.is_superuser:
-        users = [i async for i in  User.objects.all().values('id', 'name', 'phone', 'role')]
+        users = [i async for i in  User.objects.all().values('id', 'name', 'username', 'role')]
         return 200, users
     return 409, {"message" : "You are not authorized to access users"}
