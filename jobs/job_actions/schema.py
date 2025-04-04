@@ -38,7 +38,7 @@ class ApplyJobsData(Schema):
 class ApplyCandidatesData(Schema):
     id: int
     job: JobData
-    company: CompanyData
+    company: str
     applied_jobs: List[JobData]
     candidate: SeekerData
     custom_qns: Optional[Union[List[str], Dict[str, Any]]]
