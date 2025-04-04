@@ -74,7 +74,7 @@ class AllUsers(Schema):
     name: str
     username: str
 
-class ApplyCandidatesData(Schema):
+class AdminCandidatesData(Schema):
     id: int
     job: JobData
     candidate: SeekerData

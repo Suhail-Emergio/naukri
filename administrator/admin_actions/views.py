@@ -120,7 +120,7 @@ def job_post_application_leads(request, job_id: int):
     return {"message" : "You are not authorized"}
 
 #################################  J O B S  A P P L I C A T I O N S  #################################
-@admin_api.get("/all_applications", response={200: List[ApplyCandidatesData], 409:Message}, description="Fetch all job applications")
+@admin_api.get("/all_applications", response={200: List[AdminCandidatesData], 409:Message}, description="Fetch all job applications")
 @paginate
 def all_applications(request):
     user = request.auth
