@@ -12,7 +12,7 @@ async def candidate_creation(email, job):
         candidates.append(user)
     else:
         password = random_password_generation()
-        user = await User.objects.acreate(email=email, username=email)
+        user = await User.objects.acreate(email=email, username=email, email_verified=True)
         user.set_password(password)
         await user.asave()
         await send_creds(email=email, password=password, username=email)
