@@ -44,6 +44,8 @@ class JobPosts(models.Model):
     country = models.CharField(max_length=250)
     location_type = models.JSONField(null=True, blank=True) # `Remote, Onsite, Hybrid`
     address = models.TextField(null=True, blank=True)
+    pin_code = models.CharField(max_length=6, null=True, blank=True)
+    state = models.CharField(max_length=100, null=True, blank=True)
     type = models.JSONField(null=True, blank=True) # `Full-time, Part-time, Contract, Internship`
     schedule = models.JSONField(null=True, blank=True) # `Day, Night, Evening, Rotational`
     start_date = models.DateField(null=True, blank=True)
@@ -60,13 +62,14 @@ class JobPosts(models.Model):
     end_date = models.DateField(null=True, blank=True)
     skills = models.JSONField(null=True, blank=True)
     interview_rounds = models.JSONField(null=True, blank=True)
-    professional_exp = models.FloatField(null=True, blank=True, default=0.0)
+    professional_exp_year = models.IntegerField(null=True, blank=True, default=0)
+    professional_exp_month = models.IntegerField(null=True, blank=True, default=0)
     total_experience = models.FloatField(null=True, blank=True, default=0.0)
     education = models.CharField(max_length=50, null=True, blank=True)
     custom_qns = models.JSONField(null=True, blank=True)
     languages = models.JSONField(null=True, blank=True)
     work_location = models.JSONField(null=True, blank=True)
-    commute = models.BooleanField(default=False)
+    # commute = models.BooleanField(default=False)
     relocate = models.BooleanField(default=False)
     date_availablity = models.BooleanField(default=True)
     gender = models.CharField(max_length=50, choices=[('male', 'male'), ('female', 'female')], null=True, blank=True)
