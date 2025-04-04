@@ -6,6 +6,7 @@ from datetime import timedelta
 from jobs.job_actions.schema import ApplyCandidatesData
 from recruiter.recruiter_actions.schema import SeekerData
 from jobs.jobposts.schema import JobCompanyData, JobData
+from datetime import datetime
 
 class PlanCreation(Schema):
     title: str
