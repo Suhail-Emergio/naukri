@@ -7,9 +7,10 @@ from django.db.models import Q
 from jobs.jobposts.schema import JobCompanyData
 from jobs.jobposts.models import JobPosts
 from recruiter.company.models import CompanyDetails
-from recruiter.recruiter_actions.models import InviteCandidate
+from recruiter.recruiter_actions.models import InviteCandidate, InterviewSchedule
 from asgiref.sync import sync_to_async
 from seeker.details.models import *
+from recruiter.recruiter_actions.schema import UpdateInterviewRound
 from datetime import datetime, timedelta
 
 User = get_user_model()
@@ -143,6 +144,16 @@ async def update_job_applications(request, applied_id: int):
         applied = await ApplyJobs.objects.aget(id=applied_id)
         applied.viewed = True
         return 200, {"message": "Updated successfully"}
+    return 404, {"message": "Applied job not found"}
+
+@job_actions_api.get("/interview_info", response={200: UpdateInterviewRound, 409: Message}, description="Interview information from applied job")
+async def interview_info(request, applied_id: int):
+    if await ApplyJobs.objects.filter(id=applied_id).aexists():
+        applied = await ApplyJobs.objects.aget(id=applied_id)
+        if await InterviewSchedule.objects.filter(application=applied).aexists():
+            interview = await InterviewSchedule.objects.aget(application=applied)
+            return 200, interview
+        return 409, {"message": "Interview not scheduled"}
     return 404, {"message": "Applied job not found"}
 
 #################################  S A V E /  B O O K M A R K  J O B S  #################################

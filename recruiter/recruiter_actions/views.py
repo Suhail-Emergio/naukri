@@ -80,9 +80,9 @@ async def resdex(request,
                     user = await sync_to_async(lambda: i.user)()
                     if user.id not in seen_users:
                         seen_users.add(user.id)
-                        # search_apps = await SearchApps.objects.filter(user=user).alatest('date')
-                        # search_apps.count += 1
-                        # await search_apps.asave()
+                        search_apps = await SearchApps.objects.filter(user=user).alatest('date')
+                        search_apps.count += 1
+                        await search_apps.asave()
                         personal_ = await Personal.objects.aget(user=user)
                         qualification = None
                         if await Qualification.objects.filter(user=user).aexists():
@@ -114,9 +114,9 @@ async def resdex(request,
                 candidate = [i async for i in Personal.objects.filter(queries).exclude(user__is_active=False).order_by('-user__subscribed', '-id')]
                 for i in candidate:
                     user = await sync_to_async(lambda: i.user)()
-                    # search_apps = await SearchApps.objects.filter(user=user).alatest('date')
-                    # search_apps.count += 1
-                    # await search_apps.asave()
+                    search_apps = await SearchApps.objects.filter(user=user).alatest('date')
+                    search_apps.count += 1
+                    await search_apps.asave()
                     employment = None
                     if await Employment.objects.filter(user=user).aexists():
                         employment = [i async for i in Employment.objects.filter(user=user).order_by('-id')]
