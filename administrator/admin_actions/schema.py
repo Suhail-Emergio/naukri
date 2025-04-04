@@ -73,3 +73,12 @@ class AllUsers(Schema):
     id: int
     name: str
     username: str
+
+class ApplyCandidatesData(Schema):
+    id: int
+    job: JobData
+    candidate: SeekerData
+    company: str
+    status: str
+    viewed: bool
+    created_on: datetime
