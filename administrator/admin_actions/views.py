@@ -71,6 +71,7 @@ def job_post_application(request, job_id: int):
                 "status": i.status,
                 "viewed": i.viewed,
                 "created_on": i.created_on,
+                "matching_skills": None
             })
             if i.status == "shortlisted":
                 shortlisted += 1 
