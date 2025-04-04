@@ -143,6 +143,7 @@ def all_applications(request):
             applications.append({
                 "id": i.id,
                 'job': i.job,
+                'company': i.job.company,
                 'applied_jobs': applied_jobs,
                 "candidate": {"personal": {"personal": personal, "user": i.user}, "employment": employment, "qualification": qualification},
                 "custom_qns": i.custom_qns,

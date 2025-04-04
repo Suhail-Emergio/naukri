@@ -5,6 +5,7 @@ from .models import *
 from jobs.jobposts.schema import JobCompanyData, JobData
 from datetime import datetime
 from recruiter.recruiter_actions.schema import SeekerData
+from recruiter.company.schema import CompanyData
 
 # Job Post to save Schema
 class SavedJobsCreation(Schema):
@@ -37,6 +38,7 @@ class ApplyJobsData(Schema):
 class ApplyCandidatesData(Schema):
     id: int
     job: JobData
+    company: CompanyData
     applied_jobs: List[JobData]
     candidate: SeekerData
     custom_qns: Optional[Union[List[str], Dict[str, Any]]]
