@@ -58,7 +58,8 @@ async def applied_jobs(request):
         viewed = await sync_to_async(lambda: i.viewed)()
         created_on = await sync_to_async(lambda: i.created_on)()
         company = await sync_to_async(lambda: job.company)()
-        jobs.append({"job": {"job_posts": job, "company_data": company}, "id": id, "custom_qns": custom_qns, "status": status, "viewed": viewed, "created_on": created_on})
+        company_mail = await sync_to_async(lambda: company.user.email)()
+        jobs.append({"job": {"job_posts": job, "company_data": company}, "id": id, "custom_qns": custom_qns, "status": status, "viewed": viewed, "created_on": created_on, "company_mail": company_mail})
     return 200, jobs
 
 #################################  A P P L I C A T I O N S  #################################

@@ -29,6 +29,7 @@ class ApplyJobsCreation(Schema):
 class ApplyJobsData(Schema):
     id: int
     job: JobCompanyData
+    company_mail: str
     custom_qns: Optional[Union[List[str], Dict[str, Any]]]
     status: str
     viewed: bool
