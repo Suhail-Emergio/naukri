@@ -224,8 +224,8 @@ async def plans(request):
 async def update_plans(request, data: PatchDict[PlanData]):
     user = request.auth
     if user.is_superuser:
-        if await Plans.objects.filter(id=data.id).aexists():
-            plan = await Plans.objects.aget(id=data.id)
+        if await Plans.objects.filter(id=data['id']).aexists():
+            plan = await Plans.objects.aget(id=data['id'])
             for key, value in data.items():
                 setattr(plan, key, value)
             await plan.asave()
@@ -267,8 +267,8 @@ async def banners(request):
 async def update_banner(request, data: PatchDict[BannerData]):
     user = request.auth
     if user.is_superuser:
-        if await Banner.objects.filter(id=data.id).aexists():
-            banner = await Banner.objects.aget(id=data.id)
+        if await Banner.objects.filter(id=data['id']).aexists():
+            banner = await Banner.objects.aget(id=data['id'])
             for key, value in data.items():
                 setattr(banner, key, value)
             await banner.asave()
