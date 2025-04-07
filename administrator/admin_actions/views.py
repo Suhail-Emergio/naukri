@@ -332,16 +332,23 @@ def all_notifications(request):
     return {"message" : "You are not authorized to access notifications"}
 
 @admin_api.patch("/edit_notifications", response={200: Message, 409:Message}, description="Edit Notifications")
-def edit_notifications(request, data: PatchDict[NotificationData]):
+def edit_notifications(request, data: PatchDict[NotiData]):
     user = request.auth
     if user.is_superuser:
-        notification = Notification.objects.get(id=data.id)
-        notification.title = data.title
-        notification.description = data.description
+        notification = Notification.objects.get(id=data['id'])
+        notification.title = data['title']
+        if data['description']:
+            notification.description = data['description']
         if data.image:
-            notification.image = data.image
+            notification.image = data['image']
+        if data.audience:
+            notification.audience = data['audience']
+        if data.user_id:
+            for i in data.user_id:
+                user = User.objects.get(id=i)
+                notification.user.add(user)
         if data.url:
-            notification.url = data.url
+            notification.url = data['url']
         notification.save()
         return 200, {"message": "Notification updated successfully"}
     return 409, {"message" : "You are not authorized to access notifications"}

@@ -7,6 +7,7 @@ from jobs.job_actions.schema import ApplyCandidatesData
 from recruiter.recruiter_actions.schema import SeekerData
 from jobs.jobposts.schema import JobCompanyData, JobData
 from datetime import datetime
+from common_actions.models import Notification
 
 class PlanCreation(Schema):
     title: str
@@ -83,3 +84,5 @@ class AdminCandidatesData(Schema):
     status: str
     viewed: bool
     created_on: datetime
+
+NotiData = create_schema(Notification)

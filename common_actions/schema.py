@@ -35,5 +35,5 @@ class NotificationSchema(Schema):
 
 class NotificationData(Schema):
     id: int
-    noti: NotificationSchema    
+    noti: NotificationSchema
     read: bool
