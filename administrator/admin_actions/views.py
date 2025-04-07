@@ -23,10 +23,13 @@ admin_api = Router(tags=['admin'])
 #################################  J O B S  #################################
 @admin_api.get("/all_jobs", response={200: List[AllJobsData], 409:Message}, description="Fetch all jobs")
 @paginate
-async def all_jobs(request, order: str = 'active'):
+async def all_jobs(request, order: str = 'active', verified: bool = None):
     user = request.auth
     if user.is_superuser:
-        jobs = [i async for i in JobPosts.objects.all().order_by(f'-{order}')]
+        if verified:
+            jobs = [i async for i in JobPosts.objects.filter(verified=verified).order_by(f'-{order}')]
+        else:
+            jobs = [i async for i in JobPosts.objects.all().order_by(f'-{order}')]
         all_job = []
         for job in jobs:
             company_details = await CompanyDetails.objects.aget(id=job.company_id)
