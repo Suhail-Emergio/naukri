@@ -12,7 +12,7 @@ from recruiter.company.schema import CompanyDetails, CompanyData
 from seeker.details.schema import Personal, Qualification, Employment
 from recruiter.recruiter_actions.schema import SeekerData
 from common_actions.models import Subscription
-from common_actions.schema import NotificationCreation, Notification
+from common_actions.schema import NotificationCreation, Notification, NotificationData
 from datetime import date, timedelta
 from django.db.models import Count, Case, When, DateField
 from django.db.models.functions import Cast
