@@ -336,18 +336,19 @@ def edit_notifications(request, data: PatchDict[NotiData]):
     user = request.auth
     if user.is_superuser:
         notification = Notification.objects.get(id=data['id'])
-        notification.title = data['title']
+        if data['title']:
+            notification.title = data['title']
         if data['description']:
             notification.description = data['description']
-        if data.image:
+        if data['image']:
             notification.image = data['image']
-        if data.audience:
+        if data['audience']:
             notification.audience = data['audience']
-        if data.user_id:
-            for i in data.user_id:
+        if data['user']:
+            for i in data['user']:
                 user = User.objects.get(id=i)
                 notification.user.add(user)
-        if data.url:
+        if data['url']:
             notification.url = data['url']
         notification.save()
         return 200, {"message": "Notification updated successfully"}
