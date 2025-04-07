@@ -189,7 +189,7 @@ async def search_jobs(request,
         specialization: str = None, 
         query: str = None, 
         filter: bool = False, 
-        job_category: str = None,
+        schedule: str = None,
         job_type: str = None,
         city: str = None,
         salary_min: int = None,
@@ -203,21 +203,21 @@ async def search_jobs(request,
 
         # Querying jobs based on specialization\ query
         if specialization and query:
-            queries &= (Q(industry__icontains=specialization) | Q(functional_area__icontains=specialization)) & Q(title__icontains=query)
+            queries &= (Q(industry__icontains=specialization) | Q(skills__in=specialization)) & Q(title__icontains=query)
         elif specialization:
-            queries &= Q(industry__icontains=specialization) | Q(functional_area__icontains=specialization)
+            queries &= Q(industry__icontains=specialization) | Q(skills__in=specialization)
         elif query:
             queries &= Q(title__icontains=query)
 
         # Filtering jobs based on filter data from above query
         if filter:
-            queries &= Q(category=job_category) if job_category else Q()
+            queries &= Q(schedule=schedule) if schedule else Q()
             queries &= Q(type=job_type) if job_type else Q()
-            queries &= Q(city=city) if city else Q()
+            queries &= Q(work_location__in=city) or Q(city=city) if city else Q()
             queries &= Q(salary_min__gte=salary_min) if salary_min is not None else Q()
             queries &= Q(salary_max__lte=salary_max) if salary_max is not None else Q()
-            queries &= Q(experience_min__gte=experience_min) if experience_min is not None else Q()
-            queries &= Q(experience_max__lte=experience_max) if experience_max is not None else Q()
+            queries &= Q(total_experience__gte=experience_min) if experience_min is not None else Q()
+            queries &= Q(total_experience__lte=experience_max) if experience_max is not None else Q()
 
             current_date = datetime.now()
             if freshness:
