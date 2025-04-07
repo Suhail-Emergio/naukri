@@ -77,3 +77,4 @@ class JobPosts(models.Model):
     status = models.CharField(max_length=50, choices=[('active', 'active'), ('closed', 'closed'), ('paused','paused')], default='active')
     active = models.BooleanField(default=True)
     views = models.IntegerField(default=0)
+    verified = models.BooleanField(default=False)
