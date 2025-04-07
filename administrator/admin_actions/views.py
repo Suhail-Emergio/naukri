@@ -342,8 +342,6 @@ def edit_notifications(request, data: PatchDict[NotiData]):
             notification.description = data['description']
         if data['image']:
             notification.image = data['image']
-        if data['audience']:
-            notification.audience = data['audience']
         if data['user']:
             for i in data['user']:
                 user = User.objects.get(id=i)
