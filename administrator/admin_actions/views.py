@@ -221,7 +221,7 @@ async def plans(request):
     return 409, {"message" : "You are not authorized to access plans"}
 
 @admin_api.patch("/update_plans", response={201: Message, 409:Message}, description="Plan details")
-async def update_plans(request, data: PatchDict[PlanCreation]):
+async def update_plans(request, data: PatchDict[PlanData]):
     user = request.auth
     if user.is_superuser:
         if await Plans.objects.filter(id=data.id).aexists():
@@ -264,7 +264,7 @@ async def banners(request):
     return 409, {"message" : "You are not authorized to access banners"}
 
 @admin_api.patch("/update_banner", response={201: Message, 409:Message}, description="Banner updations")
-async def update_banner(request, data: PatchDict[PlanCreation]):
+async def update_banner(request, data: PatchDict[BannerData]):
     user = request.auth
     if user.is_superuser:
         if await Banner.objects.filter(id=data.id).aexists():
@@ -332,7 +332,7 @@ def all_notifications(request):
     return {"message" : "You are not authorized to access notifications"}
 
 @admin_api.patch("/edit_notifications", response={200: Message, 409:Message}, description="Edit Notifications")
-def edit_notifications(request, data: PatchDict[NotificationCreation]):
+def edit_notifications(request, data: PatchDict[NotificationData]):
     user = request.auth
     if user.is_superuser:
         notification = Notification.objects.get(id=data.id)
