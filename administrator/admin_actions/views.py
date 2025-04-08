@@ -42,6 +42,18 @@ async def all_jobs(request, order: str = 'active', verified: bool = None):
         return all_job
     return {"message" : "You are not authorized"}
 
+@admin_api.patch('verify_job', response={200: Message, 404: Message, 409:Message}, description="Verify job")
+async def verify_job(request, job_id: int):
+    user = request.auth
+    if user.is_superuser:
+        if await JobPosts.objects.filter(id=job_id).aexists():
+            job = await JobPosts.objects.aget(id=job_id)
+            job.verified = True
+            await job.asave()
+            return 200, {"message" : "Job verified successfully"}
+        return 404, {"message" : "Job doesnot exists"}
+    return 409, {"message" : "You are not authorized to verify jobs"}
+
 @admin_api.get("/job_post_application", response={200: ApplicationStats, 409:Message}, description="Fetch all applications for a job")
 # @paginate
 def job_post_application(request, job_id: int):
