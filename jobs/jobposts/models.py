@@ -73,7 +73,7 @@ class JobPosts(models.Model):
     relocate = models.BooleanField(default=False)
     date_availablity = models.BooleanField(default=True)
     gender = models.CharField(max_length=50, choices=[('male', 'male'), ('female', 'female')], null=True, blank=True)
-    created_on = models.DateTimeField(auto_now=True)
+    created_on = models.DateTimeField(auto_now_add=True)
     status = models.CharField(max_length=50, choices=[('active', 'active'), ('closed', 'closed'), ('paused','paused')], default='active')
     active = models.BooleanField(default=True)
     views = models.IntegerField(default=0)
