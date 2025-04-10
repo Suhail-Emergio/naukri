@@ -351,18 +351,18 @@ def edit_notifications(request, id: str, title: Optional[str] = Form(None), desc
     user = request.auth
     if user.is_superuser:
         notification = Notification.objects.get(id=id)
-        if data['title'] is not None:
-            notification.title = data['title']
-        if data['description'] is not None:
-            notification.description = data['description']
+        if title is not None:
+            notification.title = title
+        if description is not None:
+            notification.description = description
         if image:
             notification.image = image
-        if data['user'] is not None:
-            for i in data['user']:
+        if user is not None:
+            for i in user:
                 user = User.objects.get(id=i)
                 notification.user.add(user)
-        if data['url'] is not None:
-            notification.url = data['url']
+        if url is not None:
+            notification.url = url
         notification.save()
         return 200, {"message": "Notification updated successfully"}
     return 409, {"message" : "You are not authorized to access notifications"}
