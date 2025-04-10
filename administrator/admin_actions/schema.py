@@ -86,7 +86,7 @@ class AdminCandidatesData(Schema):
     created_on: datetime
 
 class NotiData(Schema):
-    title: str
-    description: str
-    user: List[str]
-    url: str
+    title: str | None
+    description: str | None
+    user: List[str] | None
+    url: str | None
