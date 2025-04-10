@@ -69,7 +69,7 @@ async def category_based_jobs(request, category: str = "remote"):
     excludable_data = []
     if await BlockedCompanies.objects.filter(user=request.auth).aexists():
         excludable_data = [i.company async for i in BlockedCompanies.objects.filter(user=request.auth)]
-    jobs = [i async for i in JobPosts.objects.filter(location_type=category, active=True, verified=True).exclude(company__in=excludable_data)]
+    jobs = [i async for i in JobPosts.objects.filter(location_type__contains=category, active=True, verified=True).exclude(company__in=excludable_data)]
     job_company_data = []
     for job in jobs:
         company_details = await CompanyDetails.objects.aget(id=job.company_id)
