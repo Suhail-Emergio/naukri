@@ -88,5 +88,5 @@ class AdminCandidatesData(Schema):
 class NotiData(Schema):
     title: str | None
     description: str | None
-    user: List[str] | None
+    user: List[int] | None
     url: str | None

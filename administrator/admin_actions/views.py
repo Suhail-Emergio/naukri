@@ -357,11 +357,11 @@ def edit_notifications(request, id: str, data: Optional[NotiData], image: Option
             notification.description = data.description
         if image:
             notification.image = image
-        # if user:
-        #     notification.user.clear()
-        #     for i in user:
-        #         user = User.objects.get(id=i)
-        #         notification.user.add(user)
+        if data.user:
+            notification.user.clear()
+            for i in data.user:
+                user = User.objects.get(id=i)
+                notification.user.add(user)
         if data.url:
             notification.url = data.url
         notification.save()
