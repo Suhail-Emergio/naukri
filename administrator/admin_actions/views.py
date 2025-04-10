@@ -351,10 +351,10 @@ def edit_notifications(request, id: str, data: NotiData, image: File[UploadedFil
     logged_user = request.auth
     if logged_user.is_superuser:
         notification = Notification.objects.get(id=id)
-        if title is not None:
-            notification.title = title
-        if description:
-            notification.description = description
+        if data['title'] is not None:
+            notification.title = data['title']
+        if data['description']:
+            notification.description = data['description']
         if image:
             notification.image = image
         # if user:
@@ -362,8 +362,8 @@ def edit_notifications(request, id: str, data: NotiData, image: File[UploadedFil
         #     for i in user:
         #         user = User.objects.get(id=i)
         #         notification.user.add(user)
-        if url:
-            notification.url = url
+        if data['url']:
+            notification.url = data['url']
         notification.save()
         return 200, {"message": "Notification updated successfully"}
     return 409, {"message" : "You are not authorized to access notifications"}
