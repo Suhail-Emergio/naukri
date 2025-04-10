@@ -351,17 +351,17 @@ def edit_notifications(request, id: str, title: str = Form(None), description: s
     user = request.auth
     if user.is_superuser:
         notification = Notification.objects.get(id=id)
-        if title is not None:
+        if title:
             notification.title = title
-        if description is not None:
+        if description:
             notification.description = description
         if image:
             notification.image = image
-        if user is not None:
+        if user:
             for i in user:
                 user = User.objects.get(id=i)
                 notification.user.add(user)
-        if url is not None:
+        if url:
             notification.url = url
         notification.save()
         return 200, {"message": "Notification updated successfully"}
