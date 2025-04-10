@@ -1,4 +1,4 @@
-from ninja import Router, PatchDict, File, UploadedFile
+from ninja import Router, PatchDict, File, UploadedFile, Form
 from django.contrib.auth import get_user_model
 from asgiref.sync import sync_to_async
 from .schema import *
@@ -347,7 +347,7 @@ def all_notifications(request):
     return {"message" : "You are not authorized to access notifications"}
 
 @admin_api.patch("/edit_notifications", response={200: Message, 409:Message}, description="Edit Notifications")
-def edit_notifications(request, id: str, data: PatchDict[NotiData], image: UploadedFile = File(None)):
+def edit_notifications(request, id: str, title: Optional[str] = Form(None), description: Optional[str] = Form(None), url: Optional[str] = Form(None), user: Optional[List[str]] = Form(None), image: UploadedFile = File(None)):
     user = request.auth
     if user.is_superuser:
         notification = Notification.objects.get(id=id)
