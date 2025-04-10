@@ -347,23 +347,24 @@ def all_notifications(request):
     return {"message" : "You are not authorized to access notifications"}
 
 @admin_api.post("/edit_notifications", response={200: Message, 409:Message}, description="Edit Notifications")
-def edit_notifications(request, id: str, data: Optional[NotiData], image: Optional[File[UploadedFile]]):
+def edit_notifications(request, id: str, data: Optional[NotiData], image: UploadedFile = File(None)):
     logged_user = request.auth
     if logged_user.is_superuser:
         notification = Notification.objects.get(id=id)
-        if data.title is not None:
-            notification.title = data.title
-        if data.description:
-            notification.description = data.description
+        if data:
+            if data.title is not None:
+                notification.title = data.title
+            if data.description:
+                notification.description = data.description
+            if data.user:
+                notification.user.clear()
+                for i in data.user:
+                    user = User.objects.get(id=i)
+                    notification.user.add(user)
+            if data.url:
+                notification.url = data.url
         if image:
             notification.image = image
-        if data.user:
-            notification.user.clear()
-            for i in data.user:
-                user = User.objects.get(id=i)
-                notification.user.add(user)
-        if data.url:
-            notification.url = data.url
         notification.save()
         return 200, {"message": "Notification updated successfully"}
     return 409, {"message" : "You are not authorized to access notifications"}
