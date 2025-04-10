@@ -351,7 +351,7 @@ def edit_notifications(request, id: str, title: str = Form(None), description: s
     logged_user = request.auth
     if logged_user.is_superuser:
         notification = Notification.objects.get(id=id)
-        if title:
+        if title is not None:
             notification.title = title
         if description:
             notification.description = description
