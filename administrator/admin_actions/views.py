@@ -347,7 +347,7 @@ def all_notifications(request):
     return {"message" : "You are not authorized to access notifications"}
 
 @admin_api.patch("/edit_notifications", response={200: Message, 409:Message}, description="Edit Notifications")
-def edit_notifications(request, data: PatchDict[NotiData]):
+def edit_notifications(request, data: PatchDict[NotiData], image: UploadedFile = File(None)):
     user = request.auth
     if user.is_superuser:
         notification = Notification.objects.get(id=data['id'])
@@ -355,7 +355,7 @@ def edit_notifications(request, data: PatchDict[NotiData]):
             notification.title = data['title']
         if data['description'] is not None:
             notification.description = data['description']
-        if data['image'] is not None:
+        if image:
             notification.image = data['image']
         if data['user'] is not None:
             for i in data['user']:

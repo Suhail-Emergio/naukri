@@ -85,4 +85,8 @@ class AdminCandidatesData(Schema):
     viewed: bool
     created_on: datetime
 
-NotiData = create_schema(Notification)
+class NotiData(Schema):
+    title: str
+    description: str
+    user: List[str]
+    url: str
