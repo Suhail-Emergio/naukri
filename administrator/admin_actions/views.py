@@ -347,7 +347,7 @@ def all_notifications(request):
     return {"message" : "You are not authorized to access notifications"}
 
 @admin_api.patch("/edit_notifications", response={200: Message, 409:Message}, description="Edit Notifications")
-def edit_notifications(request, id: str, title: Optional[str] = Form(None), description: Optional[str] = Form(None), url: Optional[str] = Form(None), user: Optional[List[str]] = Form(None), image: UploadedFile = File(None)):
+def edit_notifications(request, id: str, title: str = Form(None), description: str = Form(None), url: str = Form(None), user: List[str] = Form(None), image: UploadedFile = File(None)):
     user = request.auth
     if user.is_superuser:
         notification = Notification.objects.get(id=id)
