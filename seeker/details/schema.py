@@ -76,9 +76,9 @@ QualificationData = create_schema(Qualification)
 
 # Preference Schema
 class PreferenceCreation(Schema):
-    job_type: str
-    employment_type: str
-    job_shift: str
+    job_type: List[str]
+    employment_type: List[str]
+    job_shift: List[str]
     job_role: Union[List[str], Dict[str, Any]]
     pref_salary: int
     job_location: Union[List[str], Dict[str, Any]]
