@@ -348,8 +348,8 @@ def all_notifications(request):
 
 @admin_api.patch("/edit_notifications", response={200: Message, 409:Message}, description="Edit Notifications")
 def edit_notifications(request, id: str, title: str = Form(None), description: str = Form(None), url: str = Form(None), user: List[str] = Form(None), image: UploadedFile = File(None)):
-    user = request.auth
-    if user.is_superuser:
+    logged_user = request.auth
+    if logged_user.is_superuser:
         notification = Notification.objects.get(id=id)
         if title:
             notification.title = title
