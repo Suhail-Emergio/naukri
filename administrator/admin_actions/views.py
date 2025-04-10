@@ -356,7 +356,7 @@ def edit_notifications(request, data: PatchDict[NotiData], image: UploadedFile =
         if data['description'] is not None:
             notification.description = data['description']
         if image:
-            notification.image = data['image']
+            notification.image = image
         if data['user'] is not None:
             for i in data['user']:
                 user = User.objects.get(id=i)
