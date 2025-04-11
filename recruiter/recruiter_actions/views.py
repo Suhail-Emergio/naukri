@@ -252,7 +252,7 @@ async def export_application(request, job_id: int = None):
         job = [i async for i in JobPosts.objects.filter(id=job_id, company__user=user)]
     else:
         job = [i async for i in JobPosts.objects.filter(company__user=user)] ## All Jobs
-    async for i in job:
+    for i in job:
         async for i in ApplyJobs.objects.filter(job=i).order_by('-id'):
             candidate = await sync_to_async(lambda: i.user)()
             personal = await Personal.objects.aget(user=candidate)
@@ -262,7 +262,7 @@ async def export_application(request, job_id: int = None):
         response = HttpResponse(csv_data, content_type='text/csv')
         filename = f"applications{'_job_'+str(job_id) if job_id else ''}.csv"
         response.headers["Content-Disposition"] = f"attachment; filename={filename}"
-        return response
+        return 200, response
     return 404, {"message": "No applications found"}
 
 @recruiter_actions_api.patch("/reject_application", response={200: Message, 404: Message, 409: Message}, description="Reject application")
