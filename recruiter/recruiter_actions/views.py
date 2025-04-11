@@ -253,7 +253,8 @@ async def export_application(request, job_id: int = None):
     else:
         job = [i async for i in JobPosts.objects.filter(company__user=user)] ## All Jobs
     for i in job:
-        async for i in ApplyJobs.objects.filter(job=i).order_by('-id'):
+        job_apps = [i async for i in ApplyJobs.objects.filter(job=i).order_by('-id')]
+        for i in job_apps:
             candidate = await sync_to_async(lambda: i.user)()
             personal = await Personal.objects.aget(user=candidate)
             applications.append({"name": personal.name, "email": candidate.email, "phone": personal.phone, "job_title": i.job.title, "status": i.status, "applied_on": i.created_on.strftime('%Y-%m-%d %H:%M:%S')})
