@@ -18,6 +18,7 @@ async def create_csv(data):
     csv_buffer = io.StringIO()
     csv_writer = csv.writer(csv_buffer)
 
+    data = data.get("applications", [])
     # Write the header row
     if data and len(data) > 0:
         headers = data[0].keys()
@@ -27,4 +28,10 @@ async def create_csv(data):
     for row in data:
         csv_writer.writerow(row.values())
     csv_buffer.seek(0)
-    return csv_buffer.getvalue()
+    response = HttpResponse(
+        content=csv_buffer.getvalue(),
+        content_type="text/csv"
+    )
+    filename = data["filename"]
+    response.headers["Content-Disposition"] = f"attachment; filename={filename}"
+    return response

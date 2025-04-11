@@ -244,7 +244,7 @@ async def schedule_interview(request, data: InterviewScheduleSchema):
     return 404, {"message": "Candidate not found"}
 
 #################################  A P P L I C A T I O N S  #################################
-@recruiter_actions_api.get("/export_application", response={200: dict, 404: Message, 409: Message}, description="Reject application")
+@recruiter_actions_api.get("/export_application", response={200: create_csv, 404: Message, 409: Message}, description="Reject application")
 async def export_application(request, job_id: int = None):
     user = request.auth
     applications = []
@@ -259,11 +259,8 @@ async def export_application(request, job_id: int = None):
             job_title = await sync_to_async(lambda: i.job.title)()
             applications.append({"name": candidate.name, "email": candidate.email, "phone": candidate.phone, "job_title": job_title, "status": i.status, "applied_on": i.created_on.strftime('%Y-%m-%d %H:%M:%S')})
     if applications:
-        csv_data = await create_csv(applications)
-        response = HttpResponse(csv_data, content_type='text/csv')
-        filename = f"applications{'_job_'+str(job_id) if job_id else ''}.csv"
-        response.headers["Content-Disposition"] = f"attachment; filename={filename}"
-        return 200, response
+        # csv_data = await create_csv(applications)
+        return {"applications": applications}
     return 404, {"message": "No applications found"}
 
 @recruiter_actions_api.patch("/reject_application", response={200: Message, 404: Message, 409: Message}, description="Reject application")
