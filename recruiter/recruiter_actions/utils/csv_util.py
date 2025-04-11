@@ -1,6 +1,7 @@
 #################################  C S V  D A T A  F E T C H I N G  #################################
 import csv, io
 from .candidate_gen import candidate_creation
+from django.http import HttpResponse
 
 async def get_csv_data(file, job):
     text_file = io.TextIOWrapper(file, encoding='utf-8')
@@ -32,6 +33,6 @@ async def create_csv(data):
         content=csv_buffer.getvalue(),
         content_type="text/csv"
     )
-    filename = data["filename"]
+    filename = "applications.csv"
     response.headers["Content-Disposition"] = f"attachment; filename={filename}"
     return response
