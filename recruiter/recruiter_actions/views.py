@@ -13,8 +13,9 @@ from seeker.details.schema import CountData
 from common_actions.models import Subscription
 from naukry.utils.profile_completion import completion_data
 from django.utils import timezone
-from .utils.csv_util import get_csv_data
+from .utils.csv_util import get_csv_data, create_csv
 from .utils.candidate_gen import candidate_creation
+from django.http import HttpResponse
 
 User = get_user_model()
 recruiter_actions_api = Router(tags=['recruiter_actions'])
@@ -241,6 +242,28 @@ async def schedule_interview(request, data: InterviewScheduleSchema):
             return 404, {"message": "Applied job not found"}
         return 404, {"message": "Job not found"}
     return 404, {"message": "Candidate not found"}
+
+#################################  A P P L I C A T I O N S  #################################
+@recruiter_actions_api.get("/export_application", response={200: dict, 404: Message, 409: Message}, description="Reject application")
+async def export_application(request, job_id: int = None):
+    user = request.auth
+    applications = []
+    if job_id:
+        job = [i async for i in JobPosts.objects.filter(id=job_id, company__user=user)]
+    else:
+        job = [i async for i in JobPosts.objects.filter(company__user=user)] ## All Jobs
+    async for i in job:
+        async for i in ApplyJobs.objects.filter(job=i).order_by('-id'):
+            candidate = await sync_to_async(lambda: i.user)()
+            personal = await Personal.objects.aget(user=candidate)
+            applications.append({"name": personal.name, "email": candidate.email, "phone": personal.phone, "job_title": i.job.title, "status": i.status, "applied_on": i.created_on.strftime('%Y-%m-%d %H:%M:%S')})
+    if applications:
+        csv_data = await create_csv(applications)
+        response = HttpResponse(csv_data, content_type='text/csv')
+        filename = f"applications{'_job_'+str(job_id) if job_id else ''}.csv"
+        response.headers["Content-Disposition"] = f"attachment; filename={filename}"
+        return response
+    return 404, {"message": "No applications found"}
 
 @recruiter_actions_api.patch("/reject_application", response={200: Message, 404: Message, 409: Message}, description="Reject application")
 async def reject_application(request, id: int):

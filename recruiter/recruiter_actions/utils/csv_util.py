@@ -13,3 +13,18 @@ async def get_csv_data(file, job):
         email = row[email_index]
         await candidate_creation(email, job)
     return True, {"message": "CSV data processed successfully"}
+
+async def create_csv(data):
+    csv_buffer = io.StringIO()
+    csv_writer = csv.writer(csv_buffer)
+
+    # Write the header row
+    if data and len(data) > 0:
+        headers = data[0].keys()
+        csv_writer.writerow(headers)
+
+    # Write the data rows
+    for row in data:
+        csv_writer.writerow(row.values())
+    csv_buffer.seek(0)
+    return csv_buffer.getvalue()
