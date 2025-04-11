@@ -256,8 +256,7 @@ async def export_application(request, job_id: int = None):
         job_apps = [i async for i in ApplyJobs.objects.filter(job=i).order_by('-id')]
         for i in job_apps:
             candidate = await sync_to_async(lambda: i.user)()
-            personal = await Personal.objects.aget(user=candidate)
-            applications.append({"name": personal.name, "email": candidate.email, "phone": personal.phone, "job_title": i.job.title, "status": i.status, "applied_on": i.created_on.strftime('%Y-%m-%d %H:%M:%S')})
+            applications.append({"name": candidate.name, "email": candidate.email, "phone": candidate.phone, "job_title": i.job.title, "status": i.status, "applied_on": i.created_on.strftime('%Y-%m-%d %H:%M:%S')})
     if applications:
         csv_data = await create_csv(applications)
         response = HttpResponse(csv_data, content_type='text/csv')
