@@ -79,7 +79,7 @@ async def email_login(request, data: LoginSchema):
                 if check_password(data.password, user.password):
                     if user.role == "recruiter" and not user.subscribed:
                         return 406, {'access': str(refresh.access_token), 'refresh': str(refresh), 'role': user.role, "name": user.name}
-                    if (user.role == "recruiter" and not CompanyDetails.objects.filter(user=user).aexists()) or (user.role == "seeker" and not Personal.objects.filter(user=user).aexists()):
+                    if (user.role == "recruiter" and not await CompanyDetails.objects.filter(user=user).aexists()) or (user.role == "seeker" and not await Personal.objects.filter(user=user).aexists()):
                         return 206, {'access': str(refresh.access_token), 'refresh': str(refresh), 'role': user.role, "name": user.name}
                     return 200, {'access': str(refresh.access_token), 'refresh': str(refresh), 'role': user.role, "name": user.name}
                 return 401, {"message": "Invalid credentials"}
@@ -91,7 +91,7 @@ async def email_login(request, data: LoginSchema):
             await user.asave()
             if user.role == "recruiter" and not user.subscribed:
                 return 406, {'access': str(refresh.access_token), 'refresh': str(refresh), 'role': user.role, "name": user.name}
-            if (user.role == "recruiter" and not CompanyDetails.objects.filter(user=user).aexists()) or (user.role == "seeker" and not Personal.objects.filter(user=user).aexists()):
+            if (user.role == "recruiter" and not await CompanyDetails.objects.filter(user=user).aexists()) or (user.role == "seeker" and not await Personal.objects.filter(user=user).aexists()):
                 return 206, {'access': str(refresh.access_token), 'refresh': str(refresh), 'role': user.role, "name": user.name}
             return 200, {'access': str(refresh.access_token), 'refresh': str(refresh), 'role': user.role, "name": user.name}
         return 401, {"message": "Invalid credentials"}
@@ -110,17 +110,16 @@ async def mobile_otp_verify(request, data: UserCreation):
                 user = await User.objects.acreate(**user_data, username=data.phone)
                 user.set_password(data.password)
                 user.phone_verified = True
-                role = user.role
                 await user.asave()
             else:
                 user = await User.objects.aget(phone=data.phone)
-                role = await sync_to_async(lambda: user.role)()
             refresh = RefreshToken.for_user(user)
-            if role == "recruiter" and not user.subscribed:
+            role = await sync_to_async(lambda: user.role)()
+            if user.role == "recruiter" and not user.subscribed:
                 return 406, {"message": "Please subscribe to a plan"}
-            if (role == "recruiter" and not CompanyDetails.objects.filter(user=user).aexists()) or (role == "seeker" and not Personal.objects.filter(user=user).aexists()):
-                return 206, {'access': str(refresh.access_token), 'refresh': str(refresh), 'role': role, "name": user.name}
-            return 200, {'access': str(refresh.access_token), 'refresh': str(refresh), 'role': role, "name": user.name}
+            if (user.role == "recruiter" and not await CompanyDetails.objects.filter(user=user).aexists()) or (user.role == "seeker" and not await Personal.objects.filter(user=user).aexists()):
+                return 206, {'access': str(refresh.access_token), 'refresh': str(refresh), 'role': user.role, "name": user.name}
+            return 200, {'access': str(refresh.access_token), 'refresh': str(refresh), 'role': user.role, "name": user.name}
         return 403, {"message": "Invalid OTP"}
     return 401, {"message": "OTP expired"}
 
