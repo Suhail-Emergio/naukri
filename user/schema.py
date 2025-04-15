@@ -20,7 +20,6 @@ class LoginSchema(Schema):
 
 class MobileOtpVerify(Schema):
     phone: str
-    otp: str
 
 class EmailOtpVerify(Schema):
     email: str
@@ -40,6 +39,7 @@ class UserCreation(Schema):
     email: str
     phone: str
     role: str
+    otp: int
     onesignal_id: str
     whatsapp_updations: bool
 
