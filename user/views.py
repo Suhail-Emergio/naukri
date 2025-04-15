@@ -110,10 +110,11 @@ async def mobile_otp_verify(request, data: UserCreation):
                 user = await User.objects.acreate(**user_data, username=data.phone)
                 user.set_password(data.password)
                 user.phone_verified = True
+                role = user.role
                 await user.asave()
             else:
                 user = await User.objects.aget(phone=data.phone)
-            role = await sync_to_async(lambda: user.role)()
+                role = await sync_to_async(lambda: user.role)()
             refresh = RefreshToken.for_user(user)
             if role == "recruiter" and not user.subscribed:
                 return 406, {"message": "Please subscribe to a plan"}
