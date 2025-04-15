@@ -105,7 +105,9 @@ async def mobile_otp_verify(request, data: UserCreation):
     if cache_value:
         if int(cache_value) == data.otp:
             if not await User.objects.filter(phone=data.phone).aexists():
-                user = await User.objects.acreate(**data.dict(), username=data.phone)
+                user_data = data.dict()
+                user_data.pop('otp', None)
+                user = await User.objects.acreate(user_data, username=data.phone)
                 user.set_password(data.password)
                 user.phone_verified = True
                 await user.asave()
