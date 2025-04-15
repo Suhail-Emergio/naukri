@@ -133,7 +133,7 @@ async def update_preference_data(request, data: PatchDict[PreferenceData]):
             setattr(preference, attr, value)
         await preference.asave()
         return 201, preference
-    return 404, {"message": "Language data not found"}
+    return 404, {"message": "Preference data not found"}
 
 @details_api.get("/preference", response={200: PreferenceData, 404: Message, 409: Message}, description="User preference data")
 async def preference_data(request):
