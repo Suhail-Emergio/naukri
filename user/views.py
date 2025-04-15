@@ -104,23 +104,19 @@ async def mobile_otp_verify(request, data: UserCreation):
     cache_value = await sync_to_async(cache.get)(key)
     if cache_value:
         if int(cache_value) == data.otp:
-            # user = await User.objects.aget(phone=data.phone)
-            # if not user.phone_verified:
-            #     user.phone_verified = True
-            #     await user.asave()
             if not await User.objects.filter(phone=data.phone).aexists():
                 user = await User.objects.acreate(**data.dict(), username=data.phone)
                 user.set_password(data.password)
                 user.phone_verified = True
                 await user.asave()
-                refresh = RefreshToken.for_user(user)
-                return 200, {'access': str(refresh.access_token), 'refresh': str(refresh), 'role': user.role, "name": user.name}
-            return 406, {"message": "User already exists with another phone or email"}
-
-            # if user.role == "recruiter" and not user.subscribed:
-            #     return 406, {"message": "Please subscribe to a plan"}
-            # if (user.role == "recruiter" and not CompanyDetails.objects.filter(user=user).aexists()) or (user.role == "seeker" and not Personal.objects.filter(user=user).aexists()):
-            #     return 206, {'access': str(refresh.access_token), 'refresh': str(refresh), 'role': user.role, "name": user.name}
+            else:
+                user = await User.objects.aget(phone=data.phone)
+            refresh = RefreshToken.for_user(user)
+            if user.role == "recruiter" and not user.subscribed:
+                return 406, {"message": "Please subscribe to a plan"}
+            if (user.role == "recruiter" and not CompanyDetails.objects.filter(user=user).aexists()) or (user.role == "seeker" and not Personal.objects.filter(user=user).aexists()):
+                return 206, {'access': str(refresh.access_token), 'refresh': str(refresh), 'role': user.role, "name": user.name}
+            return 200, {'access': str(refresh.access_token), 'refresh': str(refresh), 'role': user.role, "name": user.name}
         return 403, {"message": "Invalid OTP"}
     return 401, {"message": "OTP expired"}
 
