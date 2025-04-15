@@ -56,6 +56,7 @@ class EmploymentCreation(Schema):
     ctc: int
     notice_pd: int
     department: str
+    industry: str
     job_role: str
     role_category: str
 
