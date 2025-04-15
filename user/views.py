@@ -103,7 +103,7 @@ async def mobile_otp_verify(request, data: UserCreation):
     key = f'otp_{data.phone}'
     cache_value = await sync_to_async(cache.get)(key)
     if cache_value:
-        if cache_value == data.otp:
+        if int(cache_value) == data.otp:
             # user = await User.objects.aget(phone=data.phone)
             # if not user.phone_verified:
             #     user.phone_verified = True
