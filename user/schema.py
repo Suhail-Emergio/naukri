@@ -34,14 +34,14 @@ class ResetPassword(Schema):
     password: str
 
 class UserCreation(Schema):
-    name: str
-    password: str
-    email: str
+    name: str | None = None
+    password: str | None = None
+    email: str | None = None
     phone: str
-    role: str
+    role: str | None = None
     otp: int
-    onesignal_id: str
-    whatsapp_updations: bool
+    onesignal_id: str | None = None
+    whatsapp_updations: bool | None = None
 
 class TokenSchema(Schema):
     access: str
