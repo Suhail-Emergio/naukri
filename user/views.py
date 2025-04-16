@@ -98,7 +98,7 @@ async def email_login(request, data: LoginSchema):
     return 401, {"message": "Invalid credentials"}
 
 #################################  V E R I F I C A T I O N S  #################################
-@user_api.post("/mobile_otp_verify", auth=None, response={200: TokenSchema, 203: Message, 406: Message, 206: TokenSchema, 401: Message, 403: Message}, description="Verify OTP using mobile number")
+@user_api.post("/mobile_otp_verify", auth=None, response={200: TokenSchema, 203: Message, 406: TokenSchema, 206: TokenSchema, 401: Message, 403: Message}, description="Verify OTP using mobile number")
 async def mobile_otp_verify(request, data: UserCreation):
     key = f'otp_{data.phone}'
     cache_value = await sync_to_async(cache.get)(key)
