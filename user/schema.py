@@ -20,6 +20,7 @@ class LoginSchema(Schema):
 
 class MobileOtpVerify(Schema):
     phone: str
+    email: str
 
 class EmailOtpVerify(Schema):
     email: str

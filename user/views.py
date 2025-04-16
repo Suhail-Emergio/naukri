@@ -23,7 +23,7 @@ User = get_user_model()
 #################################  R E G I S T E R  &  L O G I N  #################################
 @user_api.post("/register", auth=None, response={201: Message, 409: Message, 406: Message}, description="User creation")
 async def register(request, data: MobileOtpVerify):
-    if not await User.objects.filter(phone=data.phone).aexists():
+    if not await User.objects.filter(Q(phone=data.phone) | Q(email=data.email)).aexists():
     #     existing_user = await User.objects.aget(Q(phone=data.phone) | Q(email=data.email)) 
     #     phone_verified = await sync_to_async(lambda: existing_user.phone_verified)()
     #     phone = await sync_to_async(lambda: existing_user.phone)()
@@ -104,7 +104,7 @@ async def mobile_otp_verify(request, data: UserCreation):
     cache_value = await sync_to_async(cache.get)(key)
     if cache_value:
         if int(cache_value) == data.otp:
-            if not await User.objects.filter(phone=data.phone).aexists():
+            if not await User.objects.filter(Q(phone=data.phone) | Q(email=data.email)).aexists():
                 user_data = data.dict()
                 user_data.pop('otp', None)
                 user = await User.objects.acreate(**user_data, username=data.phone)
