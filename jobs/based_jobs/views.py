@@ -27,9 +27,8 @@ async def prefered_jobs(request):
     if await Preference.objects.filter(user=user).aexists():
         preferences = await sync_to_async(Preference.objects.get)(user=user)
         jobs = [i async for i in JobPosts.objects.filter(
-            Q(category__in=preferences.job_type) |
+            Q(location_type__in=preferences.job_type) |
             Q(city__in=preferences.job_location) |
-            Q(type__in=preferences.employment_type) |
             Q(type__in=preferences.employment_type) |
             Q(title__icontains=preferences.job_role)
         ).exclude(Q(active=False) | Q(company__in=excludable_data) | Q(verified=False)).order_by('-id')]

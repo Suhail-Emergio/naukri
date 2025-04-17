@@ -85,6 +85,8 @@ async def delete_subscription(request):
     if await Subscription.objects.filter(user=user).aexists():
         subscription = await Subscription.objects.aget(user=user)
         await subscription.adelete()
+        user.subscribed = False
+        await user.asave()
         return 200, {"message" : "Subscription deleted successfully"}
     return 404, {"message" : "Subscription doesnot exists"}
 
