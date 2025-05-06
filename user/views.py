@@ -134,7 +134,7 @@ async def retry_otp(request, data: ForgotPassword):
     await whatsapp_message(otp, data.phone)
     return 201, {"message": "Otp send successfully"}
 
-@user_api.post("/send_email_otp", auth=None, response={200: Message}, description="Send OTP to email")
+@user_api.post("/send_email_otp", auth=None, response={200: Message,401:Message}, description="Send OTP to email")
 async def send_email_otp(request, data: EmailOtpVerify):
     if await User.objects.filter(email=data.email).aexists():
         user = await User.objects.aget(email=data.email)

@@ -33,9 +33,9 @@ RUN chmod 0644 /etc/cron.d/naukri_cron
 RUN crontab /etc/cron.d/naukri_cron
 
 # Expose the port the application listens on
-EXPOSE 8000  
+EXPOSE 8007  
 
 # Run the application
-CMD service cron start && gunicorn naukry.asgi:application --bind 0.0.0.0:8000 --workers 4 --worker-class uvicorn.workers.UvicornWorker
+CMD service cron start && gunicorn naukry.asgi:application --bind 0.0.0.0:8007 --workers 4 --worker-class uvicorn.workers.UvicornWorker
 # CMD ["gunicorn", "naukry.asgi:application", "--bind", "0.0.0.0:8000", "--workers", "4", "--worker-class", "uvicorn.workers.UvicornWorker"]
 # CMD ["uvicorn", "naukry.asgi:application"]
