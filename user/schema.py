@@ -22,6 +22,9 @@ class MobileOtpVerify(Schema):
     phone: str
     email: str | None = None
 
+class EmailOtp(Schema):
+    email: str
+
 class EmailOtpVerify(Schema):
     email: str
     otp: int | None = None
