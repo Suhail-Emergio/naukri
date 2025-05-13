@@ -42,6 +42,92 @@ async def all_seekers(request):
     return 200, candidates
 
 #################################  F I L T E R  C A N D I D A T E S  B A S E D  #################################
+# @recruiter_actions_api.get("/resdex", response={200: List[SeekerData], 403: Message, 404: Message, 409: Message}, description="Retrieve all candidates based on filters")
+# async def resdex(request,
+#         job_id: int = None,
+#         location: str = None,
+#         keywords: List[str] = Query(None, description="List of keywords"), 
+#         experience_year: int = None,
+#         experience_month: int = None,
+#         current_loc: str = None,
+#         nationality: str = None,
+#         salary_min: int = None,
+#         salary_max: int = None,
+#         gender: str = None,
+#         additional: str = None,
+#     ):
+#     if await Subscription.objects.filter(user=request.auth, plan__resdex=True).aexists():
+#         queries = Q()
+#         candidates = []
+#         if job_id:
+#             if await JobPosts.objects.filter(id=job_id).aexists():
+#                 job = await JobPosts.objects.aget(id=job_id)
+#                 skills = await sync_to_async(lambda: job.skills)()
+#                 keyword_query = Q()
+#                 for keyword in skills:
+#                     keyword_query |= Q(skills__contains=keyword.upper())
+#                 queries &= keyword_query
+#                 if location:
+#                     queries &= Q(city__contains=location)
+#                 users = []
+#                 async for i in Personal.objects.filter(queries).order_by('-id'):
+#                     users.append(await sync_to_async(lambda: i.user.id)())
+#                 title = await sync_to_async(lambda: job.title)()
+#                 q = Q()
+#                 q &= Q(job_title__icontains=title)
+#                 q &= Q(user__in=users)
+#                 seen_users = set()
+#                 async for i in Employment.objects.filter(q).order_by('-id'):
+#                     user = await sync_to_async(lambda: i.user)()
+#                     if user.id not in seen_users:
+#                         seen_users.add(user.id)
+#                         search_apps = await SearchApps.objects.filter(user=user).alatest('date')
+#                         search_apps.count += 1
+#                         await search_apps.asave()
+#                         personal_ = await Personal.objects.aget(user=user)
+#                         qualification = None
+#                         if await Qualification.objects.filter(user=user).aexists():
+#                             qualification = [i async for i in Qualification.objects.filter(user=user).order_by('-id')]
+#                         employment = None
+#                         if await Employment.objects.filter(user=user).aexists():
+#                             employment = [i async for i in Employment.objects.filter(user=user).order_by('-id')]
+#                         candidates.append({"personal": {"personal": personal_, "user": user}, "employment": employment, "qualification": qualification})
+#         else:
+#             if keywords:
+#                 keyword_query = Q()
+#                 for keyword in keywords:
+#                     keyword_query |= Q(skills__contains=keyword)
+#                 queries &= keyword_query
+#             if experience_year or experience_month:
+#                 if experience_year and experience_month:
+#                     queries &= Q(total_experience_years__gte=experience_year) & Q(total_experience_months__gte=experience_month)
+#                 else:
+#                     queries &= Q(total_experience_years__gte=experience_year) | Q(total_experience_months__gte=experience_month)
+#             if current_loc:
+#                 queries &= Q(city__icontains=current_loc) | Q(state__icontains=current_loc)
+#             if nationality:
+#                 queries &= Q(nationality__icontains=nationality)
+#             if salary_min and salary_max:
+#                 queries &= Q(prefered_salary_pa__gte=salary_min) & Q(prefered_salary_pa__lte=salary_max)
+#             if gender:
+#                 queries &= Q(gender=gender) 
+#             if queries:
+#                 candidate = [i async for i in Personal.objects.filter(queries).exclude(user__is_active=False).order_by('-user__subscribed', '-id')]
+#                 for i in candidate:
+#                     user = await sync_to_async(lambda: i.user)()
+#                     search_apps = await SearchApps.objects.filter(user=user).alatest('date')
+#                     search_apps.count += 1
+#                     await search_apps.asave()
+#                     employment = None
+#                     if await Employment.objects.filter(user=user).aexists():
+#                         employment = [i async for i in Employment.objects.filter(user=user).order_by('-id')]
+#                     qualification = None
+#                     if await Qualification.objects.filter(user=user).aexists():
+#                         qualification = [i async for i in Qualification.objects.filter(user=user).order_by('-id')]
+#                     candidates.append({"personal": {"personal": i, "user": user}, "employment": employment, "qualification": qualification})
+#         return 200, candidates
+#     return 403, {"message": "Subscription not found"}
+
 @recruiter_actions_api.get("/resdex", response={200: List[SeekerData], 403: Message, 404: Message, 409: Message}, description="Retrieve all candidates based on filters")
 async def resdex(request,
         job_id: int = None,
@@ -56,7 +142,18 @@ async def resdex(request,
         gender: str = None,
         additional: str = None,
     ):
-    if await Subscription.objects.filter(user=request.auth, plan__resdex=True).aexists():
+    subscription_exists = await Subscription.objects.filter(
+        user=request.auth,
+        plan__resdex=True 
+    ).aexists()
+    
+    # print(f"Subscription exists: {subscription_exists}")
+    
+    if not subscription_exists:
+        any_sub = await Subscription.objects.filter(user=request.auth).aexists()
+        # print(f"Any subscription exists: {any_sub}")
+        return 403, {"message": "Subscription not found or Resdex feature not enabled"}
+    if subscription_exists:
         queries = Q()
         candidates = []
         if job_id:
@@ -126,119 +223,7 @@ async def resdex(request,
                         qualification = [i async for i in Qualification.objects.filter(user=user).order_by('-id')]
                     candidates.append({"personal": {"personal": i, "user": user}, "employment": employment, "qualification": qualification})
         return 200, candidates
-    return 403, {"message": "Subscription not found"}
-
-# @recruiter_actions_api.get(
-#     "/resdex", 
-#     response={200: List[SeekerData], 403: Message, 404: Message, 409: Message}, 
-#     description="Retrieve all candidates based on filters"
-# )
-# async def resdex(
-#     request,
-#     job_id: int = None,
-#     location: str = None,
-#     keywords: List[str] = Query(None, description="List of keywords"), 
-#     experience_year: int = None,
-#     experience_month: int = None,
-#     current_loc: str = None,
-#     nationality: str = None,
-#     salary_min: int = None,
-#     salary_max: int = None,
-#     gender: str = None,
-#     additional: str = None,
-# ):
-#     user = request.user
-
-#     # ✅ Ensure user is authenticated
-#     if not user.is_authenticated:
-#         return 403, {"message": "Authentication required"}
-
-#     # ✅ Check subscription
-#     has_access = await Subscription.objects.filter(
-#         user=user,
-#         plan__resdex=True
-#     ).aexists()
-
-#     if not has_access:
-#         return 403, {"message": "Subscription not found"}
-
-#     queries = Q()
-#     candidates = []
-
-#     if job_id:
-#         if await JobPosts.objects.filter(id=job_id).aexists():
-#             job = await JobPosts.objects.aget(id=job_id)
-#             skills = await sync_to_async(lambda: job.skills)()
-#             keyword_query = Q()
-#             for keyword in skills:
-#                 keyword_query |= Q(skills__icontains=keyword.upper())
-#             queries &= keyword_query
-#             if location:
-#                 queries &= Q(city__icontains=location)
-
-#             users = []
-#             async for i in Personal.objects.filter(queries).order_by('-id'):
-#                 users.append(i.user.id)
-
-#             title = await sync_to_async(lambda: job.title)()
-#             q = Q(job_title__icontains=title, user__in=users)
-
-#             seen_users = set()
-#             async for i in Employment.objects.filter(q).order_by('-id'):
-#                 candidate_user = i.user
-#                 if candidate_user.id not in seen_users:
-#                     seen_users.add(candidate_user.id)
-#                     search_apps = await SearchApps.objects.filter(user=candidate_user).alatest('date')
-#                     search_apps.count += 1
-#                     await search_apps.asave()
-#                     personal_ = await Personal.objects.aget(user=candidate_user)
-#                     qualification = [q async for q in Qualification.objects.filter(user=candidate_user).order_by('-id')] \
-#                         if await Qualification.objects.filter(user=candidate_user).aexists() else None
-#                     employment = [e async for e in Employment.objects.filter(user=candidate_user).order_by('-id')] \
-#                         if await Employment.objects.filter(user=candidate_user).aexists() else None
-#                     candidates.append({
-#                         "personal": {"personal": personal_, "user": candidate_user},
-#                         "employment": employment,
-#                         "qualification": qualification
-#                     })
-#     else:
-#         if keywords:
-#             keyword_query = Q()
-#             for keyword in keywords:
-#                 keyword_query |= Q(skills__icontains=keyword)
-#             queries &= keyword_query
-#         if experience_year or experience_month:
-#             if experience_year and experience_month:
-#                 queries &= Q(total_experience_years__gte=experience_year) & Q(total_experience_months__gte=experience_month)
-#             else:
-#                 queries &= Q(total_experience_years__gte=experience_year) | Q(total_experience_months__gte=experience_month)
-#         if current_loc:
-#             queries &= Q(city__icontains=current_loc) | Q(state__icontains=current_loc)
-#         if nationality:
-#             queries &= Q(nationality__icontains=nationality)
-#         if salary_min and salary_max:
-#             queries &= Q(prefered_salary_pa__gte=salary_min) & Q(prefered_salary_pa__lte=salary_max)
-#         if gender:
-#             queries &= Q(gender=gender)
-
-#         if queries:
-#             candidate_list = [i async for i in Personal.objects.filter(queries).exclude(user__is_active=False).order_by('-user__subscribed', '-id')]
-#             for i in candidate_list:
-#                 candidate_user = i.user
-#                 search_apps = await SearchApps.objects.filter(user=candidate_user).alatest('date')
-#                 search_apps.count += 1
-#                 await search_apps.asave()
-#                 employment = [e async for e in Employment.objects.filter(user=candidate_user).order_by('-id')] \
-#                     if await Employment.objects.filter(user=candidate_user).aexists() else None
-#                 qualification = [q async for q in Qualification.objects.filter(user=candidate_user).order_by('-id')] \
-#                     if await Qualification.objects.filter(user=candidate_user).aexists() else None
-#                 candidates.append({
-#                     "personal": {"personal": i, "user": candidate_user},
-#                     "employment": employment,
-#                     "qualification": qualification
-#                 })
-
-#     return 200, candidates
+    
 
 
 
