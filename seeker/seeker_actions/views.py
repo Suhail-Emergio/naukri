@@ -187,7 +187,7 @@ def search_apps(request, type: str = ""):
         # Fetch counts from DB
         appearences = (
             SearchApps.objects
-            .filter(user=user, date__date__range=[start_date.date(), end_date.date()])
+            .filter(user=user, date__range=[start_date.date(), end_date.date()])
             .annotate(truncated_date=TruncDate("date"))
             .values("truncated_date")
             .annotate(total_count=Sum("count"))
@@ -196,17 +196,16 @@ def search_apps(request, type: str = ""):
 
         # Map actual DB results
         count_map = {
-            item["truncated_date"].date(): item["total_count"]
+            item["truncated_date"]: item["total_count"]
             for item in appearences if item["truncated_date"]
         }
 
         # Build result using weekday numbers (1 = Mon, ..., 7 = Sun)
-        data = OrderedDict()
+        data = {}
         for i in range(7):
             day = (start_date + timedelta(days=i)).date()
             weekday_num = day.isoweekday()  # 1 = Monday, 7 = Sunday
             data[str(weekday_num)] = count_map.get(day, 0)
-
 
     elif type == "month":
         start_date = today.replace(day=1)
