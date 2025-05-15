@@ -18,6 +18,7 @@ from recruiter.recruiter_actions.schema import ScheduledInterviews
 from seeker.details.models import SearchApps
 from jobs.jobposts.schema import JobData
 from seeker.details.models import *
+from calendar import monthrange
 
 User = get_user_model()
 seeker_actions_api = Router(tags=['seeker_actions'])
@@ -148,26 +149,90 @@ def recruiter_action(request):
     }]
     return recruiter_actions
 
-@seeker_actions_api.get("/seach_apps", description="Search appearences of a seeker")
-def seach_apps(request, type: str = ""):
+# @seeker_actions_api.get("/seach_apps", description="Search appearences of a seeker")
+# def seach_apps(request, type: str = ""):
+#     user = request.auth
+#     today = timezone.now()
+#     appearences = []
+#     appearences = 0
+#     if type == "week":
+#         start_date = today - timedelta(days=7) 
+#         appearences = (
+#             SearchApps.objects.filter(user=user, date__range=[start_date, today])
+#             .annotate(truncated_date=TruncDate("date"))
+#             .values("date", "truncated_date")
+#             .annotate(total_count=Sum("count"))
+#             .order_by("truncated_date")
+#         )
+#     elif type == "month":
+#         start_date = today - timedelta(days=30)
+#         appearences = (SearchApps.objects.filter(user=user, date__range=[start_date, today]).annotate(day_of_month=ExtractDay('date'), date_range=Case(When(day_of_month__lte=10, then=1), When(day_of_month__lte=20, then=2), When(day_of_month__lte=31, then=3), output_field=IntegerField(),)).values('date_range').annotate(total_count=Sum('count')).order_by('date_range'))
+#     else:
+#         start_date = today - timedelta(days=90)
+#         appearences = (SearchApps.objects.filter(user=user, date__range=[start_date, today]).annotate(month=ExtractMonth("date")).values("month").annotate(total_count=Sum("count")).values("month", "total_count").order_by('date'))
+#     total_count = sum(item["total_count"] for item in appearences)
+#     return {"items": list(appearences), "total_count": total_count}
+
+@seeker_actions_api.get("/search_apps", description="Search appearances of a seeker")
+def search_apps(request, type: str = ""):
     user = request.auth
     today = timezone.now()
-    appearences = []
-    appearences = 0
+    data = {}
+
     if type == "week":
-        start_date = today - timedelta(days=7) 
+        start_date = today - timedelta(days=7)
         appearences = (
-            SearchApps.objects.filter(user=user, date__range=[start_date, today])
+            SearchApps.objects
+            .filter(user=user, date__range=[start_date, today])
             .annotate(truncated_date=TruncDate("date"))
-            .values("date", "truncated_date")
+            .values("truncated_date")
             .annotate(total_count=Sum("count"))
             .order_by("truncated_date")
         )
+
+        data = {
+            str(item["truncated_date"]): item["total_count"]
+            for item in appearences
+        }
+
     elif type == "month":
-        start_date = today - timedelta(days=30)
-        appearences = (SearchApps.objects.filter(user=user, date__range=[start_date, today]).annotate(day_of_month=ExtractDay('date'), date_range=Case(When(day_of_month__lte=10, then=1), When(day_of_month__lte=20, then=2), When(day_of_month__lte=31, then=3), output_field=IntegerField(),)).values('date_range').annotate(total_count=Sum('count')).order_by('date_range'))
+        start_date = today.replace(day=1)
+        last_day = monthrange(today.year, today.month)[1]
+
+        week_ranges = [
+            (1, 7),
+            (8, 14),
+            (15, 21),
+            (22, last_day)
+        ]
+
+        data = {}
+        for idx, (start_day, end_day) in enumerate(week_ranges, start=1):
+            range_start = start_date.replace(day=start_day)
+            range_end = start_date.replace(day=min(end_day, last_day))
+
+            count = SearchApps.objects.filter(
+                user=user,
+                date__range=(range_start, range_end)
+            ).aggregate(total=Sum("count"))["total"] or 0
+
+            data[str(idx)] = count
+
     else:
         start_date = today - timedelta(days=90)
-        appearences = (SearchApps.objects.filter(user=user, date__range=[start_date, today]).annotate(month=ExtractMonth("date")).values("month").annotate(total_count=Sum("count")).values("month", "total_count").order_by('date'))
-    total_count = sum(item["total_count"] for item in appearences)
-    return {"items": list(appearences), "total_count": total_count}
+        appearences = (
+            SearchApps.objects
+            .filter(user=user, date__range=[start_date, today])
+            .annotate(month=ExtractMonth("date"))
+            .values("month")
+            .annotate(total_count=Sum("count"))
+            .order_by("month")
+        )
+
+        data = {
+            str(item["month"]): item["total_count"]
+            for item in appearences
+        }
+
+    total_count = sum(data.values())
+    return {"items": data, "total_count": total_count}
