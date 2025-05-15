@@ -19,6 +19,7 @@ from seeker.details.models import SearchApps
 from jobs.jobposts.schema import JobData
 from seeker.details.models import *
 from calendar import monthrange
+from django.utils.timezone import now
 
 User = get_user_model()
 seeker_actions_api = Router(tags=['seeker_actions'])
