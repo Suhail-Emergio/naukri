@@ -176,7 +176,7 @@ def recruiter_action(request):
 @seeker_actions_api.get("/search_apps", description="Search appearances of a seeker")
 def search_apps(request, type: str = ""):
     user = request.auth
-    today = timezone.now()
+    today = now()
     data = {}
 
     if type == "week":
@@ -206,7 +206,6 @@ def search_apps(request, type: str = ""):
             (22, last_day)
         ]
 
-        data = {}
         for idx, (start_day, end_day) in enumerate(week_ranges, start=1):
             range_start = start_date.replace(day=start_day)
             range_end = start_date.replace(day=min(end_day, last_day))
@@ -219,19 +218,32 @@ def search_apps(request, type: str = ""):
             data[str(idx)] = count
 
     else:
-        start_date = today - timedelta(days=90)
+        # Get last 3 months including current
+        month_years = []
+        for i in range(2, -1, -1):
+            month = (today.month - i - 1) % 12 + 1
+            year = today.year if today.month - i > 0 else today.year - 1
+            month_years.append((year, month))
+
+        # Build filter Q object for these months
+        month_filters = Q()
+        for year, month in month_years:
+            month_filters |= Q(year=year, month=month)
+
         appearences = (
             SearchApps.objects
-            .filter(user=user, date__range=[start_date, today])
-            .annotate(month=ExtractMonth("date"))
-            .values("month")
+            .filter(user=user)
+            .annotate(month=ExtractMonth("date"), year=ExtractYear("date"))
+            .filter(month_filters)
+            .values("year", "month")
             .annotate(total_count=Sum("count"))
-            .order_by("month")
         )
 
+        count_map = {(item["year"], item["month"]): item["total_count"] for item in appearences}
+
         data = {
-            str(item["month"]): item["total_count"]
-            for item in appearences
+            str(month): count_map.get((year, month), 0)
+            for year, month in month_years
         }
 
     total_count = sum(data.values())
