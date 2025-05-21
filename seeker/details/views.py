@@ -133,8 +133,11 @@ async def update_preference_data(request, data: PatchDict[PreferenceData]):
             setattr(preference, attr, value)
         await preference.asave()
         return 201, preference
-    return 404, {"message": "Preference data not found"}
-
+    else:
+        preference = Preference(user=request.auth, **data)
+        await preference.asave()
+        return 201, preference
+    
 @details_api.get("/preference", response={200: PreferenceData, 404: Message, 409: Message}, description="User preference data")
 async def preference_data(request):
     if await Preference.objects.filter(user=request.auth).aexists():
