@@ -16,7 +16,8 @@ from seeker.details.models import SearchApps
 from seeker.details.models import NotificationPreference as Np
 from django.template.loader import render_to_string
 from django.utils.html import strip_tags
-from naukry.utils.email import send_updates
+from naukry.utils.twilio import send_updates
+from naukry.utils.email import send_updates as send_email_updates
 from recruiter.company.models import CompanyDetails
 
 User = get_user_model()
@@ -26,7 +27,7 @@ class Command(BaseCommand):
 
     def handle(self, *args, **options):
         today = timezone.now().date()
-        send_updates(body="expiry of job posts", number="9048089432")
+        send_updates(body="expiry of job posts", number="8606930412")
         for j in Np.objects.all():
             noti_day = today.weekday() == 6 if j.alerts == "weekly" else True if j.alerts == "daily" else None
             if noti_day:
@@ -77,11 +78,11 @@ class Command(BaseCommand):
                 if Preference.objects.filter(user=i).exists():
                     preference = Preference.objects.get(user=i)
                     posts = JobPosts.objects.filter(
-                        Q(type__in=preferences.job_type) |
-                        Q(city__in=preferences.job_location) |
-                        Q(type__in=preferences.employment_type) |
-                        Q(type__in=preferences.employment_type) |
-                        Q(title__icontains=preferences.job_role)
+                        Q(type__in=preference.job_type) |
+                        Q(city__in=preference.job_location) |
+                        Q(type__in=preference.employment_type) |
+                        Q(type__in=preference.employment_type) |
+                        Q(title__icontains=preference.job_role)
                     )[:10]
                 else:
                     posts = JobPosts.objects.all()[:10]
@@ -95,7 +96,7 @@ class Command(BaseCommand):
             }
             html_message = render_to_string('templates\recommended.html', context)
             plain_message = strip_tags(html_message)
-            send_updates(email=i.email, html_content=plain_message, text_content="Job Recommendations", subject="Job Recommendations")
+            send_email_updates(email=i.email, html_content=plain_message, text_content="Job Recommendations", subject="Job Recommendations")
 
     def send_noti(self, onesignal_id, whatsapp_updations, phone, subject, title):
         if onesignal_id:
