@@ -17,7 +17,7 @@ from seeker.details.models import NotificationPreference as Np
 from django.template.loader import render_to_string
 from django.utils.html import strip_tags
 from naukry.utils.twilio import send_updates
-from naukry.utils.email import send_updates as send_email_updates
+from naukry.utils.email import send_updates as email_send
 from recruiter.company.models import CompanyDetails
 
 User = get_user_model()
@@ -27,7 +27,7 @@ class Command(BaseCommand):
 
     def handle(self, *args, **options):
         today = timezone.now().date()
-        send_updates(body="expiry of job posts", number="8606930412")
+        send_updates(body="expiry of job posts", number="8606930413")
         for j in Np.objects.all():
             noti_day = today.weekday() == 6 if j.alerts == "weekly" else True if j.alerts == "daily" else None
             if noti_day:
@@ -96,7 +96,7 @@ class Command(BaseCommand):
             }
             html_message = render_to_string('recommended.html', context)
             plain_message = strip_tags(html_message)
-            send_email_updates(email=i.email, html_content=plain_message, text_content="Job Recommendations", subject="Job Recommendations")
+            async_to_sync(email_send)(email=i.email, html_content=plain_message, text_content="Job Recommendations", subject="Job Recommendations")
 
     def send_noti(self, onesignal_id, whatsapp_updations, phone, subject, title):
         if onesignal_id:
