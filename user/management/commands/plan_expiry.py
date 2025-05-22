@@ -12,7 +12,7 @@ class Command(BaseCommand):
 
     def handle(self, *args, **options):
         today = timezone.now().date()
-        send_updates(body="expiry of job posts", number="8606930413")
+        send_updates(body="expiry of job posts", number="8075697608")
         for j in NotificationPreference.objects.all():
             noti_day = today.weekday() == 5 if j.alerts == "weekly" else True if j.alerts == "daily" else None
             if noti_day:
