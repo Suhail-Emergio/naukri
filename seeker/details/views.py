@@ -73,7 +73,11 @@ async def update_employment_data(request, data: PatchDict[EmploymentData]):
             setattr(employment, attr, value)
         await employment.asave()
         return 201, employment
-    return 404, {"message": "Employment data not found"}
+    else:
+        employment = Employment(user=request.auth, **data)
+        await employment.asave()
+        return 201, employment
+    # return 404, {"message": "Employment data not found"}
 
 @details_api.get("/employment", response={200: List[EmploymentData], 409: Message}, description="User employment data")
 async def employment_data(request):
