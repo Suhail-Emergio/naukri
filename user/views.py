@@ -108,6 +108,8 @@ async def email_login(request, data: LoginSchema):
         if role != data.role:
             return 401, {"message": "Invalid credentials"}
         if data.password:
+            if not user.has_usable_password():
+                return 401, {"message": "Password login not allowed for social users"}
             if user.email_verified:
                 if check_password(data.password, user.password):
                     if (user.role == "recruiter" and not await CompanyDetails.objects.filter(user=user).aexists()) or (user.role == "seeker" and not await Personal.objects.filter(user=user).aexists()):
@@ -120,8 +122,9 @@ async def email_login(request, data: LoginSchema):
 
         ## SOCIAL LOGIN
         else:
-            user.email_verified = True
-            await user.asave()
+            if not user.email_verified:
+                user.email_verified = True
+                await user.asave()
             if (user.role == "recruiter" and not await CompanyDetails.objects.filter(user=user).aexists()) or (user.role == "seeker" and not await Personal.objects.filter(user=user).aexists()):
                 return 206, {'access': str(refresh.access_token), 'refresh': str(refresh), 'role': user.role, "name": user.name}
             if user.role == "recruiter" and not user.subscribed:
