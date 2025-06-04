@@ -47,37 +47,37 @@ async def register(request, data: MobileOtpVerify):
         return 201, {"message": "Otp send successfully"}
     return 406, {"message": "User already exists with another phone or email"}
 
-@user_api.post("/social_signup", auth=None, response={200: TokenSchema, 201: TokenSchema, 409: Message, 401: Message})
-async def social_signup(request, data: SocialSignupSchema):
-    email = data.email
-    name = data.name
-    user = await User.objects.filter(email=email).afirst()
-    created = False
-    if not user:
-        user = await User.objects.acreate(
-            username=data.phone,
-            email=email,
-            name=name,
-            role=data.role,
-            email_verified=True,
-            is_active=True,
-            onesignal_id=data.onesignal_id
-        )
-        user.set_unusable_password()
-        await user.asave()
-        created = True
+# @user_api.post("/social_signup", auth=None, response={200: TokenSchema, 201: TokenSchema, 409: Message, 401: Message})
+# async def social_signup(request, data: SocialSignupSchema):
+#     email = data.email
+#     name = data.name
+#     user = await User.objects.filter(email=email).afirst()
+#     created = False
+#     if not user:
+#         user = await User.objects.acreate(
+#             username=data.phone,
+#             email=email,
+#             name=name,
+#             role=data.role,
+#             email_verified=True,
+#             is_active=True,
+#             onesignal_id=data.onesignal_id
+#         )
+#         user.set_unusable_password()
+#         await user.asave()
+#         created = True
 
-    else:
-        if user.role != data.role:
-            return 401, {"message": "User role mismatch"}
+#     else:
+#         if user.role != data.role:
+#             return 401, {"message": "User role mismatch"}
 
-    refresh = RefreshToken.for_user(user)
-    return (201 if created else 200), {
-        "access": str(refresh.access_token),
-        "refresh": str(refresh),
-        "role": user.role,
-        "name": user.name
-    }
+#     refresh = RefreshToken.for_user(user)
+#     return (201 if created else 200), {
+#         "access": str(refresh.access_token),
+#         "refresh": str(refresh),
+#         "role": user.role,
+#         "name": user.name
+#     }
 
 
 @user_api.post("/mobile_login", auth=None, response={200: Message, 403: Message, 401: Message}, description="Authenticate user with username and password")
@@ -144,6 +144,11 @@ async def mobile_otp_verify(request, data: UserCreation):
                 user_data = data.dict()
                 user_data.pop('otp', None)
                 user = await User.objects.acreate(**user_data, username=data.phone)
+                if not data.password:
+                    user.set_unusable_password()
+                    user.email_verified = True
+                else:
+                    user.set_password(data.password)
                 user.set_password(data.password)
                 user.phone_verified = True
                 await user.asave()
