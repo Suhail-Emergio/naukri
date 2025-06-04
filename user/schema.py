@@ -47,6 +47,14 @@ class UserCreation(Schema):
     onesignal_id: str | None = None
     whatsapp_updations: bool | None = None
 
+class SocialSignupSchema(Schema):
+    email: str  # Required for identifying the user
+    name: Optional[str] = None
+    role: Optional[str] = None
+    phone: Optional[str] = None
+    onesignal_id: Optional[str] = None
+    whatsapp_updations: Optional[bool] = None
+
 class TokenSchema(Schema):
     access: str
     refresh: str
