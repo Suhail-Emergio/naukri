@@ -459,7 +459,7 @@ async def recruiter_counts(request):
         interview_scheduled_count = await InterviewSchedule.objects.filter(user=request.auth).acount()
         application_count = await ApplyJobs.objects.filter(job__company__user=request.auth).acount()
         active_jobs_count = await JobPosts.objects.filter(company__user=request.auth, active=True).acount()
-        inactive_jobs_count = await JobPosts.objects.filter(company__user=request.auth, active=False).acount()
+        inactive_jobs_count = await JobPosts.objects.filter(company__user=request.auth, status='closed').acount()
         subscription = await Subscription.objects.aget(user=request.auth)
         plan = await sync_to_async(lambda: subscription.plan)()
         posts = await sync_to_async(lambda: plan.posts)()
