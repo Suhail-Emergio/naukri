@@ -16,6 +16,7 @@ from django.utils import timezone
 from .utils.csv_util import get_csv_data, create_csv
 from .utils.candidate_gen import candidate_creation
 from django.http import HttpResponse
+from django.utils.timezone import now
 
 User = get_user_model()
 recruiter_actions_api = Router(tags=['recruiter_actions'])
@@ -179,9 +180,13 @@ async def resdex(request,
                 user = await sync_to_async(lambda: i.user)()
                 if user.id not in seen_users:
                     seen_users.add(user.id)
-                    search_apps = await SearchApps.objects.filter(user=user).alatest('date')
-                    search_apps.count += 1
-                    await search_apps.asave()
+                    try:
+                        search_apps = await SearchApps.objects.filter(user=user).alatest('date')
+                        search_apps.count += 1
+                        await search_apps.asave()
+                    except SearchApps.DoesNotExist:
+                        search_apps = SearchApps(user=user, count=1, date=now())
+                        await search_apps.asave()
 
                     personal_ = await Personal.objects.aget(user=user)
                     qualification = [i async for i in Qualification.objects.filter(user=user).order_by('-id')] if await Qualification.objects.filter(user=user).aexists() else None
@@ -221,9 +226,13 @@ async def resdex(request,
             candidate = [i async for i in Personal.objects.filter(queries).exclude(user__is_active=False).order_by('-user__subscribed', '-id')]
             for i in candidate:
                 user = await sync_to_async(lambda: i.user)()
-                search_apps = await SearchApps.objects.filter(user=user).alatest('date')
-                search_apps.count += 1
-                await search_apps.asave()
+                try:
+                    search_apps = await SearchApps.objects.filter(user=user).alatest('date')
+                    search_apps.count += 1
+                    await search_apps.asave()
+                except SearchApps.DoesNotExist:
+                    search_apps = SearchApps(user=user, count=1, date=now())
+                    await search_apps.asave()
 
                 employment = [i async for i in Employment.objects.filter(user=user).order_by('-id')] if await Employment.objects.filter(user=user).aexists() else None
                 qualification = [i async for i in Qualification.objects.filter(user=user).order_by('-id')] if await Qualification.objects.filter(user=user).aexists() else None
