@@ -29,6 +29,9 @@ async def update_personal_data(request, data: PatchDict[PersonalCreation]):
     if await Personal.objects.filter(user=request.auth).aexists():
         personal = await Personal.objects.aget(user=request.auth)
         for attr, value in data.items():
+            if attr == "skills":
+                if value is None:
+                    value = []
             setattr(personal, attr, value)
         await personal.asave()
         return 201, {"message": "Succesfully updated"}
