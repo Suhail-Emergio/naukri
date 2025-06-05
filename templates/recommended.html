@@ -214,21 +214,21 @@
         <div class="recommendation-count">
             We found {{ posts|length }} jobs matching your preferences
         </div>
-        {% for job in post %}
+        {% for job in posts %}
         <div class="job-card">
-            {% if job.company_logo %}
+            {% if job.company.logo.url %}
             <div class="company-logo">
-                <img src="data:image/png;base64,{{ job.company_logo }}" alt="{{ job.company_name }} logo">
+                <img src="data:image/png;base64,{{ job.company.logo.url }}" alt="{{ job.company.name }} logo">
             </div>
             {% else %}
             <div class="company-logo-fallback">
-                {{ job.company_name|slice:":2"|upper }}
+                {{ job.company.name|slice:":2"|upper }}
             </div>
             {% endif %}
             <div class="job-title">{{ job.title }}</div>
             <div class="job-meta">
                 <div class="job-meta-item">
-                    🏢 {{ job.company_name }}
+                    🏢 {{ job.company.name }}
                 </div>
                 <div class="job-meta-item">
                     📍 {{ job.city }}

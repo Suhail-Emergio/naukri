@@ -11,7 +11,7 @@ class PersonalCreation(Schema):
     city : str
     state : str
     employed : bool
-    skills : Union[List[str], Dict[str, Any]]
+    skills : Union[List[str], Dict[str, Any]]|None=True
     prefered_salary_pa : int
     prefered_work_loc : Union[List[str], Dict[str, Any]]
     nationality : str

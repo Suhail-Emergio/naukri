@@ -91,12 +91,12 @@ class Command(BaseCommand):
                 posts = Personal.objects.filter(skills__in=company.functional_area)[:10]
             context = {
                 'posts': posts,
-                'job_detail_url': 'https://yourdomain.com/jobs/',
-                'unsubscribe_url': 'https://yourdomain.com/unsubscribe/'
+                'job_detail_url': 'https://job.emergiogames/jobs/',
+                'unsubscribe_url': 'https://job.emergiogames/unsubscribe/'
             }
             html_message = render_to_string('recommended.html', context)
             plain_message = strip_tags(html_message)
-            async_to_sync(email_send)(email=i.email, html_content=plain_message, text_content="Job Recommendations", subject="Job Recommendations")
+            async_to_sync(email_send)(email=i.email, html_content=html_message, text_content=plain_message, subject="Job Recommendations")
 
     def send_noti(self, onesignal_id, whatsapp_updations, phone, subject, title):
         if onesignal_id:
