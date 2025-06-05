@@ -17,6 +17,7 @@ from recruiter.recruiter_actions.models import InterviewSchedule
 from recruiter.recruiter_actions.schema import ScheduledInterviews
 from seeker.details.models import SearchApps
 from jobs.jobposts.schema import JobData
+from user.schema import Message
 from seeker.details.models import *
 from calendar import monthrange
 from django.utils.timezone import now
