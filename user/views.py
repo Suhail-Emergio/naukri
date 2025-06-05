@@ -107,7 +107,7 @@ async def email_login(request, data: LoginSchema):
         role = await sync_to_async(lambda: user.role)()
         if role != data.role:
             return 401, {"message": "Invalid credentials"}
-        if data.password:
+        if data.password and data.password.strip() != "":
             if not user.has_usable_password():
                 return 401, {"message": "Password login not allowed for social users"}
             if user.email_verified:
