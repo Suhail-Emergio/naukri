@@ -192,10 +192,8 @@ async def resdex(request,
         if keywords:
             keyword_query = Q()
             for keyword in keywords:
-                if keyword:
-                    keyword_query |= Q(skills__contains=keyword)
+                keyword_query |= Q(skills__contains=keyword)
             queries &= keyword_query
-
         if experience_year is not None and experience_month is not None:
             queries &= Q(total_experience_years__gte=experience_year) & Q(total_experience_months__gte=experience_month)
         elif experience_year is not None:
@@ -234,6 +232,7 @@ async def resdex(request,
 
     return 200, candidates
 
+    
 
 
 
