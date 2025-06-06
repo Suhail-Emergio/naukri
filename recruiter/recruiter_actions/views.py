@@ -458,7 +458,7 @@ async def recruiter_counts(request):
         profile_completion_percentage, empty_models, models_with_empty_fields = await completion_data(request.auth)
         interview_scheduled_count = await InterviewSchedule.objects.filter(user=request.auth).acount()
         application_count = await ApplyJobs.objects.filter(job__company__user=request.auth).acount()
-        active_jobs_count = await JobPosts.objects.filter(company__user=request.auth,status='active').acount()
+        active_jobs_count = await JobPosts.objects.filter(company__user=request.auth,status='active',verified=True).acount()
         inactive_jobs_count = await JobPosts.objects.filter(company__user=request.auth, status='closed').acount()
         subscription = await Subscription.objects.aget(user=request.auth)
         plan = await sync_to_async(lambda: subscription.plan)()
