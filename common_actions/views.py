@@ -76,7 +76,10 @@ async def subscriptions(request):
 async def check_subscription(request):
     user = request.auth
     if await Subscription.objects.filter(user=user).aexists():
-        return 200, {"message": "Subscribed"}
+        subscription = await Subscription.objects.select_related('plan').aget(user=user)
+        resdex_status = subscription.plan.resdex if subscription.plan else False
+        return 200, {"message": "Subscribed", "resdex": resdex_status}
+        # return 200, {"message": "Subscribed"}
     return 404, {"message" : "Subscription doesnot exists"}
 
 @common_api.delete("/delete_subscription", response={200: Message, 404: Message, 409:Message}, description="delete subscription taken by a user")
