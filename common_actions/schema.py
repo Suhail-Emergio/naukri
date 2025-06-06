@@ -19,6 +19,10 @@ class SubscriptionData(Schema):
     transaction_id: str
     subscribed_on: datetime
 
+class subscriptionstatus(Schema):
+    message: str
+    resdex: bool
+
 class NotificationCreation(Schema):
     user_id: Optional[List[int]] = None
     audience: str | None = None

@@ -72,14 +72,13 @@ async def subscriptions(request):
         }
     return 404, {"message" : "Subscription doesnot exists"}
 
-@common_api.get("/check_subscription", response={200: Message, 404: Message, 409:Message}, description="subscription taken by a user")
+@common_api.get("/check_subscription", response={200: subscriptionstatus, 404: Message, 409:Message}, description="subscription taken by a user")
 async def check_subscription(request):
     user = request.auth
     if await Subscription.objects.filter(user=user).aexists():
         subscription = await Subscription.objects.select_related('plan').aget(user=user)
-        resdex_status = subscription.plan.resdex if subscription.plan else False
+        resdex_status = subscription.plan.resdex if subscription.plan else False    
         return 200, {"message": "Subscribed", "resdex": resdex_status}
-        # return 200, {"message": "Subscribed"}
     return 404, {"message" : "Subscription doesnot exists"}
 
 @common_api.delete("/delete_subscription", response={200: Message, 404: Message, 409:Message}, description="delete subscription taken by a user")
