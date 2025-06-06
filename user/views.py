@@ -215,7 +215,14 @@ async def email_verify(request, data: EmailOtpVerify):
 def refresh_token(request, token_data: TokenRefreshSchema):
     try:
         refresh = RefreshToken(token_data.refresh)
-        return 200, {'access': str(refresh.access_token),'refresh': str(refresh), 'role': "", "name": ""}
+        user_id = refresh['user_id']
+        user = UserProfile.objects.get(id=user_id)
+        return 200, {
+            'access': str(refresh.access_token),
+            'refresh': str(refresh),
+            'role': user.role,
+            'name': user.name
+        }
     except Exception:
         return 401, {"message": "Invalid refresh token"}
 
