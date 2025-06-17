@@ -202,28 +202,40 @@ async def search_jobs(request,
     if specialization or query:
         queries = Q()
 
-        # Querying jobs based on specialization\ query
+        # Fix: Use icontains instead of exact list match
         if specialization and query:
-            queries &= (Q(industry__icontains=specialization) | Q(skills__contains=[specialization])) | Q(title__icontains=query)
+            queries &= (
+                Q(industry__icontains=specialization) |
+                Q(skills__icontains=specialization) |
+                Q(title__icontains=query)
+            )
         elif specialization:
-            queries &= Q(industry__icontains=specialization) | Q(skills__contains=[specialization])
+            queries &= (
+                Q(industry__icontains=specialization) |
+                Q(skills__icontains=specialization)
+            )
         elif query:
             queries &= Q(title__icontains=query)
 
-        # Filtering jobs based on filter data from above query
+        # Filtering
         if filter:
-            queries &= Q(schedule=schedule) if schedule else Q()
-            queries &= Q(type=job_type) if job_type else Q()
-            queries &= Q(work_location__in=city) or Q(city=city) if city else Q()
-            queries &= Q(salary_min__gte=salary_min) if salary_min is not None else Q()
-            queries &= Q(salary_max__lte=salary_max) if salary_max is not None else Q()
-            queries &= Q(total_experience__gte=experience_min) if experience_min is not None else Q()
-            queries &= Q(total_experience__lte=experience_max) if experience_max is not None else Q()
-
-            current_date = datetime.now()
+            if schedule:
+                queries &= Q(schedule__icontains=schedule)
+            if job_type:
+                queries &= Q(type__icontains=job_type)
+            if city:
+                queries &= Q(work_location__icontains=city) | Q(city__icontains=city)
+            if salary_min is not None:
+                queries &= Q(salary_min__gte=salary_min)
+            if salary_max is not None:
+                queries &= Q(salary_max__lte=salary_max)
+            if experience_min is not None:
+                queries &= Q(total_experience__gte=experience_min)
+            if experience_max is not None:
+                queries &= Q(total_experience__lte=experience_max)
             if freshness:
-                diff = current_date - timedelta(days=freshness)
-                queries &= Q(created_on__gte=diff)
+                cutoff_date = datetime.now() - timedelta(days=freshness)
+                queries &= Q(created_on__gte=cutoff_date)
 
         jobs = [i async for i in JobPosts.objects.filter(queries).exclude(active=False).order_by('-created_on')]
         job_company_data = []
@@ -231,4 +243,5 @@ async def search_jobs(request,
             company_details = await CompanyDetails.objects.aget(id=job.company_id)
             job_company_data.append({"job_posts": job, "company_data": company_details})
         return 200, job_company_data
+
     return 409, {"message": "Please provide specialization or query"}
