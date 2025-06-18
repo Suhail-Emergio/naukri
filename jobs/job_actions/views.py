@@ -206,16 +206,16 @@ async def search_jobs(request,
         if specialization and query:
             queries &= (
                 Q(industry__icontains=specialization) |
-                Q(skills__icontains=specialization) |
-                Q(title__icontains=query)
+                Q(skills__icontains=specialization) |Q(title__icontains=specialization)|
+                Q(title__icontains=query)|Q(skills__icontains=query) | Q(industry__icontains=query)
             )
         elif specialization:
             queries &= (
                 Q(industry__icontains=specialization) |
-                Q(skills__icontains=specialization)
+                Q(skills__icontains=specialization)|Q(title__icontains=specialization)
             )
         elif query:
-            queries &= Q(title__icontains=query)
+            queries &= (Q(title__icontains=query)| Q(skills__icontains=query) | Q(industry__icontains=query))
 
         # Filtering
         if filter:
