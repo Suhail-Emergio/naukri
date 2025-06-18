@@ -64,7 +64,7 @@ class UpdateApplicationStatus(Schema):
     status : str
 
 class UpdateInterviewRound(Schema):
-    interview_round : str
+    interview_round : Optional[str]
     interview_status : str
     schedule : datetime
 
