@@ -17,9 +17,16 @@ SECRET_KEY = config('SECRET_KEY')
 DEBUG = config('DEBUG')
 
 ALLOWED_HOSTS = config('DJANGO_ALLOWED_HOSTS', default='').split(',')
-# CSRF_TRUSTED_ORIGINS = config('DJANGO_CSRF_TRUSTED_ORIGINS', default='').split(',')
-# CSRF_ALLOWED_ORIGINS = config('DJANGO_CSRF_ALLOWED_ORIGINS', default='').split(',')
-# CORS_ORIGINS_WHITELIST = config('DJANGO_CORS_ORIGINS_WHITELIST', default='').split(',')
+CSRF_TRUSTED_ORIGINS = config('DJANGO_CSRF_TRUSTED_ORIGINS', default='').split(',')
+CSRF_ALLOWED_ORIGINS = config('DJANGO_CSRF_ALLOWED_ORIGINS', default='').split(',')
+CORS_ORIGINS_WHITELIST = config('DJANGO_CORS_ORIGINS_WHITELIST', default='').split(',')
+
+WEBSOCKET_URL = config('DJANGO_ALLOWED_HOSTS')
+PROJECT_NAME = config('PROJECT_NAME')
+TWILIO_ACCOUNT_SID = config('TWILIO_ACCOUNT_SID')
+TWILIO_AUTH_TOKEN = config('TWILIO_AUTH_TOKEN')
+ONESIGNAL_APP_ID = config('ONESIGNAL_APP_ID')
+ONESIGNAL_API_KEY = config('ONESIGNAL_API_KEY')
 
 INSTALLED_APPS = [
     'django.contrib.admin',
@@ -33,6 +40,9 @@ INSTALLED_APPS = [
     'user',
     'recruiter',
     'seeker',
+    'jobs',
+    'common_actions',
+    'administrator',
 ]
 
 MIDDLEWARE = [
@@ -50,14 +60,14 @@ CORS_ALLOW_ALL_ORIGINS = True
 CORS_ALLOW_CREDENTIALS = True 
 CORS_ALLOW_METHODS = ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS']
 CORS_ALLOW_HEADERS = ['accept', 'accept-encoding', 'authorization', 'content-type', 'origin', 'user-agent']
-
 ROOT_URLCONF = 'naukry.urls'
 AUTH_USER_MODEL = 'user.UserProfile'
+NINJA_PAGINATION_PER_PAGE = 20
 
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [],
+        'DIRS': [BASE_DIR / 'templates'],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
@@ -71,14 +81,25 @@ TEMPLATES = [
 ]
 
 NINJA_JWT = {
-    'ACCESS_TOKEN_LIFETIME': timedelta(minutes=60),
-    'REFRESH_TOKEN_LIFETIME': timedelta(days=1),
+    'ACCESS_TOKEN_LIFETIME': timedelta(days=30),
+    'REFRESH_TOKEN_LIFETIME': timedelta(days=60),
     'USER_ID_FIELD': 'id',
     'USER_ID_CLAIM': 'user_id', 
     'AUTH_HEADER_TYPES': ('Bearer',),
 }
 
+ASGI_APPLICATION = 'naukry.asgi.application'
 WSGI_APPLICATION = 'naukry.wsgi.application'
+
+CACHES = {
+    'default': {
+        'BACKEND': 'django.core.cache.backends.db.DatabaseCache',
+        'LOCATION': 'otp_cache',
+        'OPTIONS': {
+            'TIMEOUT': 120,
+        }
+    }
+}
 
 DATABASES = {
     'default': {
@@ -112,7 +133,7 @@ AUTH_PASSWORD_VALIDATORS = [
 # Internationalization
 # https://docs.djangoproject.com/en/5.0/topics/i18n/
 LANGUAGE_CODE = 'en-us'
-TIME_ZONE = 'UTC'
+TIME_ZONE = 'Asia/Kolkata'
 USE_I18N = True
 USE_TZ = True
 
@@ -128,3 +149,11 @@ MEDIA_URL='/media/'
 # Default primary key field type
 # https://docs.djangoproject.com/en/5.0/ref/settings/#default-auto-field
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
+# Email settings
+EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+EMAIL_HOST = config('EMAIL_HOST')
+EMAIL_USE_TLS = True
+EMAIL_PORT = config('EMAIL_PORT')
+EMAIL_HOST_USER = config('EMAIL_HOST_USER')
+EMAIL_HOST_PASSWORD = config('EMAIL_HOST_PASSWORD')
